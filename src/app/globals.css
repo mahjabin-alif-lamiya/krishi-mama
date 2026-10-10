@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+:root,
+[data-theme="light"] {
+  --background: #F7FAF5;
+  --card: #FFFFFF;
+  --text: #0F1F14;
+  --muted: #4B5B50;
+  --border: #E2EAE0;
+  --primary: #14532D;
+  --accent: #C8961E;
+
+  /* Risk status colors (identical across themes) */
+  --risk-safe: #16A34A;
+  --risk-caution: #EAB308;
+  --risk-danger: #DC2626;
+}
+
+[data-theme="dark"] {
+  --background: #0A0A0A;
+  --card: #141414;
+  --text: #F5F5F5;
+  --muted: #A3A3A3;
+  --border: #262626;
+  --primary: #4ADE80;
+  --accent: #E5B84A;
+
+  /* Risk status colors (identical across themes) */
+  --risk-safe: #16A34A;
+  --risk-caution: #EAB308;
+  --risk-danger: #DC2626;
+}
+
+/* Always-dark surface that looks identical in both light and dark theme */
+.surface-dark {
+  --background: #0B3A22;
+  --card: rgba(255, 255, 255, 0.06);
+  --text: #F5FAF6;
+  --muted: #B7D3C0;
+  --border: rgba(255, 255, 255, 0.14);
+  --accent: #E5B84A;
+  --primary: #E5B84A;
+  background: linear-gradient(135deg, #0B3A22 0%, #14532D 100%);
+  color: #F5FAF6;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Ensure cards inside .surface-dark use the dark card variables */
+.surface-dark .card,
+.surface-dark [data-card="true"] {
+  background-color: var(--card);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* Soft radial glow helper (gold glow top-right, green glow bottom-left) */
+.surface-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.surface-glow::before {
+  content: "";
+  position: absolute;
+  top: -15%;
+  right: -10%;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 184, 74, 0.18) 0%, rgba(229, 184, 74, 0) 70%);
+  filter: blur(45px);
+  pointer-events: none;
+}
+
+.surface-glow::after {
+  content: "";
+  position: absolute;
+  bottom: -15%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 83, 45, 0.45) 0%, rgba(11, 58, 34, 0) 70%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+/* Subtle dotted pattern overlay with low opacity */
+.surface-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.9) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-foreground: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-risk-safe: var(--risk-safe);
+  --color-risk-caution: var(--risk-caution);
+  --color-risk-danger: var(--risk-danger);
+  --font-sans: var(--font-inter), var(--font-noto-bengali), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  font-family: var(--font-inter), var(--font-noto-bengali), system-ui, sans-serif;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
