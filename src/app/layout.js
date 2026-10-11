@@ -19,7 +19,7 @@ const notoSansBengali = Noto_Sans_Bengali({
 });
 
 export const metadata = {
-  title: "Krishi Mama (কৃষি মামা) — NASA Space Apps Challenge 2026 | Team MindMesh",
+  title: "Krishi Mama | Team NeuralMesh | NASA Space Apps Challenge 2026",
   description:
     "A climate decision-support tool that evaluates the risk of delaying sowing by 0, 7, or 14 days for Bangladeshi farmers using 25 years of NASA POWER meteorological data.",
   keywords: [
