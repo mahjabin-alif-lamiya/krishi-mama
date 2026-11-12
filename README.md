@@ -38,7 +38,7 @@ The interface is designed for farmers with limited literacy: one question per sc
 | `GWETROOT` | Root zone soil wetness (0 to 1) | Yes |
 | `T2M` | Air temperature at 2 m | Fetched, not used yet (planned for heat-stress analysis) |
 
-Data is requested live through a server route (`src/app/api/handoff/route.js`) and cached for 24 hours. If NASA does not respond within 8 seconds, the app falls back to a saved snapshot (`src/data/snapshots/`). The response states whether the data is `live` or `snapshot`, and the interface shows a badge.
+Data is requested live through a server route (`krishi_client/src/app/api/handoff/route.js`) and cached for 24 hours. If NASA does not respond within 8 seconds, the app falls back to a saved snapshot (`krishi_client/src/data/snapshots/`). The response states whether the data is `live` or `snapshot`, and the interface shows a badge.
 
 Snapshots are included for Chattogram, Cumilla, Dhaka and Rajshahi. Other districts use the live API.
 
@@ -54,7 +54,7 @@ For each rotation and each delay (0, 7, 14 days):
 4. Risk percent = years marked wet or dry / years with complete data x 100.
 5. Levels: under 25% safe, 25% to 50% caution, over 50% danger.
 
-Code: `src/lib/risk.js`, `src/lib/sentences.js`, `src/lib/advice.js`, `src/lib/priorities.js`.
+Code: `krishi_client/src/lib/risk.js`, `krishi_client/src/lib/sentences.js`, `krishi_client/src/lib/advice.js`, `krishi_client/src/lib/priorities.js`.
 
 ## Local information (not NASA data)
 
@@ -66,7 +66,7 @@ These values are **assumptions** and must be verified with BRRI, DAE, BARC and B
 | Aman rice then Lentil | 15 November | above 35 mm | below 0.45 |
 | Aman rice then Wheat | 22 November | above 45 mm | below 0.45 |
 
-Soil type shifts the thresholds slightly (clay tolerates less rain, sandy tolerates more). Crop traits (water need, duration, effect on soil nitrogen) and the farmer's goal are used to rank the options. Everything is in `src/lib/crops.js`, `src/lib/soils.js` and `src/lib/priorities.js`.
+Soil type shifts the thresholds slightly (clay tolerates less rain, sandy tolerates more). Crop traits (water need, duration, effect on soil nitrogen) and the farmer's goal are used to rank the options. Everything is in `krishi_client/src/lib/crops.js`, `krishi_client/src/lib/soils.js` and `krishi_client/src/lib/priorities.js`.
 
 ## Limitations
 
@@ -87,11 +87,15 @@ Soil type shifts the thresholds slightly (clay tolerates less rain, sandy tolera
 
 ## Tech stack
 
-Next.js 16 (App Router), React 19, Tailwind CSS 4, Recharts, lucide-react. Deployed on Vercel.
+- **Client:** Next.js 16 (App Router), React 19, Tailwind CSS 4, Recharts, lucide-react. Deployed on Vercel.
+- **Server:** Node.js, Express, MongoDB (Mongoose).
 
 ## Run locally
 
+### Client
+
 ```bash
+cd krishi_client
 npm install
 npm run snapshots   # optional: download offline NASA POWER snapshots
 npm run dev
@@ -99,14 +103,32 @@ npm run dev
 
 Open http://localhost:3000. No API key is needed for NASA POWER.
 
+### Server
+
+```bash
+cd krishi_server
+npm install
+cp .env.example .env    # then edit the values
+npm run dev
+```
+
+Open http://localhost:5000/api/health.
+
 ## Project structure
 
+This is a monorepo with two folders:
+
 ```
-src/app/            pages: Home, planner (When to Sow), NASA Data, API route
-src/components/     layout, cards, planner steps, UI
-src/lib/            risk logic, crop and soil assumptions, sentences, translations
-src/data/snapshots/ saved NASA POWER data (offline fallback)
-scripts/            snapshot downloader
+krishi_client/        Next.js app
+  src/app/              pages: Home, planner (When to Sow), NASA Data, API route
+  src/components/       layout, cards, planner steps, UI
+  src/lib/              risk logic, crop and soil assumptions, sentences, translations
+  src/data/snapshots/   saved NASA POWER data (offline fallback)
+  scripts/              snapshot downloader
+krishi_server/        Node + Express + MongoDB API
+  src/index.js          app entry
+  src/config/db.js      Mongoose connection
+  src/routes/health.js  /api/health
 ```
 
 ## Use of AI
