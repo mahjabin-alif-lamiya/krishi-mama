@@ -15,6 +15,21 @@ function isBanglaMessage(message) {
   return /[\u0980-\u09FF]/.test(message);
 }
 
+function isGeneralHelpOrGreeting(message) {
+  if (!message || typeof message !== "string") return false;
+  const msg = message.toLowerCase().trim();
+  return (
+    /^hello\b/i.test(msg) ||
+    /^hi\b/i.test(msg) ||
+    /^hey\b/i.test(msg) ||
+    /how can you help/i.test(msg) ||
+    /help/i.test(msg) ||
+    /সাহায্য/i.test(msg) ||
+    /নমস্কার/i.test(msg) ||
+    /সালাম/i.test(msg)
+  );
+}
+
 function getAnnualRainfallMean(rainfallData) {
   const value = rainfallData?.annualHistorical?.meanAnnualTotalMm;
   return Number.isFinite(value) ? value : null;
@@ -57,7 +72,7 @@ function updateConversationHistory(conversationId, userText, assistantText) {
 async function generateDeterministicFallback({ message, district, crop = null, farmId = null, userId = null }) {
   const normMessage = message.toLowerCase();
   const validDistrict = VALID_DISTRICT_CODES.has(district?.toLowerCase()) ? district.toLowerCase() : null;
-  if (!validDistrict) {
+  if (!validDistrict && !farmId && !isGeneralHelpOrGreeting(message)) {
     const language = isBanglaMessage(message) ? "bn" : "en";
     return {
       answer: language === "bn"
@@ -1010,7 +1025,8 @@ export class AssistantChatService {
 
     // Validate district against supported list
     const lowerDistrict = typeof district === "string" ? district.trim().toLowerCase() : "";
-    if (!VALID_DISTRICT_CODES.has(lowerDistrict)) {
+    const isGreetingOrHelp = isGeneralHelpOrGreeting(trimmedMessage);
+    if (!farmId && !isGreetingOrHelp && !VALID_DISTRICT_CODES.has(lowerDistrict)) {
       const language = isBanglaMessage(trimmedMessage) ? "bn" : "en";
       const unsupportedAnswer = language === "bn"
         ? `বর্তমানে কেবল কুমিল্লা ও চট্টগ্রাম জেলার উপাত্ত যাচাইকৃত। '${district || "নির্বাচিত নয়"}' জেলার জন্য তথ্য ব্যবহার করা হয়নি। অনুগ্রহ করে কুমিল্লা বা চট্টগ্রাম নির্বাচন করুন।`

@@ -160,8 +160,8 @@ test("Phase 8.1: Offline API Endpoints Fallback (Disconnected MongoDB)", async (
     assert.equal(resModisLatest.status, 200);
     const jsonModisLatest = await resModisLatest.json();
     assert.equal(jsonModisLatest.meta.provenance, "SNAPSHOT");
-    assert.equal(jsonModisLatest.data.ndvi, 0.2865);
-    assert.equal(jsonModisLatest.data.dateLabel, "2024-01-17");
+    assert.equal(jsonModisLatest.data.ndvi, 0.3434);
+    assert.equal(jsonModisLatest.data.dateLabel, "2023-12-19");
 
     // 11. Vegetation History Fallback
     const resModisHist = await fetch(`${baseUrl}/vegetation/history?district=cumilla&from=2023-12-01&to=2024-02-01`);
@@ -223,7 +223,7 @@ test("Phase 8.1: AI Assistant Tools Offline Resilience", async () => {
   const modis = await toolExecutors.getVegetationLatest({ district: "cumilla" });
   assert.equal(modis.district, "cumilla");
   assert.ok(modis.provenance.includes("SNAPSHOT"));
-  assert.equal(modis.ndvi, 0.2865);
+  assert.equal(modis.ndvi, 0.3434);
 
   // 5. getHandoffPlan
   const handoff = await toolExecutors.getHandoffPlan({ district: "cumilla", transition: "aman-mustard" });

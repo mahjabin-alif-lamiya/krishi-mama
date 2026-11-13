@@ -7,8 +7,8 @@ Developed for the **NASA International Space Apps Challenge 2026**
 **Selected Challenge:** Field Shift: Adapting Farms with NASA Data  
 **Team:** NeuralMesh  
 
-- **Backend Repository:** [https://github.com/shahed-hassan-fz-rabbi/Krishi_server](https://github.com/shahed-hassan-fz-rabbi/Krishi_server)
-- **Frontend Repository:** [https://github.com/shahed-hassan-fz-rabbi/Krishi_Client](https://github.com/shahed-hassan-fz-rabbi/Krishi_Client)
+- **Backend Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_server](https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_server)
+- **Frontend Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_client](https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_client)
 - **Scientific Formula Version:** `v1.0.0-phase3`  
 - **Runtime Environment:** Node.js (Express 5 REST API) + Python 3.11+ (NumPy 2.x Engine) + MongoDB Atlas
 
@@ -312,8 +312,8 @@ All backend endpoints are mounted under `/api/v1` and return standardized JSON e
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/shahed-hassan-fz-rabbi/Krishi_server.git
-   cd Krishi_server
+   git clone https://github.com/mahjabin-alif-lamiya/krishi-mama.git
+   cd krishi-mama/krishi_server
    ```
 
 2. **Install Node Dependencies:**

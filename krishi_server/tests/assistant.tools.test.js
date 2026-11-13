@@ -335,7 +335,7 @@ test("Gemini success path propagates GPM observation provenance and completeness
 });
 
 test("Assistant Weather Tools Executors return structured data without fabrication", async () => {
-  const forecast = await toolExecutors.getLocationWeatherForecast({ location: "Dhaka" });
+  const forecast = await toolExecutors.getLocationWeatherForecast({ location: "Cumilla" });
   assert.ok(forecast.location);
   assert.equal(forecast.next7Days.length, 7);
   assert.ok(forecast.provenance);
@@ -345,12 +345,12 @@ test("Assistant Weather Tools Executors return structured data without fabricati
   assert.ok(["LOW", "MODERATE", "HIGH", "SEVERE"].includes(alerts.overallRiskLevel));
   assert.ok(Array.isArray(alerts.alerts));
 
-  const outlook = await toolExecutors.getWeeklyWeatherOutlook({ location: "Sylhet" });
+  const outlook = await toolExecutors.getWeeklyWeatherOutlook({ location: "Chattogram" });
   assert.ok(outlook.location);
   assert.ok(Array.isArray(outlook.weeklyTendencies));
   assert.ok(outlook.weeklyTendencies.length > 0);
 
-  const seasonal = await toolExecutors.getSeasonalCropOutlook({ location: "Khulna", crop: "Boro" });
+  const seasonal = await toolExecutors.getSeasonalCropOutlook({ location: "Cumilla", crop: "boro_rice" });
   assert.ok(seasonal.location);
   assert.ok(Array.isArray(seasonal.monthlyOutlooks));
   assert.ok(seasonal.monthlyOutlooks.length > 0);
