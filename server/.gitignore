@@ -1,0 +1,49 @@
+# Krishi Mama — Server .gitignore
+
+# ---- Dependencies ----
+node_modules/
+
+# ---- Environment & secrets (NEVER commit) ----
+.env
+.env.*
+!.env.example
+.netrc
+*_netrc
+*.pem
+*.key
+
+# ---- NASA Earthdata credentials ----
+earthdata/
+*.edl
+
+# ---- Logs ----
+logs/
+*.log
+npm-debug.log*
+
+# ---- OS / Editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# ---- Build / cache ----
+dist/
+coverage/
+
+# ---- Python Bytecode ----
+__pycache__/
+*.pyc
+*.pyo
+
+# ---- NASA Raw Data Staging (Never commit satellite binaries) ----
+data/smap/raw/
+data/modis/raw/
+data/gpm/raw/
+*.h5
+*.hdf
+*.nc4
+*.nc
+*.tif
+*.tiff
+
