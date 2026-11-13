@@ -8,7 +8,7 @@ Developed for the **NASA International Space Apps Challenge 2026**
 **Team:** NeuralMesh  
 
 - **Frontend Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_client](https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_client)
-- **Backend Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/server](https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/server)
+- **Backend Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_server](https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_server)
 - **Deployment Status:** Configured for local development and demonstration; see [Installation and Local Development](#installation-and-local-development).
 
 ---
@@ -262,5 +262,5 @@ In compliance with the **NASA International Space Apps Challenge Participants Gu
 
 - **License:** Open source under the [MIT License](LICENSE).
 - **Data Provider:** NASA Langley Research Center POWER Project.
-- **Backend Service:** the `server/` folder in this repository.
+- **Backend Service:** the `krishi_server/` folder in this repository.
 - **Team:** NeuralMesh — NASA International Space Apps Challenge 2026.
