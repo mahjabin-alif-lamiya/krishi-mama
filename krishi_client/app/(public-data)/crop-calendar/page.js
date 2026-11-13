@@ -307,6 +307,61 @@ export default function CropCalendarPage() {
         </div>
       </div>
 
+      {/* NASA Satellite Observation Context */}
+      {satContext && (
+        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-line pb-3">
+            <h3 className="font-bold text-sm text-ink">
+              {isBn ? "তারিখসহ সংরক্ষিত নাসা উপগ্রহ পর্যবেক্ষণ" : "Dated, stored NASA satellite observations"}
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Soil Moisture */}
+            <div className="rounded-xl border border-line p-4">
+              <span className="text-xs font-semibold text-ink-muted">
+                {isBn ? "মাটির আর্দ্রতা (SMAP)" : "Soil Moisture (SMAP)"}
+              </span>
+              {satContext?.soilMoisture?.isRecommended === true && Number.isFinite(satContext.soilMoisture.value) ? (
+                <div className="mt-2 text-lg font-bold">
+                  {satContext.soilMoisture.value} m³/m³
+                  <span className="ml-2 text-xs text-ink-muted">({satContext.soilMoisture.date || "—"})</span>
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-ink-muted">
+                  {isBn
+                    ? "মানদণ্ড পূর্ণ না হওয়ায় মাটির আর্দ্রতার উপাত্ত প্রদর্শন স্থগিত রাখা হয়েছে। Values are withheld unless the retrieval quality flag is 0 or 8."
+                    : "Values are withheld unless the retrieval quality flag is 0 or 8."}
+                </p>
+              )}
+            </div>
+
+            {/* Vegetation Index */}
+            <div className="rounded-xl border border-line p-4">
+              <span className="text-xs font-semibold text-ink-muted">
+                {isBn ? "উদ্ভিদ সূচক (MODIS)" : "Vegetation Index (MODIS)"}
+              </span>
+              {satContext?.vegetationIndex?.available === true ? (
+                <div className="mt-2 text-lg font-bold">
+                  {satContext.vegetationIndex.ndvi} NDVI
+                  <span className="ml-2 text-xs text-ink-muted">({satContext.vegetationIndex.date || "—"})</span>
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-ink-muted">
+                  {satContext.vegetationIndex.pixelReliability === 1 && satContext.vegetationIndex.quality === "marginal_data" ? (
+                    isBn
+                      ? "গুণমান নীতিমালার কারণে NDVI/EVI মান দেখানো হয়নি (No rank-0 value; rank-1 data is withheld)।"
+                      : "No rank-0 value; rank-1 data is withheld. গুণমান নীতিমালার কারণে NDVI/EVI মান দেখানো হয়নি।"
+                  ) : (
+                    isBn ? "গুণমান নীতিমালার কারণে NDVI/EVI মান দেখানো হয়নি।" : "No rank-0 value; rank-1 data is withheld."
+                  )}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 4. Crop Key Agronomic Windows Summary Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {/* Total Duration */}

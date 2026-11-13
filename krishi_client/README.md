@@ -7,8 +7,8 @@ Developed for the **NASA International Space Apps Challenge 2026**
 **Selected Challenge:** Field Shift: Adapting Farms with NASA Data  
 **Team:** NeuralMesh  
 
-- **Frontend Repository:** [https://github.com/shahed-hassan-fz-rabbi/Krishi_Client](https://github.com/shahed-hassan-fz-rabbi/Krishi_Client)
-- **Backend Repository:** [https://github.com/shahed-hassan-fz-rabbi/Krishi_server](https://github.com/shahed-hassan-fz-rabbi/Krishi_server)
+- **Frontend Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_client](https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_client)
+- **Backend Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_server](https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_server)
 - **Deployment Status:** Configured for local development and demonstration; see [Installation and Local Development](#installation-and-local-development).
 
 ---
@@ -186,8 +186,8 @@ GET http://localhost:5000/api/v1/...
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/shahed-hassan-fz-rabbi/Krishi_Client.git
-   cd Krishi_Client
+   git clone https://github.com/mahjabin-alif-lamiya/krishi-mama.git
+   cd krishi-mama/krishi_client
    ```
 
 2. **Install Dependencies:**
@@ -262,5 +262,5 @@ In compliance with the **NASA International Space Apps Challenge Participants Gu
 
 - **License:** Open source under the [MIT License](LICENSE).
 - **Data Provider:** NASA Langley Research Center POWER Project.
-- **Backend Service:** [Krishi_server Repository](https://github.com/shahed-hassan-fz-rabbi/Krishi_server).
+- **Backend Service:** [Krishi_server — Backend README](https://github.com/mahjabin-alif-lamiya/krishi-mama/tree/main/krishi_server).
 - **Team:** NeuralMesh — NASA International Space Apps Challenge 2026.

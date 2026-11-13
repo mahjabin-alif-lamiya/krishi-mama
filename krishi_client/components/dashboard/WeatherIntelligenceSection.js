@@ -702,12 +702,26 @@ export default function WeatherIntelligenceSection({ locationCode = "chattogram"
 
       {/* 4. Data Provenance & Freshness Metadata */}
       <div className="mt-6 text-[11px] text-muted">
-        {(provenance?.isForecastStale || provenance?.isSeasonalStale) && (
+        {(provenance?.forecastDataStatus !== "AVAILABLE" || provenance?.seasonalDataStatus !== "AVAILABLE" || provenance?.isForecastStale || provenance?.isSeasonalStale) && (
           <p role="status" className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
             {locale === "bn"
               ? "প্রোভাইডারের সঙ্গে সংযোগ না হওয়ায় পূর্বের ক্যাশ করা তথ্য দেখানো হচ্ছে। সময় ও স্থান বিবেচনা করে ব্যবহার করুন।"
               : "Provider unavailable; showing a previously cached result. Check its timestamp and regional coverage before acting."}
           </p>
+        )}
+        {(provenance?.forecastFetchTimestamp || provenance?.seasonalFetchTimestamp) && (
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-muted">
+            {provenance.forecastFetchTimestamp && (
+              <span>
+                {locale === "bn" ? "পূর্বাভাস আপডেট:" : "Forecast update:"} {new Date(provenance.forecastFetchTimestamp).toLocaleString(locale === "bn" ? "bn-BD" : "en-US")}
+              </span>
+            )}
+            {provenance.seasonalFetchTimestamp && (
+              <span>
+                {locale === "bn" ? "মৌসুমি দৃষ্টিভঙ্গি আপডেট:" : "Seasonal outlook update:"} {new Date(provenance.seasonalFetchTimestamp).toLocaleString(locale === "bn" ? "bn-BD" : "en-US")}
+              </span>
+            )}
+          </div>
         )}
       </div>
     </section>

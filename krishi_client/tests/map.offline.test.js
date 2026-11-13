@@ -15,7 +15,10 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const geojsonPath = path.resolve(__dirname, "../../server/data/gis/bbs_admin2_cumilla_chattogram.geojson");
+const serverDir = fs.existsSync(path.resolve(__dirname, "../../krishi_server"))
+  ? "../../krishi_server"
+  : "../../server";
+const geojsonPath = path.resolve(__dirname, `${serverDir}/data/gis/bbs_admin2_cumilla_chattogram.geojson`);
 
 test("Phase 8.2 Client Map: BBS 2020 GeoJSON Boundaries Parse Offline", async () => {
   assert.ok(fs.existsSync(geojsonPath), "GeoJSON boundary file must exist");
@@ -59,7 +62,7 @@ test("Environmental GIS map renders actual source observations with quality and 
   const page = fs.readFileSync(pagePath, "utf8");
   const map = fs.readFileSync(mapPath, "utf8");
   assert.match(page, /toggleLayer\("gpm"\)/);
-  assert.match(page, /validIntervals/);
+  assert.match(map, /validIntervals/);
   assert.match(map, /CircleMarker/);
   assert.match(map, /NASA GPM IMERG Final V07/);
   assert.match(map, /dailySummary\.completeness === "complete"/);

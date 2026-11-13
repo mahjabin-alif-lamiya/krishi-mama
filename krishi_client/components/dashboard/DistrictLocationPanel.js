@@ -30,8 +30,8 @@ export default function DistrictLocationPanel({ district, locale }) {
           </h2>
           <details className="mt-2"><summary className="cursor-pointer text-xs font-medium text-muted">{t("dashboardUi.details")}</summary><p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
             {isBn
-              ? "নিচের POWER, GPM, SMAP ও MODIS তথ্য নির্বাচিত জেলার জন্যই দেখানো হয়। মানচিত্রের চিহ্নটি প্রকল্পে ব্যবহৃত জেলার reference coordinate—এটি আপনার খামারের সুনির্দিষ্ট অবস্থান বা পুরো জেলার সব এলাকার পরিমাপ নয়।"
-              : "The POWER, GPM, SMAP and MODIS information below is scoped to the selected district. The map marker is the project-configured district reference coordinate; it is not your exact farm location or a measurement for every place in the district."}
+              ? "নিচের POWER, GPM, SMAP ও MODIS তথ্য প্রকল্প জেলা (কুমিল্লা ও চট্টগ্রাম - Cumilla and Chattogram)-এর জন্যই দেখানো হয়। মানচিত্রের চিহ্নটি প্রকল্পে ব্যবহৃত জেলার reference coordinate—এটি আপনার খামারের সুনির্দিষ্ট অবস্থান বা পুরো জেলার সব এলাকার পরিমাপ নয়।"
+              : "The POWER, GPM, SMAP and MODIS information below is scoped to the project districts (Cumilla and Chattogram). The map marker is the project-configured district reference coordinate; it is not your exact farm location or a measurement for every place in the district."}
           </p>
           {point && (
             <p className="mt-3 text-xs font-medium text-muted">

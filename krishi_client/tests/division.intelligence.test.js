@@ -9,7 +9,8 @@ const dashboard = fs.readFileSync(path.join(project, "components/dashboard/Dashb
 const locationPanel = fs.readFileSync(path.join(project, "components/dashboard/DistrictLocationPanel.js"), "utf8");
 const locationContext = fs.readFileSync(path.join(project, "contexts/LocationContext.js"), "utf8");
 const pointMap = fs.readFileSync(path.join(project, "components/dashboard/DivisionPointMap.js"), "utf8");
-const districtConfig = fs.readFileSync(path.join(project, "../server/src/config/climate.config.js"), "utf8");
+const serverDir = fs.existsSync(path.join(project, "../krishi_server")) ? "../krishi_server" : "../server";
+const districtConfig = fs.readFileSync(path.join(project, `${serverDir}/src/config/climate.config.js`), "utf8");
 
 test("Dashboard is scoped to the configured Cumilla and Chattogram districts", () => {
   assert.match(districtConfig, /code: "chattogram"/);
