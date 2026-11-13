@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/* Class-based dark mode (Tailwind v4 custom variant) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   KRISHI MAMA — DESIGN TOKENS
+   Exact approved palette + semantic surface tokens.
+   Brand colors are constant; surfaces/text adapt to theme.
+   ============================================================ */
+:root {
+  /* semantic — light */
+  --km-bg: #f5f7f2; /* Off-white */
+  --km-surface: #ffffff;
+  --km-surface-2: #eef4ec;
+  --km-text: #242b27; /* Dark Charcoal */
+  --km-text-muted: #5c6b62;
+  --km-border: #e3e9e1;
+
+  /* brand — identical in both themes */
+  --km-forest: #123d2b; /* Deep Forest Green */
+  --km-forest-50: #f1f7f3;
+  --km-forest-100: #e1eee5;
+  --km-forest-200: #c3ddcb;
+  --km-forest-300: #9bc4a8;
+  --km-forest-400: #6aa57f;
+  --km-forest-500: #43885f;
+  --km-forest-600: #2c6b49;
+  --km-forest-700: #1d5639;
+  --km-forest-800: #123d2b;
+  --km-forest-900: #0d3122;
+  --km-forest-950: #08251a;
+  --km-emerald: #16865a; /* Emerald Green */
+  --km-emerald-strong: #0f6c49;
+  --km-sage: #ddf3e5; /* Soft Sage */
+  --km-climate: #2878c8; /* Climate Blue */
+  --km-purple: #8b75d7; /* Purple Accent */
+  --km-amber: #e6a23c; /* Amber */
+  --km-amber-strong: #b45309; /* Amber for text: readable on light surfaces */
+  --km-danger: #d95d59; /* Risk Red */
+  --km-danger-strong: #b23b38; /* Danger for text: readable on light surfaces */
+  --km-purple-strong: #6d4fc4; /* Purple for text: readable on light surfaces */
+  --km-emerald-text: #0f6c49; /* Emerald for text: readable on light surfaces */
+  --km-climate-text: #1d5fa3; /* Climate blue for text: readable on light surfaces */
+
+  /* sidebar chrome */
+  --km-sidebar: #123d2b;
+  --km-sidebar-text: #e7f2ea;
+  --km-sidebar-muted: #9cb8a7;
+  --km-sidebar-hover: #1a4a36;
+
+  /* elevation */
+  --km-shadow-sm: 0 1px 2px rgba(18, 61, 43, 0.06), 0 1px 3px rgba(18, 61, 43, 0.08);
+  --km-shadow-md: 0 4px 14px rgba(18, 61, 43, 0.1);
+
+  color-scheme: light;
+}
+
+.dark {
+  /* semantic — dark */
+  --km-bg: #161d18;
+  --km-surface: #212b23;
+  --km-surface-2: #29342b;
+  --km-text: #f0f5f0;
+  --km-text-muted: #a7b6ab;
+  --km-border: #37443a;
+
+  /* sage works on dark, others stay constant */
+  --km-sage: #1c332a;
+  /* Dark surfaces need the brighter brand colors for text contrast */
+  --km-amber-strong: #e6a23c;
+  --km-danger-strong: #ef8b88;
+  --km-purple-strong: #a78bfa;
+  --km-emerald-text: #34d399;
+  --km-climate-text: #7ab3f0;
+
+  --km-sidebar: #10261c;
+  --km-sidebar-text: #e7f2ea;
+  --km-sidebar-muted: #93ab9d;
+  --km-sidebar-hover: #1a4a36;
+
+  --km-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --km-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+
+/* Map tokens to Tailwind utilities */
+@theme inline {
+  --color-bg: var(--km-bg);
+  --color-surface: var(--km-surface);
+  --color-surface-2: var(--km-surface-2);
+  --color-content: var(--km-text);
+  --color-ink: var(--km-text);
+  --color-muted: var(--km-text-muted);
+  --color-ink-muted: var(--km-text-muted);
+  --color-line: var(--km-border);
+
+  --color-forest: var(--km-forest);
+  --color-forest-50: var(--km-forest-50);
+  --color-forest-100: var(--km-forest-100);
+  --color-forest-200: var(--km-forest-200);
+  --color-forest-300: var(--km-forest-300);
+  --color-forest-400: var(--km-forest-400);
+  --color-forest-500: var(--km-forest-500);
+  --color-forest-600: var(--km-forest-600);
+  --color-forest-700: var(--km-forest-700);
+  --color-forest-800: var(--km-forest-800);
+  --color-forest-900: var(--km-forest-900);
+  --color-forest-950: var(--km-forest-950);
+  --color-emerald: var(--km-emerald);
+  --color-emerald-strong: var(--km-emerald-strong);
+  --color-sage: var(--km-sage);
+  --color-climate: var(--km-climate);
+  --color-purple: var(--km-purple);
+  --color-amber: var(--km-amber);
+  --color-amber-strong: var(--km-amber-strong);
+  --color-danger: var(--km-danger);
+  --color-danger-strong: var(--km-danger-strong);
+  --color-purple-strong: var(--km-purple-strong);
+  --color-emerald-text: var(--km-emerald-text);
+  --color-climate-text: var(--km-climate-text);
+
+  --color-sidebar: var(--km-sidebar);
+  --color-sidebar-text: var(--km-sidebar-text);
+  --color-sidebar-muted: var(--km-sidebar-muted);
+  --color-sidebar-hover: var(--km-sidebar-hover);
+
+  --shadow-km-sm: var(--km-shadow-sm);
+  --shadow-km-md: var(--km-shadow-md);
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    background-color: var(--km-bg);
+    color: var(--km-text);
+    font-family: var(--font-inter), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Bengali typography: Noto Sans Bengali leads; Inter falls back for Latin glyphs */
+  html[lang="bn"] body {
+    font-family: var(--font-bengali), var(--font-inter), system-ui, sans-serif;
+  }
+
+  /* Custom sleek, ultra-smooth scrollbars for professional SaaS feel */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(18, 61, 43, 0.22) transparent;
+  }
+  .dark * {
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(18, 61, 43, 0.18);
+    border-radius: 9999px;
+    transition: background-color 0.2s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(18, 61, 43, 0.38);
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.38);
+  }
+
+  /* Accessibility: never naked italic / clear focus ring */
+  :not(i):not(em) {
+    font-style: normal;
+  }
+  :focus-visible {
+    outline: 2px solid var(--km-climate);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--km-emerald);
+    color: #ffffff;
+  }
+}
+
+/* Smooth scrolling utilities */
+.km-smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+
+/* ============================================================
+   TV NEWS STYLE AGRICULTURAL TICKER ANIMATION
+   Continuous Right-to-Left Scrolling (ডান দিক থেকে বাম দিকে)
+   ============================================================ */
+@keyframes km-ticker-rtl {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+.animate-km-ticker {
+  display: flex;
+  flex-shrink: 0;
+  will-change: transform;
+  animation: km-ticker-rtl 85s linear infinite;
+}
+
+.km-ticker-container:hover .animate-km-ticker,
+.km-ticker-container:focus-within .animate-km-ticker {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-km-ticker {
+    animation: none !important;
+    transform: none !important;
+  }
+  .km-ticker-scroll {
+    overflow-x: auto !important;
+    scrollbar-width: thin;
+  }
+}
