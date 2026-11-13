@@ -248,6 +248,7 @@ Complete, exhaustive documentation is available in the root repository and withi
 | **Database Design** | [`docs/DATABASE_DESIGN.md`](docs/DATABASE_DESIGN.md) | Mongoose collection schemas, compound indexes, and relationship architecture. |
 | **User Walkthrough Guide** | [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) | Step-by-step instructions for farmers, officers, and competition evaluators. |
 | **Installation Guide** | [`docs/INSTALLATION_GUIDE.md`](docs/INSTALLATION_GUIDE.md) | Production build, local development, environment variable templates, and containerization. |
+| **Google OAuth Setup Guide** | [`docs/GOOGLE_OAUTH_SETUP_GUIDE.md`](docs/GOOGLE_OAUTH_SETUP_GUIDE.md) | Instructions for setting up Google Sign-In with Google Cloud Console and Render. |
 | **Testing & Verification** | [`docs/TESTING_AND_VERIFICATION.md`](docs/TESTING_AND_VERIFICATION.md) | Test suites, mock fixtures, CI/CD validation checks, and coverage reports. |
 | **Limitations & Future Scope** | [`docs/LIMITATIONS_AND_FUTURE_SCOPE.md`](docs/LIMITATIONS_AND_FUTURE_SCOPE.md) | Honest disclosure of spatial resolutions, soil depths, and Phase 2 roadmap. |
 | **References & Citations** | [`docs/REFERENCES.md`](docs/REFERENCES.md) | Official data portals, academic citations, research institutes, and open-source libraries. |
