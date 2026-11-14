@@ -9,6 +9,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed:districts": "node src/jobs/seed-districts.js",
+    "seed:forecast": "node src/jobs/seed-forecast-cache.js",
     "ingest:power": "node src/jobs/ingest-power.js",
     "probe:smap": "node src/jobs/probe-smap.js",
     "download:smap": "node src/jobs/download-smap-harmony.js",

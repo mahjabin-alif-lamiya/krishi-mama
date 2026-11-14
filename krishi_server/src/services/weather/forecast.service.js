@@ -4,10 +4,24 @@
  * structured metadata tracking, and clear separation between short-range (1-7d) and extended (8-16d).
  */
 
+import mongoose from "mongoose";
 import { WEATHER_CONFIG, WMO_WEATHER_CODES, resolveLocationCoordinates } from "../../config/weather.config.js";
+import WeatherForecastCache, { FORECAST_CACHE_RETENTION_MS } from "../../models/weatherforecastcache.model.js";
 
 // In-memory cache map: key -> { data, expiresAt }
 const forecastCache = new Map();
+
+// Provider backoff: after a failed Open-Meteo call we stop re-hammering the
+// endpoint. HTTP 429 is IP-wide, so a rate limit opens a global window too.
+const PROVIDER_BACKOFF_MS = 5 * 60 * 1000;
+const RATE_LIMIT_BACKOFF_MS = 15 * 60 * 1000;
+const providerBackoffs = new Map(); // cacheKey -> { until, rateLimited }
+let globalProviderBackoff = null; // { until, rateLimited }
+
+const STALE_CONNECTION_NOTICE =
+  "Live Open-Meteo connection failed. Showing last verified cached forecast.";
+const STALE_RATE_LIMIT_NOTICE =
+  "Open-Meteo rate limit is temporarily exhausted. Showing last verified cached forecast.";
 
 function providerDataError(message, statusCode = 502) {
   const error = new Error(message);
@@ -20,6 +34,99 @@ function providerDataError(message, statusCode = 502) {
  */
 function getCacheKey(lat, lon) {
   return `${Number(lat).toFixed(3)}_${Number(lon).toFixed(3)}`;
+}
+
+function isDatabaseReady() {
+  return mongoose.connection.readyState === 1;
+}
+
+/**
+ * Best-effort persistence of the last-known-good forecast. Never throws and
+ * never blocks the response path — a cache write failure must not break the API.
+ */
+function persistForecast(cacheKey, data) {
+  if (!isDatabaseReady()) return;
+  const fetchedAt = new Date();
+  WeatherForecastCache.updateOne(
+    { cacheKey },
+    {
+      $set: {
+        cacheKey,
+        locationName: data.location?.nameEn || null,
+        payload: data,
+        fetchedAt,
+        purgeAfter: new Date(fetchedAt.getTime() + FORECAST_CACHE_RETENTION_MS),
+      },
+    },
+    { upsert: true }
+  ).catch(() => {
+    // Optional enhancement only; the forecast stays served from memory.
+  });
+}
+
+async function loadPersistedForecast(cacheKey) {
+  if (!isDatabaseReady()) return null;
+  try {
+    const doc = await WeatherForecastCache.findOne({ cacheKey }).lean();
+    return doc?.payload || null;
+  } catch {
+    return null;
+  }
+}
+
+function staleForecastResponse(data, notice) {
+  return {
+    ...data,
+    meta: {
+      ...data.meta,
+      isCached: true,
+      isStale: true,
+      staleNotice: notice,
+    },
+  };
+}
+
+function scheduleProviderBackoff(cacheKey, error) {
+  const rateLimited = error?.rateLimited === true;
+  const entry = {
+    until: Date.now() + (rateLimited ? RATE_LIMIT_BACKOFF_MS : PROVIDER_BACKOFF_MS),
+    rateLimited,
+  };
+  providerBackoffs.set(cacheKey, entry);
+  if (rateLimited && (!globalProviderBackoff || globalProviderBackoff.until < entry.until)) {
+    globalProviderBackoff = entry;
+  }
+}
+
+function activeBackoff(cacheKey, now) {
+  const keyBackoff = providerBackoffs.get(cacheKey);
+  const keyActive = keyBackoff && keyBackoff.until > now ? keyBackoff : null;
+  const globalActive = globalProviderBackoff && globalProviderBackoff.until > now ? globalProviderBackoff : null;
+  if (!keyActive && !globalActive) return null;
+  if (keyActive && globalActive) return keyActive.until >= globalActive.until ? keyActive : globalActive;
+  return keyActive || globalActive;
+}
+
+/**
+ * Serves the freshest available copy (memory → database), or rethrows the
+ * original provider error when nothing is recoverable.
+ */
+async function recoverFromCache(cacheKey, memoryCached, notice, originalError = null) {
+  if (memoryCached) return staleForecastResponse(memoryCached.data, notice);
+
+  const persisted = await loadPersistedForecast(cacheKey);
+  if (persisted) {
+    // Re-seed the memory buffer as an already-expired entry: it acts as the
+    // fallback copy while the provider itself is retried after the backoff.
+    forecastCache.set(cacheKey, { data: persisted, expiresAt: Date.now() });
+    return staleForecastResponse(persisted, notice);
+  }
+
+  if (originalError) {
+    if (!originalError.statusCode) originalError.statusCode = 503;
+    throw originalError;
+  }
+  throw providerDataError(notice, 503);
 }
 
 /**
@@ -51,6 +158,14 @@ export async function getLiveForecast({ latitude, longitude, locationIdentifier 
     };
   }
 
+  // Respect provider backoff: while it is active, serve verified data from
+  // memory/database instead of calling Open-Meteo again.
+  const backoff = activeBackoff(cacheKey, now);
+  if (backoff) {
+    const notice = backoff.rateLimited ? STALE_RATE_LIMIT_NOTICE : STALE_CONNECTION_NOTICE;
+    return recoverFromCache(cacheKey, cached, notice);
+  }
+
   const params = new URLSearchParams({
     latitude: loc.latitude.toString(),
     longitude: loc.longitude.toString(),
@@ -76,7 +191,9 @@ export async function getLiveForecast({ latitude, longitude, locationIdentifier 
     clearTimeout(timeout);
 
     if (!res.ok) {
-      throw providerDataError(`Open-Meteo API responded with HTTP ${res.status}: ${res.statusText}`);
+      const providerError = providerDataError(`Open-Meteo API responded with HTTP ${res.status}: ${res.statusText}`);
+      if (res.status === 429) providerError.rateLimited = true;
+      throw providerError;
     }
 
     const json = await res.json();
@@ -188,24 +305,17 @@ export async function getLiveForecast({ latitude, longitude, locationIdentifier 
       expiresAt: now + WEATHER_CONFIG.openMeteo.forecastCacheTtlMs,
     });
 
+    // A successful fetch clears any backoff and persists the copy so cold
+    // starts and provider outages can keep serving verified data.
+    providerBackoffs.delete(cacheKey);
+    persistForecast(cacheKey, result);
+
     return result;
   } catch (err) {
     clearTimeout(timeout);
 
-    // If cache has expired item, return it as emergency fallback
-    if (cached) {
-      return {
-        ...cached.data,
-        meta: {
-          ...cached.data.meta,
-          isCached: true,
-          isStale: true,
-          staleNotice: "Live Open-Meteo connection timed out. Showing last verified cached forecast.",
-        },
-      };
-    }
-
-    if (!err.statusCode) err.statusCode = 503;
-    throw err;
+    scheduleProviderBackoff(cacheKey, err);
+    const notice = err.rateLimited ? STALE_RATE_LIMIT_NOTICE : STALE_CONNECTION_NOTICE;
+    return recoverFromCache(cacheKey, cached, notice, err);
   }
 }
