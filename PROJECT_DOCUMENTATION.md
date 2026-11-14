@@ -17,7 +17,18 @@
 | **API Documentation / Health** | [https://krishi-mama-api.onrender.com/api/v1/health](https://krishi-mama-api.onrender.com/api/v1/health) |
 | **Source Code Repository** | [https://github.com/mahjabin-alif-lamiya/krishi-mama](https://github.com/mahjabin-alif-lamiya/krishi-mama) |
 | **License** | MIT License |
+| **NASA Team Profile** | [https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details](https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details) |
 | **Primary Beneficiaries** | Smallholder Farmers, Agronomists, Extension Officers, and Agricultural Planners in Bangladesh |
+
+### Team Members & Contributions
+
+| Member Name | Role | Core Responsibility |
+|---|---|---|
+| **Mahjabin Alif Lamiya** | **Full-Stack & AI/ML** | Full platform engineering (Frontend & Backend integration), system architecture, Google Gemini AI assistant grounding, NASA Earth observation ingestion pipelines, and localization. |
+| **Md Rabbi Miah** | **Full-Stack** | Full-stack engineering, Express REST API backend architecture, MongoDB data modeling, authentication system, and server endpoint implementations. |
+| **Sumaiya Noor Dip** | **Researcher** | Agricultural domain research, national dataset curation (DAE, BAMIS, BRRI, BARI), and comprehensive project technical documentation. |
+| **Ikra Islam** | **UI/UX & Researcher** | User interface & experience design, farmer accessibility ergonomics, agricultural research, and project documentation. |
+| **Md. Mizbaul Hasan Shawon** | **UI/UX** | UI/UX visual design, responsive layout wireframes, color accessibility ergonomics, and supporting project documentation. |
 
 ---
 

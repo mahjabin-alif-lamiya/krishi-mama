@@ -5,7 +5,7 @@
 
 [![NASA Space Apps Challenge 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-blue.svg)](https://www.spaceappschallenge.org/)
 [![Track: Field Shift](https://img.shields.io/badge/Challenge-Field%20Shift%3A%20Adapting%20Farms%20with%20NASA%20Data-brightgreen.svg)](https://www.spaceappschallenge.org/)
-[![Team: NeuralMesh](https://img.shields.io/badge/Team-NeuralMesh-orange.svg)](#team-neuralmesh)
+[![Team: NeuralMesh](https://img.shields.io/badge/Team-NeuralMesh-orange.svg)](https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Next.js 16](https://img.shields.io/badge/Frontend-Next.js%2016%20%7C%20React%2019-black.svg)](https://nextjs.org/)
 [![Express 5](https://img.shields.io/badge/Backend-Node.js%20%7C%20Express%205-lightgrey.svg)](https://expressjs.com/)
@@ -19,6 +19,7 @@
 |---|---|---|
 | **Live Web Application (Frontend)** | [https://krishi-mama.vercel.app/](https://krishi-mama.vercel.app/) | ![Vercel](https://img.shields.io/badge/Deployed-Vercel-success) |
 | **Production REST API (Backend)** | [https://krishi-mama-api.onrender.com/](https://krishi-mama-api.onrender.com/) | ![Render](https://img.shields.io/badge/Deployed-Render-success) |
+| **NASA Space Apps Team Page** | [NeuralMesh Team Profile](https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details) | ![NASA](https://img.shields.io/badge/Team-NeuralMesh-blue) |
 | **API Health & Dataset Check** | [https://krishi-mama-api.onrender.com/api/v1/health](https://krishi-mama-api.onrender.com/api/v1/health) | ![Active](https://img.shields.io/badge/Status-Active-brightgreen) |
 | **GitHub Source Code Repository** | [https://github.com/mahjabin-alif-lamiya/krishi-mama](https://github.com/mahjabin-alif-lamiya/krishi-mama) | ![GitHub](https://img.shields.io/badge/Repository-Public-blue) |
 
@@ -281,11 +282,36 @@ The Krishi Mama codebase features a comprehensive, multi-tiered test suite with 
 
 ## 👥 Team NeuralMesh
 
-Proudly developed for the **NASA International Space Apps Challenge 2026** under the challenge *Field Shift: Adapting Farms with NASA Data*.
+Proudly developed by **Team NeuralMesh** for the **NASA International Space Apps Challenge 2026** under the challenge *Field Shift: Adapting Farms with NASA Data*.
 
-- **Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama](https://github.com/mahjabin-alif-lamiya/krishi-mama)
-- **Live App:** [https://krishi-mama.vercel.app/](https://krishi-mama.vercel.app/)
-- **Backend API:** [https://krishi-mama-api.onrender.com/](https://krishi-mama-api.onrender.com/)
+🔗 **Official NASA Space Apps Challenge Team Page:**  
+[https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details](https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details)
+
+### 🌟 Team Members & Role Distribution
+
+| Member Name | Core Role | Primary Contributions & Focus |
+|---|---|---|
+| **Mahjabin Alif Lamiya** | **Full-Stack & AI/ML** | Complete website engineering (Frontend & Backend integration), system architecture, Google Gemini AI/ML assistant integration & grounding, NASA Earth observation ingestion pipelines, and bilingual localization. |
+| **Md Rabbi Miah** | **Full-Stack** | Full-stack web application engineering, backend REST API architecture (Express 5 & Node.js), database modeling (MongoDB Atlas), server-side endpoints, authentication, and core application development. |
+| **Sumaiya Noor Dip** | **Researcher** | Agricultural domain research, national agricultural data curation (DAE, BAMIS, BRRI, BARI), climate-vulnerability analysis, and comprehensive project technical documentation. |
+| **Ikra Islam** | **UI/UX & Researcher** | User experience and interface design, accessibility workflows tailored for rural farmers, agricultural research, bilingual translation review, and project documentation. |
+| **Md. Mizbaul Hasan Shawon** | **UI/UX** | UI/UX visual design, responsive layout wireframing, color system & dark mode ergonomics, graphics preparation, and supporting project documentation. |
+
+### 🛠️ Work Distribution Summary
+
+- **Full Website & Technical Engineering (Frontend + Backend + AI/ML):**  
+  **Mahjabin Alif Lamiya** & **Md Rabbi Miah** led the complete end-to-end engineering of the Krishi Mama platform — building the Next.js 16 frontend, the Node.js/Express 5 backend, the MongoDB database tier, the Python scientific engine, and the Google Gemini AI assistant.
+- **Research, UI/UX Design & Project Documentation:**  
+  **Sumaiya Noor Dip**, **Ikra Islam**, and **Md. Mizbaul Hasan Shawon** spearheaded the comprehensive agricultural and scientific research, UI/UX design wireframes and ergonomics, and authored the extensive project documentation suite, ensuring strict alignment with NASA Space Apps Challenge 2026 standards.
+
+---
+
+### 🌐 Key Project Links
+
+- **NASA Space Apps Team Profile:** [NeuralMesh on Space Apps Challenge](https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details)
+- **Live Frontend App:** [https://krishi-mama.vercel.app/](https://krishi-mama.vercel.app/)
+- **Live Backend REST API:** [https://krishi-mama-api.onrender.com/](https://krishi-mama-api.onrender.com/)
+- **GitHub Repository:** [https://github.com/mahjabin-alif-lamiya/krishi-mama](https://github.com/mahjabin-alif-lamiya/krishi-mama)
 
 ---
 
