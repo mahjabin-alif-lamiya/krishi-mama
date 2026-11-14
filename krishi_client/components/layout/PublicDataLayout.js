@@ -6,6 +6,10 @@ import { AppShell } from "@/components/layout/AppShell.js";
 import { useAuth } from "@/contexts/AuthContext.js";
 import { useLang } from "@/lib/i18n/LanguageContext.js";
 
+const dataLinks = [
+  { href: "/climate", key: "publicHeader.climateData" },
+];
+
 function PublicRecordsShell({ children }) {
   const pathname = usePathname();
   const { t } = useLang();

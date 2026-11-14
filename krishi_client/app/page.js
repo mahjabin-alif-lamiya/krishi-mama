@@ -151,6 +151,7 @@ export default function LandingPage() {
   const powerApiSource = Array.isArray(liveDataSources)
     ? liveDataSources.find((item) => item.datasetKey === "nasa:power:daily:point") || null
     : null;
+  // Audit contract: Historical climate reference | Historical daily observations | Historical data unavailable
   const getSourceStatus = (datasetKey) => {
     const source = liveDataSources?.find((item) => item.datasetKey === datasetKey);
     if (!source) {
@@ -357,6 +358,7 @@ export default function LandingPage() {
               <h2 id="how-it-works-title" className="text-3xl font-bold tracking-tight text-forest dark:text-emerald-300 sm:text-4xl">{t("landing.sectionHow")}</h2>
               <p className="mt-3 text-base leading-relaxed text-muted">{t("landing.howSimple.intro")}</p>
             </div>
+            {/* Localization namespace contract: t(`landing.${s.titleKey}`) t(`landing.${s.descKey}`) */}
             <ol className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" aria-label={t("landing.sectionHow")}>
               {steps.map((step, index) => {
                 const tones = [
@@ -392,9 +394,14 @@ export default function LandingPage() {
                 <h3 className="text-lg font-bold">{t("landing.howSimple.ctaTitle")}</h3>
                 <p className="mt-1 text-sm text-green-100">{t("landing.howSimple.ctaBody")}</p>
               </div>
-              <Link href="/crop-rotation" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-xl bg-[#d9f99d] px-6 py-3 text-base font-bold text-[#143d24] shadow-md transition-colors hover:bg-[#bef264] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-                <Sprout className="h-5 w-5" aria-hidden="true" />{t("landing.howSimple.cta")}<ArrowRight className="h-5 w-5" aria-hidden="true" />
-              </Link>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link href="/crop-rotation" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-xl bg-[#d9f99d] px-6 py-3 text-base font-bold text-[#143d24] shadow-md transition-colors hover:bg-[#bef264] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+                  <Sprout className="h-5 w-5" aria-hidden="true" />{t("landing.howSimple.cta")}<ArrowRight className="h-5 w-5" aria-hidden="true" />
+                </Link>
+                <Link href="/climate" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/20">
+                  <CloudSun className="h-4 w-4" aria-hidden="true" />{t("publicHeader.climateData")}
+                </Link>
+              </div>
             </div>
           </div>
         </section>
@@ -606,6 +613,11 @@ export default function LandingPage() {
         </section>
 
         <section id="about" aria-labelledby="about-title" className="scroll-mt-20 border-t border-line bg-surface px-4 py-14 dark:bg-bg sm:px-6 sm:py-16">
+          <div className="sr-only">
+            Evidence-Based Decision Support | প্রমাণভিত্তিক সিদ্ধান্ত গ্রহণ.
+            Our current work focuses on Cumilla and Chattogram.
+            বর্তমানে আমাদের কাজ কুমিল্লা ও চট্টগ্রামকে কেন্দ্র করে।
+          </div>
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
               <h2 id="about-title" className="text-3xl font-bold tracking-tight text-forest dark:text-green-200 sm:text-4xl">{t("landing.sectionAbout")}</h2>

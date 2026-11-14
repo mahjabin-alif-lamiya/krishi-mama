@@ -2,13 +2,19 @@
 
 import { CloudSun, MapPin } from "lucide-react";
 import { useLang } from "@/lib/i18n/LanguageContext.js";
+import { getDistrictReferencePoint } from "@/lib/districtGeography.js";
 
 export default function DistrictLocationPanel({ district, locale }) {
   const { t } = useLang();
+  const point = getDistrictReferencePoint(district);
   const districtName = (locale === "bn" ? district?.nameBn || district?.nameEn : district?.nameEn) || t("dashboardUi.selectedDistrict");
 
   return (
     <section aria-labelledby="district-location-heading" className="relative isolate overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-lime-50 via-emerald-50 to-sky-100 p-6 shadow-km-sm sm:p-8 dark:border-emerald-900 dark:from-emerald-950 dark:via-emerald-950 dark:to-sky-950">
+      <div className="sr-only">
+        Scoped to Cumilla and Chattogram. The reference point is not your exact farm location.
+        {point && `Coordinate: ${point.latitude}, ${point.longitude}`}
+      </div>
       <div className="relative z-10 max-w-xl">
         <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80 text-emerald-800 shadow-sm dark:bg-emerald-900/70 dark:text-emerald-200"><CloudSun className="h-8 w-8" aria-hidden="true" /></div>
         <p className="text-sm font-medium text-emerald-800 dark:text-emerald-200">{t("dashboardUi.areaClimate")}</p>

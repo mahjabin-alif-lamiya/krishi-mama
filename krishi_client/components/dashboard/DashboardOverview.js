@@ -26,6 +26,7 @@ export default function DashboardOverview({ available, metrics, years, chartSeri
       </div>
     </header>
     {available && <>
+      <p className="sr-only">{t("dashboardUi.historyBoundary")}</p>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label={t("dashboard.metricsTitle")}>
         {tiles.filter(({ value }) => value !== "—").map(({ key, value, unit, icon: Icon, tint, surface }) => <article key={key} className={`flex min-h-[145px] flex-col rounded-2xl border bg-gradient-to-br p-5 shadow-sm ${surface}`}><div className="flex items-center justify-between gap-3"><h2 className="text-xs font-medium text-muted">{t(`dashboard.${key}`)}</h2><span className={`rounded-xl p-2 ${tint}`}><Icon className="h-5 w-5" aria-hidden="true" /></span></div><p className="mt-2 text-2xl font-semibold text-content">{locale === "bn" ? String(value).replace(/[0-9]/g, digit => "০১২৩৪৫৬৭৮৯"[Number(digit)]) : value} <span className="text-xs font-normal text-muted">{unit}</span></p>{averageTag && <p className="mt-2 text-[11px] text-muted">{averageTag}</p>}</article>)}
       </section>
