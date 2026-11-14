@@ -63,6 +63,9 @@ export const translations = {
     },
 
     landing: {
+      aboutSimple: {"subtitle": "A website to help you explore crops, understand local climate and keep your farm plans together.", "storyTitle": "Krishi Mama for Your Crop Planning", "story": "Krishi Mama is a farming website where you can compare what to grow after your current crop. Enter the crops you grow and your water needs to see other ways to plan the same land.", "choice": "You can look at historical rainfall and temperature, check crop calendars, and compare water needs and growing times. NASA data and local agricultural information help explain these comparisons.", "localTitle": "Available in two districts", "localBody": "You can currently explore information for Cumilla and Chattogram. Choose your district to see its climate information and compare crop options. We plan to add more districts later.", "languages": "Bangla and English", "nasa": "NASA data", "card1Title": "Understand your area", "card1Body": "Explore historical rainfall, temperature, surface soil moisture and plant greenness.", "card2Title": "Compare what comes next", "card2Body": "Use crop calendars to compare water needs and the time between crops.", "card3Title": "Know what the data can tell you", "card3Body": "Dates and missing information matter. Regional observations do not measure your individual field.", "card4Title": "Use the language you prefer", "card4Body": "Read in Bangla or English and ask the assistant to explain the available information.", "help": "With an account, you can keep your farm details and follow crop tasks in My Farm. If something is unclear, ask the AI assistant to explain the available information in Bangla or English.", "coverage": "Currently available for Cumilla and Chattogram. More districts are planned."},
+      howSimple: {"intro": "Plan your next crop in four simple steps.", "title1": "Choose your area", "body1": "Select Cumilla or Chattogram to see information for your area.", "title2": "Tell us about your land", "body2": "Add the crops you grow and what you know about soil and water. Choose what matters most to you.", "title3": "Compare your options", "body3": "See your current crop sequence beside two alternatives. Compare water needs and planting times with climate information.", "title4": "Plan your next crop", "body4": "Review the options and check local field conditions before choosing. Ask the assistant if you need an explanation.", "ctaTitle": "What will you grow next?", "ctaBody": "Try a comparison without signing in.", "cta": "Compare crops"},
+      dataOverview: {"title": "NASA Data for Crop Planning", "intro": "Climate, rainfall, soil moisture and plant greenness for crop planning.", "powerMeaning": "Historical rainfall and temperature in your area.", "soilMeaning": "Moisture near the soil surface.", "rainMeaning": "Rainfall observed by satellites.", "greenMeaning": "Satellite observations of plant greenness.", "period": "Recorded period", "noDates": "Dates unavailable", "details": "Details", "records": "Stored observations", "modisPeriod": "Combines observations over 16 days.", "sources": "View all data sources"},
       heroKicker: "NASA-powered agricultural intelligence for Bangladesh",
       heroTitle: "Make smarter crop rotation decisions with climate intelligence",
       heroSubtitle:
@@ -127,14 +130,14 @@ export const translations = {
       dataSolarNoteDetail: "Solar day boundaries calculate agricultural heat accumulation (GDD) and daily solar radiation aligned with natural crop photosynthesis cycles without midnight offset errors.",
       dataExploreDoc: "Explore Full Data Source Documentation & Calibration Methodology",
       outlookKicker: "Short & Extended Outlook",
-      sectionOutlook: "0–7 day and 7–14 day outlook",
+      sectionOutlook: "Weather for the Days Ahead",
       sectionOutlookSub:
-        "A plain-language summary of the days ahead for your district, so you can plan field work early. Longer-range days carry more uncertainty.",
+        "See the next 7 days and an early outlook for days 8–14 to help plan your farm work.",
       outlookLocation: "Location",
-      outlookRangeShort: "Next 0–7 days",
-      outlookRangeExtended: "Days 7–14",
-      outlookTempMax: "Avg high",
-      outlookTempMin: "Avg low",
+      outlookRangeShort: "Days 0–7",
+      outlookRangeExtended: "Days 8–14",
+      outlookTempMax: "Highest temp",
+      outlookTempMin: "Lowest temp",
       outlookRainTotal: "Total rain",
       outlookRainProb: "Rain chance",
       outlookTypical: "Typical conditions",
@@ -1187,6 +1190,9 @@ export const translations = {
     },
 
     landing: {
+      aboutSimple: {"subtitle": "ফসল তুলনা, এলাকার জলবায়ু বোঝা ও খামারের পরিকল্পনা এক জায়গায় রাখার ওয়েবসাইট।", "storyTitle": "আপনার ফসলের পরিকল্পনায় কৃষি মামা", "story": "কৃষি মামা একটি কৃষিবিষয়ক ওয়েবসাইট। এখনকার ফসল তোলার পর কী চাষ করবেন, এখানে তা তুলনা করে দেখতে পারেন। কী ফসল চাষ করেন আর পানির কী সুবিধা আছে জানালে একই জমিতে চাষের আরও কিছু উপায় দেখতে পাবেন।", "choice": "এলাকার পুরোনো বৃষ্টি ও তাপমাত্রা দেখুন, ফসল ক্যালেন্ডার মিলিয়ে নিন। কোন ফসলে কত পানি লাগে বা চাষের সময় মিলে যায় কি না, তা বুঝতে নাসার তথ্য ও স্থানীয় কৃষি তথ্য ব্যবহার করা হয়।", "localTitle": "এখন দুই জেলার তথ্য পাবেন", "localBody": "এখন কুমিল্লা ও চট্টগ্রামের তথ্য দেখতে পারবেন। নিজের জেলা বেছে জলবায়ুর তথ্য দেখুন ও ফসলের তুলনা করুন। সামনে আরও জেলার তথ্য যুক্ত করার পরিকল্পনা আছে।", "languages": "বাংলা ও ইংরেজি", "nasa": "নাসার তথ্য", "card1Title": "নিজের এলাকা বুঝুন", "card1Body": "পুরোনো বৃষ্টি, তাপমাত্রা, মাটির ওপরের আর্দ্রতা ও গাছপালার সবুজভাব দেখুন।", "card2Title": "পরের ফসল তুলনা করুন", "card2Body": "ফসল ক্যালেন্ডার দিয়ে পানির চাহিদা ও দুই ফসলের মাঝের সময় মিলিয়ে দেখুন।", "card3Title": "তথ্যের সীমা জানুন", "card3Body": "তথ্যের তারিখ ও ঘাটতি গুরুত্বপূর্ণ। এলাকার পর্যবেক্ষণ আপনার জমির সরাসরি মাপ নয়।", "card4Title": "নিজের ভাষায় বুঝুন", "card4Body": "বাংলা বা ইংরেজিতে পড়ুন। পাওয়া তথ্য বুঝতে সহকারীর সাহায্য নিন।", "help": "অ্যাকাউন্ট থাকলে আমার খামারে জমির তথ্য রাখতে ও ফসলের কাজ দেখতে পারবেন। কোনো তথ্য বুঝতে অসুবিধা হলে এআই সহকারীকে বাংলা বা ইংরেজিতে জিজ্ঞাসা করতে পারেন।", "coverage": "এখন কুমিল্লা ও চট্টগ্রামের তথ্য পাবেন। সামনে আরও জেলা যুক্ত করার পরিকল্পনা আছে।"},
+      howSimple: {"intro": "এখনকার ফসল থেকে পরের পরিকল্পনা—সহজ চারটি ধাপে।", "title1": "আপনার এলাকা বাছুন", "body1": "কুমিল্লা বা চট্টগ্রাম বেছে নিয়ে আপনার এলাকার তথ্য দেখুন।", "title2": "জমি ও ফসলের তথ্য দিন", "body2": "কী কী ফসল চাষ করেন, মাটি ও পানির কী সুবিধা আছে জানান। আপনার কাছে কোন বিষয় বেশি জরুরি, তা বাছুন।", "title3": "চাষের উপায় তুলনা করুন", "body3": "বর্তমান ফসলের ক্রমের সঙ্গে আরও দুইটি উপায় দেখুন। জলবায়ুর তথ্য দিয়ে পানির চাহিদা ও চাষের সময় মিলিয়ে নিন।", "title4": "পরের ফসলের পরিকল্পনা করুন", "body4": "বিকল্পগুলো ও নিজের জমির অবস্থা দেখে সিদ্ধান্ত নিন। বুঝতে অসুবিধা হলে এআই সহকারীকে জিজ্ঞাসা করুন।", "ctaTitle": "এরপর কী চাষ করবেন?", "ctaBody": "লগইন ছাড়াই ফসলের তুলনা করে দেখুন।", "cta": "ফসল তুলনা করুন"},
+      dataOverview: {"title": "ফসলের পরিকল্পনায় নাসার তথ্য", "intro": "ফসলের পরিকল্পনায় জলবায়ু, বৃষ্টি, মাটির আর্দ্রতা ও গাছপালার সবুজভাবের তথ্য।", "powerMeaning": "এলাকার পুরোনো বৃষ্টি ও তাপমাত্রার তথ্য।", "soilMeaning": "মাটির ওপরের অংশের আর্দ্রতার তথ্য।", "rainMeaning": "স্যাটেলাইটে পর্যবেক্ষণ করা বৃষ্টির তথ্য।", "greenMeaning": "স্যাটেলাইটে দেখা গাছপালার সবুজভাব।", "period": "রেকর্ডের সময়কাল", "noDates": "সময়কাল পাওয়া যায়নি", "details": "বিস্তারিত", "records": "সংরক্ষিত পর্যবেক্ষণ", "modisPeriod": "১৬ দিনের পর্যবেক্ষণ মিলিয়ে তৈরি।", "sources": "সব তথ্যের উৎস দেখুন"},
       heroKicker: "নাসা প্রযুক্তিনির্ভর কৃষি বুদ্ধিমত্তা, বাংলাদেশের জন্য",
       heroTitle: "জলবায়ুর তথ্যে ফসল চাষের স্মার্ট সিদ্ধান্ত নিন",
       heroSubtitle:
@@ -1275,14 +1281,14 @@ export const translations = {
       dataSolarNoteDetail: "সৌর দিবস সময়সীমা ফসলের স্বাভাবিক সালোকসংশ্লেষণ চক্রের সাথে মিলিয়ে কৃষি তাপ সঞ্চয়ন (GDD) ও সৌর বিকিরণ নির্ভুলভাবে পরিমাপ করে।",
       dataExploreDoc: "সম্পূর্ণ ডাটা উৎস ডকুমেন্টেশন ও ক্যালিব্রেশন পদ্ধতি দেখুন",
       outlookKicker: "স্বল্প ও দীর্ঘমেয়াদী পূর্বাভাস",
-      sectionOutlook: "০-৭ দিন ও ৭-১৪ দিনের পূর্বাভাস",
+      sectionOutlook: "সামনের দিনের আবহাওয়া",
       sectionOutlookSub:
-        "আপনার জেলার আগামী দিনগুলোর সহজ বাংলা সারসংক্ষেপ, যাতে কৃষিকাজ আগে থেকেই পরিকল্পনা করা যায়। দীর্ঘমেয়াদী দিনগুলোতে ভুল হার বেশি।",
+        "আগামী ৭ দিনের আবহাওয়া ও ৮–১৪ দিনের আগাম ধারণা দেখে খামারের কাজের পরিকল্পনা করুন।",
       outlookLocation: "এলাকা",
-      outlookRangeShort: "আগামী ০-৭ দিন",
-      outlookRangeExtended: "৭-১৪ দিন",
+      outlookRangeShort: "০–৭ দিন",
+      outlookRangeExtended: "৮–১৪ দিন",
       outlookTempMax: "সর্বোচ্চ তাপমাত্রা",
-      outlookTempMin: "সর্নিম্ন তাপমাত্রা",
+      outlookTempMin: "সর্বনিম্ন তাপমাত্রা",
       outlookRainTotal: "মোট বৃষ্টি",
       outlookRainProb: "বৃষ্টির সম্ভাবনা",
       outlookTypical: "সাধারণ আবহাওয়া",

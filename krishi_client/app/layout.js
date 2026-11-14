@@ -17,7 +17,7 @@ const bengali = Noto_Sans_Bengali({
 });
 
 export const metadata = {
-  title: "Krishi Mama — Climate Intelligence for Agriculture",
+  title: "Krishi Mama",
   description:
     "NASA-powered climate-informed agricultural decision support currently focused on Cumilla and Chattogram, Bangladesh.",
   icons: {
