@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { ArrowRight, Plus, Sprout, MapPin } from "lucide-react";
 import { useLang } from "@/lib/i18n/LanguageContext.js";
 import { Button } from "@/components/ui/Button.js";
 import { RotationResults } from "@/components/RotationResults.js";
@@ -9,7 +10,7 @@ import { compareCropRotations, previewCropRotations, saveRotationPlan, fetchRota
 
 const cropCodes = ["monsoon_aman", "boro_rice", "aus_rice", "mustard"];
 const initialProfile = { districtCode: "cumilla", soilType: "unknown", drainage: "unknown", irrigation: "unknown", priority: "water" };
-const selectClass = "mt-2 w-full rounded-xl border border-line bg-surface px-3 py-3 text-sm text-content outline-none transition focus-visible:border-emerald focus-visible:ring-2 focus-visible:ring-emerald/25";
+const selectClass = "mt-2 w-full rounded-xl border border-green-200 bg-surface px-3 py-3 text-sm dark:border-green-800 text-content outline-none transition focus-visible:border-emerald focus-visible:ring-2 focus-visible:ring-emerald/25";
 const DRAFT_KEY = "km-rotation-preview-draft";
 function consumeDraft() {
   if (typeof window === "undefined") return null;
@@ -105,7 +106,7 @@ export function RotationPlanner({ publicMode = false, initialDistrict, initialPr
     finally { setExplainBusy(false); }
   };
   const cropName = (code) => t(`rotation.crops.${code}`);
-  const field = (key, options, namespace = "options") => <label key={key} className="block text-sm font-medium text-content">{t(`rotation.${key}`)}
+  const field = (key, options, namespace = "options") => <label key={key} className="block rounded-2xl border border-green-100 bg-green-50/60 p-3 text-sm font-medium text-content dark:border-green-900 dark:bg-green-950/20">{t(`rotation.${key}`)}
     <select className={selectClass} value={profile[key]} onChange={(e) => change(key, e.target.value)}>
       {options.map((value) => <option key={value} value={value}>{t(`rotation.${namespace}.${value}`)}</option>)}
     </select></label>;
@@ -113,29 +114,29 @@ export function RotationPlanner({ publicMode = false, initialDistrict, initialPr
   return <div className="space-y-8">
     <RotationOverview publicMode={publicMode} />
     {loadFailed && <p role="status" className="rounded-xl border border-amber/30 bg-amber/5 px-4 py-3 text-sm text-amber-strong">{t("rotation.farmLoadError")}</p>}
-    <form onSubmit={compare} className="overflow-hidden rounded-3xl border border-line bg-surface shadow-km-sm">
+    <form onSubmit={compare} className="overflow-hidden rounded-3xl border border-green-200 bg-surface shadow-md dark:border-green-800">
       <fieldset disabled={busy || saveBusy || explainBusy} className="min-w-0 w-full">
-        <div className="border-b border-line bg-surface-2/60 px-5 py-5 sm:px-8 sm:py-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-strong">{t("rotation.formEyebrow")}</p>
+        <div className="relative overflow-hidden border-b border-green-200 bg-gradient-to-r from-green-100 via-lime-50 to-sky-50 px-5 py-5 dark:border-green-800 dark:from-green-950/50 dark:via-surface dark:to-sky-950/20 sm:px-8 sm:py-6">
+          <Sprout className="pointer-events-none absolute -right-2 -bottom-4 h-36 w-36 text-green-700 opacity-[0.07] dark:text-green-300" aria-hidden="true" /><p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-strong">{t("rotation.formEyebrow")}</p>
           <h2 className="mt-2 text-xl font-semibold text-content sm:text-2xl">{t("rotation.profile")}</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{t("rotation.formHelp")}</p>
         </div>
         <div className="p-5 sm:p-8">
         {!publicMode && <label className="mb-6 block max-w-2xl text-sm font-medium text-content">{t("rotation.farm")}<select value={farmId} onChange={(e) => selectFarm(e.target.value)} className={selectClass}><option value="">{t("rotation.manual")}</option>{farms.map((farm) => <option key={farm._id} value={farm._id}>{farm.farmName}</option>)}</select></label>}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <label className="block text-sm font-medium text-content">{t("rotation.district")}<select value={profile.districtCode} onChange={(e) => change("districtCode", e.target.value)} className={selectClass}><option value="cumilla">{t("rotation.districts.cumilla")}</option><option value="chattogram">{t("rotation.districts.chattogram")}</option></select></label>
+          <label className="block rounded-2xl border border-sky-100 bg-sky-50/60 p-3 text-sm font-medium text-content dark:border-sky-900 dark:bg-sky-950/20"><MapPin className="mr-1 inline h-4 w-4 text-sky-600" aria-hidden="true" />{t("rotation.district")}<select value={profile.districtCode} onChange={(e) => change("districtCode", e.target.value)} className={selectClass}><option value="cumilla">{t("rotation.districts.cumilla")}</option><option value="chattogram">{t("rotation.districts.chattogram")}</option></select></label>
           {field("soilType", ["unknown", "clay", "loam", "clay_loam", "sandy_loam", "sandy", "silt", "alluvial", "other"], "soil")}
           {field("drainage", ["unknown", "good", "moderate", "poor", "waterlogged"])}
           {field("irrigation", ["unknown", "available", "limited", "unavailable"])}
           {field("priority", ["water", "diversity", "calendar"])}
         </div>
-        <div className="mt-8 rounded-2xl border border-line bg-surface-2/50 p-4 sm:p-6">
-        <h3 className="text-lg font-semibold text-content">{t("rotation.baseline")}</h3><p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{t("rotation.baselineHelp")}</p>
-        <div className="mt-4 space-y-3">{baseline.map((code, index) => <div key={index} className="flex min-w-0 items-center gap-3">
+        <div className="mt-6 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50/80 to-green-50/60 p-4 dark:border-amber-900/60 dark:from-amber-950/20 dark:to-green-950/20 sm:p-6">
+        <h3 className="flex items-center gap-2 text-lg font-bold text-content"><Sprout className="h-6 w-6 text-emerald" aria-hidden="true" />{t("rotation.baseline")}</h3><p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{t("rotation.baselineHelp")}</p>
+        <div className="mt-4 space-y-3">{baseline.map((code, index) => <div key={index} className="flex min-w-0 items-center gap-3"><span className="mt-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-forest text-sm font-bold text-white">{new Intl.NumberFormat(locale === "bn" ? "bn-BD" : "en-GB").format(index + 1)}</span>
           <label className="flex-1"><span className="sr-only">{t("rotation.baseline")} {index + 1}</span><select required value={code} className={selectClass} onChange={(e) => { invalidate(); setBaseline((old) => old.map((v, i) => i === index ? e.target.value : v)); }}><option value="">{t("rotation.chooseCrop")}</option>{cropCodes.map((c) => <option key={c} value={c}>{cropName(c)}</option>)}</select></label>
           {baseline.length > 1 && <Button variant="ghost" onClick={() => { invalidate(); setBaseline((old) => old.filter((_, i) => i !== index)); }}>{t("rotation.remove")}</Button>}
         </div>)}</div>
-        <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap">{baseline.length < 4 && <Button variant="outline" className="w-full sm:w-auto" onClick={() => { invalidate(); setBaseline((old) => [...old, ""]); }}>{t("rotation.addCrop")}</Button>}<Button as="submit" disabled={busy} className="w-full sm:w-auto">{t(busy ? "rotation.working" : "rotation.compare")}</Button></div>
+        <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap">{baseline.length < 4 && <Button variant="outline" className="w-full sm:w-auto" onClick={() => { invalidate(); setBaseline((old) => [...old, ""]); }}><Plus className="h-4 w-4" aria-hidden="true" />{t("rotation.addCrop")}</Button>}<Button as="submit" variant="forest" disabled={busy} className="w-full sm:w-auto">{t(busy ? "rotation.working" : "rotation.compare")}<ArrowRight className="h-4 w-4" aria-hidden="true" /></Button></div>
         </div>
         </div>
       </fieldset>

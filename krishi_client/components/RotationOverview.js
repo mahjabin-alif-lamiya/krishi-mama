@@ -30,13 +30,13 @@ export function RotationOverview({ publicMode }) {
         </div>
       </div>
 
-      <div className="grid gap-px bg-line md:grid-cols-3">
-        {benefits.map(({ key, Icon }, index) => <article key={key} className="bg-surface p-5 sm:p-6">
+      <div className="grid gap-4 bg-surface-2/30 p-4 md:grid-cols-3 sm:p-5">
+        {benefits.map(({ key, Icon }, index) => <article key={key} className={`relative overflow-hidden rounded-2xl border p-5 shadow-sm sm:p-6 ${index === 0 ? "border-green-200 bg-gradient-to-br from-green-50 to-lime-100/70 dark:border-green-800 dark:from-green-950/40 dark:to-surface" : index === 1 ? "border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-100/60 dark:border-amber-800 dark:from-amber-950/30 dark:to-surface" : "border-sky-200 bg-gradient-to-br from-sky-50 to-cyan-100/70 dark:border-sky-800 dark:from-sky-950/40 dark:to-surface"}`}>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald/10 text-emerald-strong"><Icon className="h-5 w-5" aria-hidden="true" /></span>
+            <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${index === 0 ? "bg-green-200/70 text-green-800 dark:text-green-300 dark:bg-green-800/40" : index === 1 ? "bg-amber-200/70 text-amber-800 dark:text-amber-300 dark:bg-amber-800/40" : "bg-sky-200/70 text-sky-800 dark:text-sky-300 dark:bg-sky-800/40"}`}><Icon className="h-7 w-7" aria-hidden="true" /></span>
             <span className="text-xs font-semibold text-muted">{new Intl.NumberFormat(locale === "bn" ? "bn-BD" : "en-GB", { minimumIntegerDigits: 2 }).format(index + 1)}</span>
           </div>
-          <h3 className="mt-4 font-semibold text-content">{t(`rotation.benefits.${key}.title`)}</h3>
+          <h3 className="mt-4 text-lg font-bold text-content">{t(`rotation.benefits.${key}.title`)}</h3>
           <p className="mt-2 text-sm leading-6 text-muted">{t(`rotation.benefits.${key}.body`)}</p>
         </article>)}
       </div>
@@ -46,8 +46,8 @@ export function RotationOverview({ publicMode }) {
     </div>
 
     <ol className="grid gap-3 sm:grid-cols-3" aria-label={t("rotation.stepsTitle")}>
-      {t("rotation.simpleSteps").map((step, index) => <li key={step} className="flex min-w-0 items-start gap-3 rounded-2xl border border-line bg-surface p-4 shadow-km-sm sm:p-5">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald text-sm font-semibold text-white">{new Intl.NumberFormat(locale === "bn" ? "bn-BD" : "en-GB").format(index + 1)}</span>
+      {t("rotation.simpleSteps").map((step, index) => <li key={step} className="flex min-w-0 items-center gap-3 rounded-2xl border border-green-200 bg-gradient-to-r from-green-50 to-surface p-4 shadow-sm dark:border-green-800 dark:from-green-950/40 dark:to-surface sm:p-5">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-forest text-sm font-bold text-white">{new Intl.NumberFormat(locale === "bn" ? "bn-BD" : "en-GB").format(index + 1)}</span>
         <span className="pt-1 text-sm leading-6 text-content">{step}</span>
       </li>)}
     </ol>
