@@ -11,8 +11,55 @@ import { DISTRICTS } from "../../config/climate.config.js";
 
 const VALID_DISTRICT_CODES = new Set(DISTRICTS.map((d) => d.code));
 
+/**
+ * High-confidence Banglish (Bangla written in Latin script) vocabulary.
+ * These tokens are unambiguous Bangla words — unlikely to appear in an
+ * English farming question. Matched on word boundaries only.
+ */
+const BANGLISH_STRONG_TOKENS = new Set([
+  // Pronouns & possessives
+  "ami", "amra", "amar", "amader", "amake", "amago",
+  "tumi", "tui", "tomar", "tomader", "tomake", "tomra", "tor",
+  "apni", "apnar", "apnake", "apnader",
+  // Question words & adverbs
+  "kemon", "keno", "kothay", "kokhon", "kibhabe", "kivabe", "kotodin",
+  "jodi", "tahole", "aro", "abaar", "abara", "ekhon", "ekdom", "khub",
+  // Auxiliaries & common verbs
+  "ache", "achen", "acho", "achis", "chilo", "chhilo", "hobe", "holo", "hoye",
+  "korbo", "korbe", "korben", "korle", "korchi", "korlam", "koren", "korun", "koro", "kori",
+  "lagbe", "lagche", "dorkar", "dorkari", "dorkor",
+  "jante", "janten", "janen", "janben", "janbo", "bolben", "bolen", "bolle", "bole",
+  "dekhen", "dekhte", "dekhben", "dekhi", "dekhle", "diben", "diye", "niye", "nebo",
+  "chai", "chahi", "chao", "chay", "chan", "chanchi",
+  // Descriptors
+  "bhalo", "valo", "beshi", "koman", "baje", "sondeho", "somadhan",
+  // Agriculture-specific nouns
+  "dhan", "phosol", "fosol", "foshol", "phoshol", "khamar", "khaamar",
+  "begoon", "begun", "beguner", "shorisha", "sorisha", "shorise", "shorishar",
+  "jom", "jole", "jol", "khete", "khet", "borshe", "borsah", "boro", "aush", "aus",
+  "ropon", "ronan", "pukur", "nodir", "borsha", "bristi", "brishti",
+  "bochor", "bochhore", "mash", "mashe", "sopthah", "sopthaho",
+  "nirapod", "nirapatta", "shomoy", "shomoe", "porikar", "porikhare",
+]);
+
+/**
+ * Medium-confidence Banglish tokens — possible (though rare) in English.
+ * A message counts as Banglish with >= 2 of these when no strong token matched.
+ */
+const BANGLISH_MEDIUM_TOKENS = new Set([
+  "ki", "koto", "kotota", "kotha", "din", "bol", "dekh", "dao", "jan",
+  "paba", "pabo", "hobe",
+]);
+
+/**
+ * Detect whether a message is Bangla in any written form — Bangla script or
+ * Banglish (transliterated Bangla in Latin script). Used to mirror the
+ * farmer's language in replies.
+ */
 function isBanglaMessage(message) {
-  return /[\u0980-\u09FF]/.test(message);
+  if (typeof message !== "string" || message.length === 0) return false;
+  if (/[\u0980-\u09FF]/.test(message)) return true;
+  return isBanglishMessage(message);
 }
 
 function isGeneralHelpOrGreeting(message) {

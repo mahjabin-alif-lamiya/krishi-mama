@@ -202,7 +202,9 @@ export async function chatWithAssistant(req, res, next) {
       {
         ...result,
         isGuest: true,
-        guestNotice: "অতিথি মোডে চ্যাট হিস্ট্রি সাময়িক। স্থায়ী সংরক্ষণের জন্য লগইন বা রেজিস্ট্রেশন করুন।",
+        guestNotice: /[\u0980-\u09FF]/.test(trimmedMessage)
+          ? "অতিথি মোডে চ্যাট হিস্ট্রি সাময়িক। স্থায়ী সংরক্ষণের জন্য লগইন বা রেজিস্ট্রেশন করুন।"
+          : "Guest mode chat history is temporary. Sign in or register to save it permanently.",
       },
       { timestamp: new Date().toISOString() }
     );
