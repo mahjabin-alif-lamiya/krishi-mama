@@ -439,7 +439,7 @@ export const translations = {
       regionalEstimate: "Area estimate, not a measurement of your field.",
       estimatesCount: "Model estimates used",
 
-      overview: "7-day forecast, outlook through day 14, seasonal trends, and available government warnings for {district}.",
+      overview: "7-day forecast, outlook through day 14, seasonal trends, and verified government warnings for {district}.",
       extendedNote: "Days 8–14 give an early idea of the weather. These forecasts can change; check again closer to the day.",
       previousForecast: "Previously saved forecast",
       kicker: "NUMERICAL FORECAST & EARLY WARNING",
@@ -1562,7 +1562,7 @@ export const translations = {
       regionalEstimate: "এটি এলাকার আনুমানিক তথ্য, আপনার জমির সরাসরি মাপ নয়।",
       estimatesCount: "হিসাবে ব্যবহৃত মডেলের অনুমান",
 
-      overview: "{district}-এর জন্য ৭ দিনের পূর্বাভাস, ১৪ দিন পর্যন্ত আবহাওয়ার ধারণা, মৌসুমি প্রবণতা ও পাওয়া সরকারি সতর্কতা।",
+      overview: "{district}-এর জন্য ৭ দিনের পূর্বাভাস, ১৪ দিন পর্যন্ত আবহাওয়ার ধারণা, মৌসুমি প্রবণতা ও যাচাইকৃত সরকারি সতর্কতা।",
       extendedNote: "৮–১৪ দিনের আবহাওয়া সম্পর্কে আগাম ধারণা। এই পূর্বাভাস বদলাতে পারে; কাজের দিন কাছে এলে আবার দেখুন।",
       previousForecast: "আগের সংরক্ষিত পূর্বাভাস",
       kicker: "সংখ্যাতাত্ত্বিক পূর্বাভাস ও প্রারম্ভিক সতর্কতা",

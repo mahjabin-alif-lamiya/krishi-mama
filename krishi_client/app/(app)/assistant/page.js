@@ -236,12 +236,19 @@ function AssistantContent() {
 
   const handleSpeakMessage = (msg) => {
     setTtsTargetId(msg.id);
-    speakTts({
-      text: msg.text,
-      lang: isBn ? "bn-BD" : "en-US",
-      messageId: msg.id,
-    });
+    // Speak in the language of this answer, regardless of the app's UI language.
+    speakTts(msg.text, { id: msg.id });
   };
+
+  const cleanAssistantText = (value) => String(value || "")
+    .replace(/\*\*(.*?)\*\*/gs, "$1")
+    .replace(/__(.*?)__/gs, "$1")
+    .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1$2")
+    .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, "$1$2")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s*[-*•]\s+/gm, "• ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 
   // Smooth contained scrolling without window jumping
   const scrollToBottom = useCallback((smooth = true) => {
@@ -316,7 +323,7 @@ function AssistantContent() {
           const formattedMessages = (conv.messages || []).map((m) => ({
             id: m._id || `msg-${Math.random()}`,
             sender: m.role,
-            text: m.content,
+            text: m.role === "assistant" ? cleanAssistantText(m.content) : m.content,
             sources: m.sources || [],
             dataDate: m.dataDate || null,
             observationDate: m.observationDate || null,
@@ -453,7 +460,7 @@ function AssistantContent() {
         const assistantMessage = {
           id: `assistant-${Date.now()}`,
           sender: "assistant",
-          text: data.answer,
+          text: cleanAssistantText(data.answer),
           sources: data.sources || [],
           dataDate: data.dataDate || null,
           observationDate: data.observationDate || null,
@@ -693,9 +700,20 @@ function AssistantContent() {
       <div className="flex-1 min-h-0 flex flex-col w-full overflow-hidden">
         {/* Left Column: Full-Height Chat Area with Contained Scroll */}
         <div className="flex-1 min-w-0 w-full h-full flex flex-col rounded-3xl border border-line/70 bg-surface shadow-xs overflow-hidden transition-all duration-200">
-          <header className="flex shrink-0 items-center gap-3 border-b border-line px-4 py-3 sm:px-6">
-            <Image src={BRAND_LOGO_SRC} alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-xl object-contain" />
-            <h1 className="text-lg font-semibold tracking-tight text-content sm:text-xl">{t("assistant.title")}</h1>
+          <header className="flex shrink-0 items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-6">
+            <div className="flex min-w-0 items-center gap-3">
+              <Image src={BRAND_LOGO_SRC} alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-xl object-contain" />
+              <h1 className="text-lg font-semibold tracking-tight text-content sm:text-xl">{t("assistant.title")}</h1>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleNewConversation(selectedFarmId)}
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl bg-forest px-3 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-forest/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2"
+              aria-label={t("assistant.newChat")}
+            >
+              <Plus className="h-4 w-4" />
+              <span>{t("assistant.newChat")}</span>
+            </button>
           </header>
           {/* Farm-Aware Context Banner */}
           {activeFarm ? (
@@ -1287,15 +1305,6 @@ function AssistantContent() {
           </div>
 
 
-          {/* New Chat Button */}
-          <button
-            type="button"
-            onClick={() => handleNewConversation(selectedFarmId)}
-            className="inline-flex items-center gap-1 rounded-xl bg-forest hover:bg-forest/90 active:scale-[0.98] text-white px-2.5 sm:px-3 h-10 text-xs font-semibold shadow-xs hover:shadow-km-sm transition-all duration-150 cursor-pointer ring-1 ring-white/10 shrink-0"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span className="inline">{t("assistant.newChat")}</span>
-          </button>
         </div>
             {/* Input form */}
             <form

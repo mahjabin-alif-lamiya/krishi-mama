@@ -23,12 +23,12 @@ const BANGLISH_STRONG_TOKENS = new Set([
   "apni", "apnar", "apnake", "apnader",
   // Question words & adverbs
   "kemon", "keno", "kothay", "kokhon", "kibhabe", "kivabe", "kotodin",
-  "jodi", "tahole", "aro", "abaar", "abara", "ekhon", "ekdom", "khub",
+  "jodi", "tahole", "aro", "abaar", "abara", "ekhon", "ekdom", "khub", "ta",
   // Auxiliaries & common verbs
   "ache", "achen", "acho", "achis", "chilo", "chhilo", "hobe", "holo", "hoye",
   "korbo", "korbe", "korben", "korle", "korchi", "korlam", "koren", "korun", "koro", "kori",
   "lagbe", "lagche", "dorkar", "dorkari", "dorkor",
-  "jante", "janten", "janen", "janben", "janbo", "bolben", "bolen", "bolle", "bole",
+  "jante", "janten", "janen", "janben", "janbo", "bolben", "bolen", "bolle", "bole", "korte", "parso", "parben",
   "dekhen", "dekhte", "dekhben", "dekhi", "dekhle", "diben", "diye", "niye", "nebo",
   "chai", "chahi", "chao", "chay", "chan", "chanchi",
   // Descriptors
@@ -36,7 +36,7 @@ const BANGLISH_STRONG_TOKENS = new Set([
   // Agriculture-specific nouns
   "dhan", "phosol", "fosol", "foshol", "phoshol", "khamar", "khaamar",
   "begoon", "begun", "beguner", "shorisha", "sorisha", "shorise", "shorishar",
-  "jom", "jole", "jol", "khete", "khet", "borshe", "borsah", "boro", "aush", "aus",
+  "jom", "jole", "jol", "khete", "khet", "borshe", "borsah",
   "ropon", "ronan", "pukur", "nodir", "borsha", "bristi", "brishti",
   "bochor", "bochhore", "mash", "mashe", "sopthah", "sopthaho",
   "nirapod", "nirapatta", "shomoy", "shomoe", "porikar", "porikhare",
@@ -50,6 +50,14 @@ const BANGLISH_MEDIUM_TOKENS = new Set([
   "ki", "koto", "kotota", "kotha", "din", "bol", "dekh", "dao", "jan",
   "paba", "pabo", "hobe",
 ]);
+
+function isBanglishMessage(message) {
+  if (typeof message !== "string" || !message.trim()) return false;
+  const words = message.toLowerCase().match(/[a-z]+/g) || [];
+  if (!words.length) return false;
+  if (words.some((word) => BANGLISH_STRONG_TOKENS.has(word))) return true;
+  return words.filter((word) => BANGLISH_MEDIUM_TOKENS.has(word)).length >= 2;
+}
 
 /**
  * Detect whether a message is Bangla in any written form — Bangla script or
@@ -1211,7 +1219,7 @@ export class AssistantChatService {
 
         responsePayload = {
           answer: geminiResult.answer,
-          language: /[\u0980-\u09FF]/.test(trimmedMessage) ? "bn" : "en",
+          language: isBanglaMessage(trimmedMessage) ? "bn" : "en",
           sources: Array.from(sources),
           dataDate: dataDate || null,
           dataQuality,
