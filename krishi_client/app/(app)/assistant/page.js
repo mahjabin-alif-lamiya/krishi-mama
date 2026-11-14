@@ -625,7 +625,7 @@ function AssistantContent() {
     <div className="mx-auto w-full max-w-[1200px] flex flex-col h-[calc(100dvh-8rem)] sm:h-[calc(100dvh-8.5rem)] overflow-hidden">
       {/* Sleek, Compact Top Toolbar: Ultra-Compact Single-Row Toolbar */}
       {conversationTitle && (
-      <div className="shrink-0 mb-3 w-full flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-4 shadow-xs sm:px-6">
+      <div className="shrink-0 mb-3 w-full flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 via-surface to-lime-50 px-4 py-4 shadow-sm sm:px-6 dark:border-emerald-900 dark:from-emerald-950/30 dark:to-lime-950/20">
         {/* Left: Sparkle Icon + Title + Grounded Badge + Conversation Title */}
         <div className="flex items-center gap-2 min-w-0">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
@@ -685,8 +685,8 @@ function AssistantContent() {
       {/* Main Grid: Left Chat Area & Right Sidebar */}
       <div className="flex-1 min-h-0 flex flex-col w-full overflow-hidden">
         {/* Left Column: Full-Height Chat Area with Contained Scroll */}
-        <div className="flex-1 min-w-0 w-full h-full flex flex-col rounded-3xl border border-line/70 bg-surface shadow-xs overflow-hidden transition-all duration-200">
-          <header className="flex shrink-0 items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-6">
+        <div className="flex-1 min-w-0 w-full h-full flex flex-col rounded-3xl border border-emerald-200 bg-gradient-to-br from-surface via-surface to-sky-50/60 shadow-sm overflow-hidden dark:border-emerald-900 dark:to-sky-950/20 transition-all duration-200">
+          <header className="flex shrink-0 items-center justify-between gap-3 border-b border-emerald-100 bg-emerald-50/60 px-4 py-3 sm:px-6 dark:border-emerald-900 dark:bg-emerald-950/20">
             <div className="flex min-w-0 items-center gap-3">
               <Image src={BRAND_LOGO_SRC} alt="" width={40} height={40} className="h-10 w-10 shrink-0 rounded-xl object-contain" />
               <h1 className="text-lg font-semibold tracking-tight text-content sm:text-xl">{t("assistant.title")}</h1>
@@ -746,7 +746,7 @@ function AssistantContent() {
               /* EMPTY STATE: Clean SaaS Hero Card + Try Asking About */
               <div className="flex flex-col gap-5">
                 {/* Hero Card with Crisp Brand Typography & Badges */}
-                <div className="relative overflow-hidden rounded-3xl border border-line/70 bg-gradient-to-b from-surface-2/50 to-surface-2/15 dark:from-surface-2/25 dark:to-surface/10 p-6 sm:p-8 text-center shadow-2xs backdrop-blur-xs transition-all duration-300">
+                <div className="relative overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-lime-100 via-emerald-50 to-sky-100 p-6 sm:p-8 text-center shadow-sm dark:border-emerald-900 dark:from-lime-950/30 dark:via-emerald-950/30 dark:to-sky-950/30">
                   {/* Centered Content */}
                   <div className="relative z-10 flex flex-col items-center max-w-xl mx-auto py-1">
                     {/* Logo Emblem */}
@@ -849,7 +849,7 @@ function AssistantContent() {
                           key={q.id}
                           type="button"
                           onClick={() => handleSendMessage(q.query)}
-                          className="flex items-center justify-between gap-3 p-3.5 rounded-2xl border border-line/70 bg-surface hover:border-emerald/40 hover:bg-surface-2/50 hover:shadow-xs hover:-translate-y-0.5 transition-all duration-200 ease-out text-left group cursor-pointer"
+                          className="flex items-center justify-between gap-3 p-3.5 rounded-2xl border border-sky-200 bg-sky-50/70 dark:border-sky-900 dark:bg-sky-950/20 hover:border-emerald/40 hover:bg-surface-2/50 hover:shadow-xs hover:-translate-y-0.5 transition-all duration-200 ease-out text-left group cursor-pointer"
                         >
                           <div className="flex items-center gap-3 min-w-0">
                             <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${q.bgColor} ${q.iconColor} transition-transform duration-200 group-hover:scale-105 shadow-2xs`}>
@@ -892,7 +892,7 @@ function AssistantContent() {
                         className={`min-w-0 max-w-full flex flex-col rounded-2xl px-5 py-4 text-sm leading-7 sm:px-6 ${
                           isUser
                             ? "bg-forest text-white rounded-tr-md shadow-xs"
-                            : "bg-surface border border-line text-content rounded-tl-md shadow-xs"
+                            : "bg-emerald-50/70 border border-emerald-100 text-content rounded-tl-md shadow-xs dark:bg-emerald-950/20 dark:border-emerald-900"
                         }`}
                       >
                         {/* Assistant Message Header / TTS Controls */}
@@ -1157,7 +1157,7 @@ function AssistantContent() {
           )}
 
           {/* Message Composer Area */}
-          <div className="sticky bottom-0 bg-surface/95 backdrop-blur-md pt-3 mt-3 border-t border-line/80 z-10">
+          <div className="sticky bottom-0 bg-gradient-to-r from-emerald-50/95 via-surface to-sky-50/95 backdrop-blur-md px-4 pb-4 pt-3 mt-3 border-t border-emerald-100 z-10 sm:px-6 dark:from-emerald-950/80 dark:to-sky-950/80 dark:border-emerald-900">
             {/* Active Listening / Interim Transcription Banner */}
             {(isListening || isTranscribing) && (
               <div className="mb-2 p-2.5 rounded-xl border border-emerald/30 bg-emerald/5 dark:bg-emerald-950/30 flex items-center justify-between gap-3 animate-in fade-in duration-150">
@@ -1193,7 +1193,7 @@ function AssistantContent() {
             )}
 
         {/* Right: Farm, District, Crop Dropdowns + Dedicated EN/BN Switcher + New Chat Button */}
-        <div className="mb-3 flex flex-wrap items-center gap-2">
+        <div className="mx-auto mb-3 flex w-full max-w-3xl flex-wrap items-center justify-center gap-3">
           {/* Farm selector (if user has registered farms) */}
           {isAuthenticated && farmsList.length > 0 ? (
             <div className="relative">
@@ -1203,7 +1203,7 @@ function AssistantContent() {
                 onChange={(e) => handleFarmSelection(e.target.value)}
                 disabled={isLoading}
                 aria-label={t("assistant.selectFarm")}
-                className="appearance-none rounded-xl border border-line/70 bg-surface-2/60 dark:bg-surface-2/40 pl-6.5 pr-5 h-10 text-xs font-medium text-content hover:border-emerald/40 hover:bg-surface focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all duration-150 cursor-pointer shadow-2xs max-w-[180px] sm:max-w-[240px] truncate"
+                className="appearance-none rounded-xl border border-emerald-200 bg-surface dark:border-emerald-800 dark:bg-surface pl-8 pr-8 h-11 text-xs font-medium text-content hover:border-emerald/40 hover:bg-surface focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all duration-150 cursor-pointer shadow-2xs max-w-[180px] sm:max-w-[240px] truncate"
               >
                 <option value="">{t("assistant.allFarmsGeneral")}</option>
                 {farmsList.map((f) => (
@@ -1224,7 +1224,7 @@ function AssistantContent() {
             </button>
           ) : null}
           {isAuthenticated && !isFarmsLoading && !farmsLoadError && farmsList.length === 0 ? (
-            <span role="status" className="text-[11px] text-content-muted">{isBn ? "কোনো সংরক্ষিত খামার নেই" : "No saved farms"}</span>
+            <span role="status" className="px-2 text-xs leading-6 text-muted">{isBn ? "কোনো সংরক্ষিত খামার নেই" : "No saved farms"}</span>
           ) : null}
 
           {/* Crop selector */}
@@ -1235,7 +1235,7 @@ function AssistantContent() {
               onChange={(e) => setSelectedCrop(e.target.value)}
               disabled={isLoading}
               aria-label={t("assistant.selectCrop")}
-              className="appearance-none rounded-xl border border-line/70 bg-surface-2/60 dark:bg-surface-2/40 pl-6.5 pr-5 h-10 text-xs font-medium text-content hover:border-emerald/40 hover:bg-surface focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all duration-150 cursor-pointer shadow-2xs max-w-[160px] sm:max-w-[200px]"
+              className="appearance-none rounded-xl border border-emerald-200 bg-surface dark:border-emerald-800 dark:bg-surface pl-8 pr-8 h-11 text-xs font-medium text-content hover:border-emerald/40 hover:bg-surface focus:outline-none focus:ring-2 focus:ring-emerald/20 focus:border-emerald transition-all duration-150 cursor-pointer shadow-2xs max-w-[160px] sm:max-w-[200px]"
             >
               {CROPS.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -1255,7 +1255,7 @@ function AssistantContent() {
                 handleSendMessage();
               }}
               aria-busy={isLoading}
-              className="relative flex items-end gap-2 p-2.5 rounded-3xl border border-line bg-surface dark:bg-surface focus-within:border-emerald focus-within:ring-2 focus-within:ring-emerald/15 focus-within:bg-surface transition-all duration-200 shadow-2xs hover:border-line"
+              className="relative mx-auto flex w-full max-w-3xl items-end gap-2 p-2.5 rounded-3xl border border-emerald-200 bg-surface dark:border-emerald-800 dark:bg-surface focus-within:border-emerald focus-within:ring-2 focus-within:ring-emerald/15 focus-within:bg-surface transition-all duration-200 shadow-2xs hover:border-line"
             >
               {/* Mic Button */}
               <button
