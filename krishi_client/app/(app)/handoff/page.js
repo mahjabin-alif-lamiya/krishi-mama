@@ -1,5 +1,7 @@
 "use client";
 
+import { PrivateAccess } from "@/components/auth/PrivateAccess.js";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
@@ -167,7 +169,7 @@ function PeriodTotalSub({ row, periodKey, locale }) {
   return null; // complete_period_total: no annotation required
 }
 
-export default function HandoffPage() {
+function HandoffPage() {
   const { locale, t } = useLang();
   const { selectedDistrict, setSelectedDistrict, districts, currentDistrictObj } = useLocation();
 
@@ -286,11 +288,11 @@ export default function HandoffPage() {
   const sowingTminMedian = sowingOpp.sowing_tmin_distribution?.median?.toFixed(1) ?? "—";
 
   return (
-    <div className="space-y-6 pb-12 print:space-y-4 print:pb-0">
+    <div className="space-y-6 rounded-3xl bg-gradient-to-br from-emerald-50/60 via-bg to-sky-50/50 p-3 pb-10 sm:p-5 dark:from-emerald-950/20 dark:to-sky-950/15 print:space-y-4 print:bg-white print:p-0">
       {/* Top Banner / Breadcrumb */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="relative overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-lime-100 via-emerald-50 to-sky-100 p-5 sm:p-7 md:flex-row md:items-center md:justify-between flex flex-col gap-4 dark:border-emerald-900 dark:from-lime-950/40 dark:via-emerald-950/40 dark:to-sky-950/40">
         <div>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-content sm:text-3xl">
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-forest sm:text-3xl dark:text-emerald-100">
             {strings.title || "Crop Transition (Handoff)"}
           </h1>
           <p className="mt-1 text-sm text-muted">
@@ -323,10 +325,10 @@ export default function HandoffPage() {
       </div>
 
       {/* Filter / Selector Controls */}
-      <Card className="p-4 print:hidden">
+      <Card className="!rounded-2xl !border-emerald-200 bg-gradient-to-r from-emerald-50/70 to-surface p-4 sm:p-5 dark:!border-emerald-900 dark:from-emerald-950/20 print:hidden">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:gap-8">
           {/* Crop Transition */}
-          <div className="w-full sm:max-w-md">
+          <div className="w-full rounded-2xl border border-emerald-100 bg-surface/80 p-3 sm:max-w-md dark:border-emerald-900">
             <label htmlFor="handoff-transition" className="mb-1.5 block text-xs font-medium text-muted">
               {strings.transitionLabel || "Crop Transition"}
             </label>
@@ -336,7 +338,7 @@ export default function HandoffPage() {
                 id="handoff-transition"
                 value={transition}
                 onChange={(e) => setTransition(e.target.value)}
-                className="w-full appearance-none rounded-lg border border-line bg-surface pl-9 pr-8 py-2 text-sm text-content transition-colors focus:border-emerald focus:outline-none"
+                className="w-full appearance-none rounded-xl border border-emerald-200 bg-surface pl-9 pr-8 py-3 text-sm text-content transition-colors focus:border-emerald focus:outline-none"
               >
                 <option value="aman-mustard">
                   {strings.amanMustard || "T. Aman Rice → Mustard (Rabi Oilseed)"}
@@ -348,7 +350,7 @@ export default function HandoffPage() {
           </div>
 
           {/* District Picker */}
-          <div className="w-full sm:max-w-md">
+          <div className="w-full rounded-2xl border border-emerald-100 bg-surface/80 p-3 sm:max-w-md dark:border-emerald-900">
             <label htmlFor="handoff-district" className="mb-1.5 block text-xs font-medium text-muted">
               {strings.districtLabel || "District"}
             </label>
@@ -358,7 +360,7 @@ export default function HandoffPage() {
                 id="handoff-district"
                 value={selectedDistrict}
                 onChange={(e) => setSelectedDistrict(e.target.value)}
-                className="w-full appearance-none rounded-lg border border-line bg-surface pl-9 pr-8 py-2 text-sm text-content transition-colors focus:border-emerald focus:outline-none"
+                className="w-full appearance-none rounded-xl border border-emerald-200 bg-surface pl-9 pr-8 py-3 text-sm text-content transition-colors focus:border-emerald focus:outline-none"
               >
                 {districts && districts.length > 0 ? (
                   districts.map((d) => (
@@ -398,6 +400,7 @@ export default function HandoffPage() {
           {/* 4 Top KPI Cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <MetricCard
+              className="h-full !rounded-2xl !border-emerald-200 bg-gradient-to-br from-emerald-50 to-surface dark:!border-emerald-900 dark:from-emerald-950/30 [&_p]:whitespace-normal [&_p]:overflow-visible"
               icon={CheckCircle2}
               tone="emerald"
               label={strings.kpiWorkableWindow || "Share of historical years"}
@@ -413,6 +416,7 @@ export default function HandoffPage() {
               }
             />
             <MetricCard
+              className="h-full !rounded-2xl !border-sky-200 bg-gradient-to-br from-sky-50 to-surface dark:!border-sky-900 dark:from-sky-950/30 [&_p]:whitespace-normal [&_p]:overflow-visible"
               icon={Calendar}
               tone="climate"
               label={strings.kpiDryDays || "Median Sowing Dry Days"}
@@ -423,6 +427,7 @@ export default function HandoffPage() {
               hint={`${strings.kpiDryDaysDesc || "Within the sowing window (rain < 1.0 mm/day)"} · ${sowingWindow || "—"}${dryMean !== "—" ? (locale === "bn" ? ` (গড়: ${locNum(dryMean, locale)} দিন)` : ` (Mean: ${dryMean}d)`) : ""}`}
             />
             <MetricCard
+              className="h-full !rounded-2xl !border-amber-200 bg-gradient-to-br from-amber-50 to-surface dark:!border-amber-900 dark:from-amber-950/30 [&_p]:whitespace-normal [&_p]:overflow-visible"
               icon={TrendingUp}
               tone="amber"
               label={strings.kpiOctLateRain || "Late Oct Rain Shift"}
@@ -435,6 +440,7 @@ export default function HandoffPage() {
               hint={strings.kpiOctLateRainDesc || "Mean Oct 16–31 rainfall shift (P1 vs P2)"}
             />
             <MetricCard
+              className="h-full !rounded-2xl !border-teal-200 bg-gradient-to-br from-teal-50 to-surface dark:!border-teal-900 dark:from-teal-950/30 [&_p]:whitespace-normal [&_p]:overflow-visible"
               icon={Thermometer}
               tone="climate"
               label={strings.kpiSowingTmin || "Germination Min Temp"}
@@ -445,7 +451,7 @@ export default function HandoffPage() {
           </div>
 
           {/* Sowing Opportunity Climatology Chart */}
-          <Card className="p-5">
+          <Card className="overflow-hidden !rounded-3xl !border-sky-200 bg-gradient-to-br from-sky-50/70 via-surface to-cyan-50/50 p-3 sm:p-5 dark:!border-sky-900 dark:from-sky-950/25 dark:to-cyan-950/15">
             <CardHeader className="flex flex-col gap-2 pb-2 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-base font-semibold text-content">
@@ -484,10 +490,10 @@ export default function HandoffPage() {
           </Card>
 
           {/* Climate Period Shift Comparison Section (2001–2012 vs 2013–2025) */}
-          <Card className="p-5">
+          <Card className="overflow-hidden !rounded-3xl !border-emerald-200 bg-gradient-to-br from-emerald-50/70 via-surface to-lime-50/50 p-3 sm:p-5 dark:!border-emerald-900 dark:from-emerald-950/25 dark:to-lime-950/15">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-climate/12 text-climate">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-climate/12 text-climate">
                   <TrendingUp className="h-4 w-4" />
                 </span>
                 <div>
@@ -594,10 +600,10 @@ export default function HandoffPage() {
           {/* DAE Agricultural Extension Advisory Card & Bangla SMS Preview */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Advisory / SMS Card */}
-            <Card className="p-5">
+            <Card className="overflow-hidden !rounded-3xl !border-emerald-200 bg-gradient-to-br from-emerald-50/70 via-surface to-green-50/50 p-3 sm:p-5 dark:!border-emerald-900 dark:from-emerald-950/25 dark:to-green-950/15">
               <CardHeader className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-forest/12 text-forest dark:bg-emerald/15 dark:text-emerald">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-forest/12 text-forest dark:bg-emerald/15 dark:text-emerald">
                     <Wheat className="h-4 w-4" />
                   </span>
                   <div>
@@ -631,7 +637,7 @@ export default function HandoffPage() {
               </CardHeader>
 
               <CardBody className="pt-2">
-                <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 text-sm leading-7 text-content dark:border-emerald-900 dark:bg-emerald-950/20">
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-100/50 p-4 text-sm leading-7 text-content dark:border-emerald-900 dark:bg-emerald-950/20">
                   <pre className="whitespace-pre-wrap font-sans">
                     {generateSmsAdvisory(
                       currentDistrictObj,
@@ -646,16 +652,16 @@ export default function HandoffPage() {
               </CardBody>
             </Card>
 
-            <Card className="p-5">
+            <Card className="overflow-hidden !rounded-3xl !border-violet-200 bg-gradient-to-br from-violet-50/70 via-surface to-sky-50/50 p-3 sm:p-5 dark:!border-violet-900 dark:from-violet-950/25 dark:to-sky-950/15">
               <CardHeader><h2 className="text-base font-semibold text-content">{t("handoffSimple.helpTitle")}</h2></CardHeader>
               <CardBody className="space-y-3 text-sm leading-7 text-muted">
-                {t("handoffSimple.helpItems").map(item => <p key={item} className="rounded-xl bg-surface-2/50 px-4 py-3">{item}</p>)}
+                {t("handoffSimple.helpItems").map(item => <p key={item} className="rounded-2xl border border-violet-100 bg-surface/80 px-4 py-3 dark:border-violet-900">{item}</p>)}
               </CardBody>
             </Card>
           </div>
 
           {/* 25-Year Climatology Observation Log */}
-          <Card className="p-5">
+          <Card className="overflow-hidden !rounded-3xl !border-sky-200 bg-gradient-to-br from-sky-50/70 via-surface to-teal-50/50 p-3 sm:p-5 dark:!border-sky-900 dark:from-sky-950/25 dark:to-teal-950/15">
             <CardHeader className="flex flex-col gap-1 pb-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-base font-semibold text-content">
@@ -730,3 +736,7 @@ export default function HandoffPage() {
   );
 }
 
+
+export default function ProtectedHandoffPage() {
+  return <PrivateAccess><HandoffPage /></PrivateAccess>;
+}

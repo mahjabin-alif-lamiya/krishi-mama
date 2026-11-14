@@ -33,7 +33,6 @@ import {
 } from "lucide-react";
 
 import { hazardTextKeys } from "@/lib/farmSourceText.js";
-import { Badge } from "@/components/ui/Badge.js";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card.js";
 import { Table, TBody, TD, THead, TR } from "@/components/ui/Table.js";
 import { useLocation } from "@/contexts/LocationContext.js";
@@ -153,12 +152,12 @@ function CropCalendarPage() {
     : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-3xl bg-gradient-to-br from-emerald-50/60 via-bg to-amber-50/50 p-3 sm:p-5 dark:from-emerald-950/20 dark:to-amber-950/15">
       {/* 1. Header with District Selector, Meteorological Week & Refresh */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-3xl border border-emerald-200 bg-gradient-to-br from-lime-100 via-emerald-50 to-sky-100 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7 dark:border-emerald-900 dark:from-lime-950/30 dark:via-emerald-950/30 dark:to-sky-950/30">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-ink font-heading sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-forest font-heading sm:text-3xl dark:text-emerald-100">
               {isBn ? "সরকারি ফসল আবহাওয়া পঞ্জিকা" : "Official Crop Agro-Weather Calendar"}
             </h1>
           </div>
@@ -211,14 +210,14 @@ function CropCalendarPage() {
                 key={crop.cropId}
                 type="button"
                 onClick={() => setSelectedCrop(crop.cropId)}
-                className={`flex flex-col text-left p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                className={`flex min-h-32 flex-col text-left p-4 rounded-2xl border transition-colors cursor-pointer ${
                   isSelected
                     ? "border-forest-600 bg-forest-50/80 shadow-sm ring-2 ring-forest-500/20 dark:border-forest-500 dark:bg-forest-950/30 dark:ring-forest-500/30"
-                    : "border-line bg-surface hover:border-forest-300 dark:hover:border-forest-700 hover:bg-surface-2"
+                    : "border-lime-200 bg-gradient-to-br from-lime-50 to-surface hover:border-emerald-400 dark:border-lime-900 dark:from-lime-950/25 dark:hover:border-emerald-700"
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-forest-100/80 dark:bg-forest-950/60">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-forest-100/80 dark:bg-forest-950/60">
                     <CropIcon cropId={crop.cropId} isSelected={isSelected} />
                   </div>
 
@@ -310,7 +309,7 @@ function CropCalendarPage() {
 
       {/* NASA Satellite Observation Context */}
       {satContext && (
-        <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs space-y-4">
+        <div className="rounded-3xl border border-sky-200 bg-gradient-to-br from-sky-50/70 to-surface p-5 shadow-sm space-y-4 dark:border-sky-900 dark:from-sky-950/20">
           <div className="flex items-center justify-between border-b border-line pb-3">
             <h3 className="font-bold text-sm text-ink">
               {isBn ? "তারিখসহ সংরক্ষিত নাসা উপগ্রহ পর্যবেক্ষণ" : "Dated, stored NASA satellite observations"}
@@ -366,7 +365,7 @@ function CropCalendarPage() {
       {/* 4. Crop Key Agronomic Windows Summary Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {/* Total Duration */}
-        <div className="rounded-2xl border border-line bg-surface p-4 shadow-xs">
+        <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-surface p-4 shadow-sm dark:border-emerald-900 dark:from-emerald-950/25">
           <div className="flex items-center gap-2 text-ink-muted">
             <Clock size={16} strokeWidth={1.8} className="text-forest-600 dark:text-forest-400" />
             <span className="text-xs font-medium">{isBn ? "মোট জীবনকাল" : "Total Life Cycle"}</span>
@@ -380,7 +379,7 @@ function CropCalendarPage() {
         </div>
 
         {/* Sowing Window */}
-        <div className="rounded-2xl border border-line bg-surface p-4 shadow-xs">
+        <div className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-surface p-4 shadow-sm dark:border-sky-900 dark:from-sky-950/25">
           <div className="flex items-center gap-2 text-ink-muted">
             <Calendar size={16} strokeWidth={1.8} className="text-sky-600 dark:text-sky-400" />
             <span className="text-xs font-medium">{isBn ? "বপন / বীজতলা সময়" : "Sowing Period"}</span>
@@ -396,7 +395,7 @@ function CropCalendarPage() {
         </div>
 
         {/* Total Water Requirement */}
-        <div className="rounded-2xl border border-line bg-surface p-4 shadow-xs">
+        <div className="rounded-2xl border border-teal-200 bg-gradient-to-br from-teal-50 to-surface p-4 shadow-sm dark:border-teal-900 dark:from-teal-950/25">
           <div className="flex items-center gap-2 text-ink-muted">
             <Droplets size={16} strokeWidth={1.8} className="text-blue-600 dark:text-blue-400" />
             <span className="text-xs font-medium">{isBn ? "মোট পানির চাহিদা" : "Water Requirement"}</span>
@@ -410,7 +409,7 @@ function CropCalendarPage() {
         </div>
 
         {/* Harvesting Period */}
-        <div className="rounded-2xl border border-line bg-surface p-4 shadow-xs">
+        <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-surface p-4 shadow-sm dark:border-amber-900 dark:from-amber-950/25">
           <div className="flex items-center gap-2 text-ink-muted">
             <CalendarRange size={16} strokeWidth={1.8} className="text-amber-600 dark:text-amber-400" />
             <span className="text-xs font-medium">{isBn ? "ফসল কর্তন সময়" : "Harvest Window"}</span>
@@ -468,11 +467,7 @@ function CropCalendarPage() {
                       >
                         {idx + 1}
                       </span>
-                      {isCurrent && (
-                        <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                          {isBn ? "চলমান" : "Active"}
-                        </span>
-                      )}
+                      
                     </div>
 
                     <h4 className="mt-2 text-xs font-bold text-ink line-clamp-2">
@@ -500,7 +495,7 @@ function CropCalendarPage() {
 
             {/* Stage Deep-Dive Detail Card (নির্বাচিত ধাপের বিশদ বিবরণ) */}
             {selectedStage && (
-              <div className="rounded-2xl border border-forest-200 bg-forest-50/30 p-5 dark:border-forest-900/40 dark:bg-forest-950/20 space-y-4">
+              <div className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-lime-50/50 to-surface p-4 sm:p-5 dark:border-emerald-900 dark:from-emerald-950/30 dark:via-lime-950/15 space-y-4">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-forest-100 pb-3 dark:border-forest-900/30">
                   <div className="flex items-center gap-2">
                     <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-forest-600 text-white font-bold text-xs dark:bg-forest-500">
@@ -518,11 +513,7 @@ function CropCalendarPage() {
                     </div>
                   </div>
 
-                  {currentStage?.stageId === selectedStage.stageId && (
-                    <Badge variant="success">
-                      {isBn ? "মাঠে বর্তমান সক্রিয় পর্যায়" : "Currently Active on Field"}
-                    </Badge>
-                  )}
+                  
                 </div>
 
                 {/* 3 Metric Pillars: Water, Temp, Hazards */}
@@ -643,11 +634,7 @@ function CropCalendarPage() {
                             <span className="font-semibold text-ink">
                               {isBn ? stage.stageNameBn : stage.stageNameEn}
                             </span>
-                            {isCurrent && (
-                              <Badge variant="success" className="text-[10px]">
-                                {isBn ? "চলমান পর্যায়" : "Active Now"}
-                              </Badge>
-                            )}
+                            
                           </div>
                         </TD>
                         <TD className="font-mono text-xs text-ink-muted">
@@ -679,7 +666,7 @@ function CropCalendarPage() {
       )}
 
       {/* 6. DAE Approved Regional Varieties & Crop Metadata */}
-      <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs space-y-3">
+      <div className="rounded-3xl border border-lime-200 bg-gradient-to-br from-lime-50 to-surface p-5 shadow-sm space-y-3 dark:border-lime-900 dark:from-lime-950/20">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-line pb-3">
           <div className="space-y-0.5">
             <h3 className="font-bold text-sm text-ink">
@@ -702,7 +689,7 @@ function CropCalendarPage() {
               .map((variety) => (
                 <span
                   key={variety}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-forest-200 bg-forest-50/70 px-3 py-1 text-xs font-semibold text-forest-800 dark:border-forest-800 dark:bg-forest-950/40 dark:text-forest-200"
+                  className="inline-flex items-center gap-1.5 px-1 py-1 text-sm font-medium text-forest-800 dark:text-forest-200"
                 >
                   <Leaf size={12} className="text-forest-600 dark:text-forest-400" />
                   <span>{isBn ? variety.replace(/BRRI dhan/gi, "ব্রি ধান").replace(/BARI Sarisha/gi, "বারি সরিষা").replace(/Binasail/gi, "বিনাশাইল").replace(/Pajam/gi, "পাজাম").replace(/[0-9]/g, digit => "০১২৩৪৫৬৭৮৯"[Number(digit)]) : variety}</span>
@@ -712,7 +699,7 @@ function CropCalendarPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-line bg-emerald-50/40 p-5 dark:bg-emerald-950/20">
+      <div className="rounded-3xl border border-sky-200 bg-gradient-to-r from-sky-50 to-emerald-50 p-5 dark:border-sky-900 dark:from-sky-950/25 dark:to-emerald-950/20">
         <h3 className="text-base font-semibold text-content">{t("calendarSimple.climateTitle")}</h3>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{t("calendarSimple.climateIntro")}</p>
         <Link href="/climate" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-xl bg-forest px-4 py-2 text-sm font-semibold text-white hover:bg-forest/90">{t("farmUi.areaClimateLink")}<ChevronRight className="h-4 w-4" aria-hidden="true" /></Link>

@@ -56,7 +56,7 @@ export function PublicHeader() {
   const isActive = (href) => {
     if (href.includes("#")) return pathname === "/" && hash === href.slice(1);
     if (href === "/") return pathname === "/" && !["#about", "#how-it-works"].includes(hash);
-    if (href === "/climate") return ["/climate", "/rainfall", "/soil-moisture", "/vegetation", "/map", "/crop-calendar", "/data-sources"].includes(pathname);
+    if (href === "/climate") return ["/climate", "/rainfall", "/soil-moisture", "/vegetation", "/map", "/crop-calendar"].includes(pathname);
     return pathname === href || pathname?.startsWith(`${href}/`);
   };
   const navClass = (href) =>

@@ -22,7 +22,6 @@ import {
   Waves,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/Badge.js";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card.js";
 import { LoadingState, ErrorState } from "@/components/ui/States.js";
 import { useAuth } from "@/contexts/AuthContext.js";
@@ -121,12 +120,12 @@ function MapPage() {
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-3xl bg-gradient-to-br from-emerald-50/60 via-bg to-sky-50/60 p-3 sm:p-5 dark:from-emerald-950/20 dark:to-sky-950/20">
       {/* Header with District Switcher & Badges */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-3xl border border-emerald-200 bg-gradient-to-br from-lime-100 via-emerald-50 to-sky-100 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7 dark:border-emerald-900 dark:from-lime-950/30 dark:via-emerald-950/30 dark:to-sky-950/30">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-ink font-heading sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-forest font-heading sm:text-3xl dark:text-emerald-100">
               {isBn ? "ভৌগোলিক তথ্য ব্যবস্থা (GIS) মানচিত্র" : "Interactive GIS & Environmental Map"}
             </h1>
           </div>
@@ -177,13 +176,13 @@ function MapPage() {
             title={isBn ? "উপাত্ত রিফ্রেশ করুন" : "Refresh data"}
           >
             <RefreshCw size={14} strokeWidth={1.8} className={isLoading ? "animate-spin" : ""} />
-            <span className="hidden sm:inline">{isBn ? "রিফ্রেশ" : "Refresh"}</span>
+            <span>{isBn ? "রিফ্রেশ" : "Refresh"}</span>
           </button>
         </div>
       </div>
 
       {/* Layer Toggles Toolbar */}
-      <div className="flex flex-wrap items-center gap-2.5 rounded-2xl border border-line bg-surface p-4 text-xs shadow-xs">
+      <div className="flex flex-wrap items-center gap-2.5 rounded-2xl border border-emerald-200 bg-surface/90 p-4 text-xs shadow-sm sm:p-5 dark:border-emerald-900">
         <span className="font-semibold text-ink flex items-center gap-1.5 mr-2">
           <Layers size={14} strokeWidth={1.8} className="text-emerald" />
           {isBn ? "লেয়ার নিয়ন্ত্রণ:" : "Layer Controls:"}
@@ -195,7 +194,7 @@ function MapPage() {
           onClick={() => toggleLayer("boundary")}
           className={`flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
             activeLayers.boundary
-              ? "bg-forest text-white border border-forest shadow-xs hover:bg-forest/90 dark:bg-emerald-800 dark:border-emerald-700 dark:hover:bg-emerald-700"
+              ? "bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-xs hover:bg-emerald-200 dark:bg-emerald-900/50 dark:border-emerald-700 dark:text-emerald-200"
               : "bg-surface text-muted hover:bg-surface-2 hover:text-content border border-line"
           }`}
         >
@@ -208,7 +207,7 @@ function MapPage() {
           aria-pressed={activeLayers.gpm}
           onClick={() => toggleLayer("gpm")}
           className={`flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
-            activeLayers.gpm ? "bg-forest text-white border border-forest shadow-xs hover:bg-forest/90 dark:bg-emerald-800 dark:border-emerald-700 dark:hover:bg-emerald-700" : "bg-surface text-muted hover:bg-surface-2 hover:text-content border border-line"
+            activeLayers.gpm ? "bg-sky-100 text-sky-900 border border-sky-300 shadow-xs hover:bg-sky-200 dark:bg-sky-900/50 dark:border-sky-700 dark:text-sky-200" : "bg-surface text-muted hover:bg-surface-2 hover:text-content border border-line"
           }`}
         >
           <Check size={12} strokeWidth={2.5} className={activeLayers.gpm ? "opacity-100" : "opacity-0"} />
@@ -221,7 +220,7 @@ function MapPage() {
           onClick={() => toggleLayer("smap")}
           className={`flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
             activeLayers.smap
-              ? "bg-forest text-white border border-forest shadow-xs hover:bg-forest/90 dark:bg-emerald-800 dark:border-emerald-700 dark:hover:bg-emerald-700"
+              ? "bg-teal-100 text-teal-900 border border-teal-300 shadow-xs hover:bg-teal-200 dark:bg-teal-900/50 dark:border-teal-700 dark:text-teal-200"
               : "bg-surface text-muted hover:bg-surface-2 hover:text-content border border-line"
           }`}
         >
@@ -236,7 +235,7 @@ function MapPage() {
           onClick={() => toggleLayer("modis")}
           className={`flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
             activeLayers.modis
-              ? "bg-forest text-white border border-forest shadow-xs hover:bg-forest/90 dark:bg-emerald-800 dark:border-emerald-700 dark:hover:bg-emerald-700"
+              ? "bg-green-100 text-green-900 border border-green-300 shadow-xs hover:bg-green-200 dark:bg-green-900/50 dark:border-green-700 dark:text-green-200"
               : "bg-surface text-muted hover:bg-surface-2 hover:text-content border border-line"
           }`}
         >
@@ -251,7 +250,7 @@ function MapPage() {
           onClick={() => toggleLayer("climate")}
           className={`flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
             activeLayers.climate
-              ? "bg-forest text-white border border-forest shadow-xs hover:bg-forest/90 dark:bg-emerald-800 dark:border-emerald-700 dark:hover:bg-emerald-700"
+              ? "bg-orange-100 text-orange-900 border border-orange-300 shadow-xs hover:bg-orange-200 dark:bg-orange-900/50 dark:border-orange-700 dark:text-orange-200"
               : "bg-surface text-muted hover:bg-surface-2 hover:text-content border border-line"
           }`}
         >
@@ -266,7 +265,7 @@ function MapPage() {
           onClick={() => toggleLayer("footprints")}
           className={`flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
             activeLayers.footprints
-              ? "bg-forest text-white border border-forest shadow-xs hover:bg-forest/90 dark:bg-emerald-800 dark:border-emerald-700 dark:hover:bg-emerald-700"
+              ? "bg-violet-100 text-violet-900 border border-violet-300 shadow-xs hover:bg-violet-200 dark:bg-violet-900/50 dark:border-violet-700 dark:text-violet-200"
               : "bg-surface text-muted hover:bg-surface-2 hover:text-content border border-line"
           }`}
         >
@@ -280,12 +279,14 @@ function MapPage() {
       {error ? (
         <ErrorState message={error} onRetry={() => loadMapData(selectedDistrict)} />
       ) : (
+        <div className="overflow-hidden rounded-3xl border border-sky-200 bg-surface p-2 shadow-sm dark:border-sky-900">
         <DynamicGisMap
           boundaryData={boundaryData}
           layersData={layersData}
           activeLayers={activeLayers}
           isBn={isBn}
         />
+        </div>
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -294,8 +295,8 @@ function MapPage() {
           { key: "soil", Icon: Waves, color: "bg-teal-50 text-teal-700 dark:bg-teal-950/30 dark:text-teal-300", value: smapObs?.isRecommendedQuality && smapObs?.soilMoisture != null ? `${display(smapObs.soilMoisture)} m³/m³` : t("mapSimple.noData"), date: smapObs?.dateLabel },
           { key: "green", Icon: Leaf, color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300", value: modisObs?.isReliableQuality && modisObs?.ndvi != null ? `${display(modisObs.ndvi)} NDVI` : t("mapSimple.noData"), date: modisObs?.dateLabel },
           { key: "district", Icon: Compass, color: "bg-stone-100 text-stone-600 dark:bg-surface-2 dark:text-muted", value: districtMeta ? (isBn ? districtMeta.nameBn || t(`rotation.districts.${selectedDistrict}`) : districtMeta.nameEn) : t("mapSimple.noData") },
-        ].map(({ key, Icon, color, value, date }) => <article key={key} className="flex h-full flex-col rounded-2xl border border-line bg-surface p-5 shadow-xs">
-          <div className="flex items-center gap-3"><span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${color}`}><Icon className="h-5 w-5" aria-hidden="true" /></span><h3 className="text-sm font-semibold text-content">{t(`mapSimple.${key}`)}</h3></div>
+        ].map(({ key, Icon, color, value, date }) => <article key={key} className={`flex h-full flex-col rounded-3xl border bg-gradient-to-br p-5 shadow-sm ${key === "rain" ? "border-sky-200 from-sky-50 to-cyan-100/50 dark:border-sky-900 dark:from-sky-950/30 dark:to-cyan-950/20" : key === "soil" ? "border-teal-200 from-teal-50 to-emerald-100/50 dark:border-teal-900 dark:from-teal-950/30 dark:to-emerald-950/20" : key === "green" ? "border-lime-200 from-lime-50 to-green-100/50 dark:border-lime-900 dark:from-lime-950/30 dark:to-green-950/20" : "border-violet-200 from-violet-50 to-indigo-100/50 dark:border-violet-900 dark:from-violet-950/30 dark:to-indigo-950/20"}`}>
+          <div className="flex items-center gap-3"><span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${color}`}><Icon className="h-5 w-5" aria-hidden="true" /></span><h3 className="text-sm font-semibold text-content">{t(`mapSimple.${key}`)}</h3></div>
           <p className="mt-5 break-words text-xl font-semibold text-content">{value}</p>
           {date && <p className="mt-2 text-xs text-muted">{t("rainSimple.day")}: {display(date)}</p>}
           <p className="mt-4 text-xs leading-6 text-muted">{t(key === "district" ? "mapSimple.boundaryNote" : "mapSimple.areaNote")}</p>

@@ -157,8 +157,8 @@ function MyFarmPage() {
 
 
   return (
-    <div className="space-y-7">
-      <header className="relative isolate overflow-hidden rounded-[28px] border border-line bg-surface shadow-km-sm">
+    <div className="space-y-6 rounded-3xl bg-gradient-to-br from-emerald-50/60 via-bg to-lime-50/60 p-3 sm:p-5 dark:from-emerald-950/20 dark:to-lime-950/10">
+      <header className="relative isolate overflow-hidden rounded-[28px] border border-emerald-200 bg-surface shadow-km-sm dark:border-emerald-900">
         <div aria-hidden="true" className="absolute inset-0 -z-20 bg-cover bg-[center_75%]" style={{ backgroundImage: "url('/images/hero.png')" }} />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#052e21]/95 via-[#052e21]/60 to-transparent" />
         <div className="flex min-h-[200px] flex-col justify-center gap-6 p-5 sm:min-h-[220px] sm:p-7 lg:flex-row lg:items-end lg:justify-between lg:p-8">
@@ -177,7 +177,7 @@ function MyFarmPage() {
           </Link>
           <Link
             href="/my-farm/new"
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-forest px-4 py-2.5 text-sm font-semibold text-white shadow-km-sm transition-colors hover:bg-forest-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-climate"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-lime-200 px-4 py-2.5 text-sm font-semibold text-forest shadow-km-sm transition-colors hover:bg-lime-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-climate"
           >
             <Plus className="h-4 w-4" />
             {t("myFarm.addNewFarm")}
@@ -216,12 +216,12 @@ function MyFarmPage() {
       {/* Summary KPI Cards */}
       {user && displayedSummary && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-line bg-surface p-5 shadow-km-sm">
+          <div className="rounded-2xl border bg-gradient-to-br p-5 shadow-km-sm border-emerald-200 from-emerald-50 to-lime-100/60 dark:border-emerald-900 dark:from-emerald-950/40 dark:to-lime-950/20">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-muted">
                 {t("myFarm.stats.totalFarms")}
               </span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest-50 text-forest-700 dark:bg-forest-950/60 dark:text-forest-400">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-forest-50 text-forest-700 dark:bg-forest-950/60 dark:text-forest-400">
                 <Layers className="h-4 w-4" />
               </div>
             </div>
@@ -235,12 +235,12 @@ function MyFarmPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-line bg-surface p-5 shadow-km-sm">
+          <div className="rounded-2xl border bg-gradient-to-br p-5 shadow-km-sm border-sky-200 from-sky-50 to-cyan-100/60 dark:border-sky-900 dark:from-sky-950/40 dark:to-cyan-950/20">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-muted">
                 {t("myFarm.stats.totalArea")}
               </span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
                 <TrendingUp className="h-4 w-4" />
               </div>
             </div>
@@ -254,12 +254,12 @@ function MyFarmPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-line bg-surface p-5 shadow-km-sm">
+          <div className="rounded-2xl border bg-gradient-to-br p-5 shadow-km-sm border-amber-200 from-amber-50 to-yellow-100/60 dark:border-amber-900 dark:from-amber-950/40 dark:to-yellow-950/20">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-muted">
                 {t("myFarm.stats.activeCrops")}
               </span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400">
                 <Sprout className="h-4 w-4" />
               </div>
             </div>
@@ -303,9 +303,9 @@ function MyFarmPage() {
         </div>
       ) : displayedFarms.length === 0 ? (
         /* Empty State */
-        <div className="rounded-[28px] border border-line bg-surface p-6 text-center shadow-km-sm sm:p-10 lg:p-12">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-forest-50 text-forest-700 dark:bg-forest-950/60 dark:text-forest-400">
-            <Tractor className="h-8 w-8" />
+        <div className="relative overflow-hidden rounded-[28px] border border-emerald-200 bg-gradient-to-br from-lime-50 via-surface to-emerald-100/60 p-6 text-center shadow-km-sm sm:p-10 lg:p-12 dark:border-emerald-900 dark:from-lime-950/20 dark:to-emerald-950/30">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-emerald-200 bg-emerald-100 text-emerald-800 shadow-sm dark:border-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200">
+            <Tractor className="h-10 w-10" />
           </div>
           <h3 className="mt-4 text-lg font-bold text-stone-900 dark:text-content">
             {t("myFarm.noFarmsTitle")}
@@ -332,7 +332,7 @@ function MyFarmPage() {
       ) : (
         /* Farm Cards Grid */
         <section aria-label={lang === "bn" ? "নিবন্ধিত খামার" : "Registered farms"}>
-        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-emerald-100 bg-surface/80 p-4 sm:flex-row sm:items-end sm:justify-between dark:border-emerald-900">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-content">{lang === "bn" ? "আপনার খামার" : "Your farms"}</h2>
             <p className="mt-1 text-sm text-muted">{lang === "bn" ? "প্রতিটি প্লটের তথ্য ও কাজ এক জায়গায় দেখুন" : "Farm details and field activities in one place"}</p>
@@ -346,7 +346,7 @@ function MyFarmPage() {
           {displayedFarms.map((farm) => (
             <div
               key={farm._id}
-              className="group flex min-w-0 flex-col justify-between rounded-2xl border border-line bg-surface p-5 shadow-km-sm transition-colors hover:border-forest/30 hover:shadow-md sm:p-6"
+              className="group relative flex min-w-0 flex-col justify-between overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-surface via-surface to-emerald-50 p-5 shadow-km-sm transition-shadow before:absolute before:inset-x-0 before:top-0 before:h-1.5 before:bg-gradient-to-r before:from-emerald-500 before:via-lime-400 before:to-sky-400 hover:shadow-md sm:p-6 dark:border-emerald-900 dark:to-emerald-950/30"
             >
               <div>
                 {/* Header: Name and status badge */}
@@ -365,7 +365,7 @@ function MyFarmPage() {
                 </div>
 
                 {/* Details Section */}
-                <div className="mt-5 space-y-3 rounded-xl border border-line/70 bg-bg/70 p-4 dark:bg-surface-2/60">
+                <div className="mt-5 space-y-3 rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 dark:border-emerald-900 dark:bg-emerald-950/25">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-stone-500 dark:text-muted">
                       {t("myFarm.fields.cropCode")}:
@@ -409,7 +409,7 @@ function MyFarmPage() {
               <div className="mt-5 flex items-center justify-between border-t border-stone-100 pt-4 dark:border-line">
                 <Link
                   href={`/my-farm/${farm._id}`}
-                  className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-2 text-sm font-semibold text-forest transition-colors hover:bg-forest/5 hover:text-forest-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-climate dark:text-emerald-300"
+                  className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-emerald-100 px-3 text-sm font-semibold text-forest transition-colors hover:bg-emerald-200 hover:text-forest-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-climate dark:text-emerald-300"
                 >
                   {t("myFarm.viewDetails")}
                   <ChevronRight className="h-3.5 w-3.5" />
