@@ -1193,7 +1193,7 @@ function AssistantContent() {
             )}
 
         {/* Right: Farm, District, Crop Dropdowns + Dedicated EN/BN Switcher + New Chat Button */}
-        <div className="mx-auto mb-3 flex w-full max-w-3xl flex-wrap items-center justify-center gap-3">
+        <div className="mx-auto mb-3 flex w-full max-w-3xl flex-wrap items-center justify-end gap-3">
           {/* Farm selector (if user has registered farms) */}
           {isAuthenticated && farmsList.length > 0 ? (
             <div className="relative">
@@ -1223,9 +1223,7 @@ function AssistantContent() {
               {isBn ? "খামার লোড হয়নি · আবার চেষ্টা" : "Farms unavailable · Retry"}
             </button>
           ) : null}
-          {isAuthenticated && !isFarmsLoading && !farmsLoadError && farmsList.length === 0 ? (
-            <span role="status" className="px-2 text-xs leading-6 text-muted">{isBn ? "কোনো সংরক্ষিত খামার নেই" : "No saved farms"}</span>
-          ) : null}
+
 
           {/* Crop selector */}
           <div className="relative">
