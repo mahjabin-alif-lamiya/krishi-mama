@@ -287,7 +287,11 @@ Proudly developed by **Team NeuralMesh** for the **NASA International Space Apps
 🔗 **Official NASA Space Apps Challenge Team Page:**  
 [https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details](https://www.spaceappschallenge.org/2026/find-a-team/neuralmesh/?tab=details)
 
-### 🌟 Team Members & Role Distribution
+### 🌟 Team Members Contribution
+
+Mahjabin Alif Lamiya and Md Rabbi Miah collaboratively built and engineered the complete full-stack website (Frontend, Backend, AI integration, and NASA DATA). Sumaiya Noor Dip, Ikra Islam, and Md. Mizbaul Hasan Shawon worked on the agricultural research, field data, and all the project documentation.
+
+### 📋 Detailed Role Distribution
 
 | Member Name | Core Role | Primary Contributions & Focus |
 |---|---|---|

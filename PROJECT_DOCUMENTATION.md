@@ -22,6 +22,8 @@
 
 ### Team Members & Contributions
 
+Mahjabin Alif Lamiya and Md Rabbi Miah collaboratively built and engineered the complete full-stack website (Frontend, Backend, AI integration, and NASA DATA). Sumaiya Noor Dip, Ikra Islam, and Md. Mizbaul Hasan Shawon worked on the agricultural research, field data, and all the project documentation.
+
 | Member Name | Role | Core Responsibility |
 |---|---|---|
 | **Mahjabin Alif Lamiya** | **Full-Stack & AI/ML** | Leader, Project Idea, Storytelling presentation (240s & 30s video), Complete website engineering, UI/UX and Frontend, system architecture, bilingual localization, and User Experience. |
