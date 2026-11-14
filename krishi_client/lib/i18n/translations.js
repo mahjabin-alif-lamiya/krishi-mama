@@ -293,6 +293,7 @@ export const translations = {
       noRisk: "Available data shows no major weather risk signal. Check local weather and field conditions before working.",
       tasks: { sowing: "Prepare seedbed and sow", transplant: "Transplant seedlings", growth: "Check crop growth", flowering: "Check flowers and panicles", harvest: "Check maturity and harvest", water: "Check water and soil moisture", hazard: "Watch for weather and pest risks" },
     },
+    dashboardSourceMeaning: { power: "Past rainfall, temperature and sunlight in your area.", smap: "Shows moisture near the top of the soil.", gpm: "Shows rainfall recorded by satellites.", modis: "Shows how green plants looked in satellite images." },
     dashboardDesign: {
       headline: "Crop Rotation Insights for Climate-Resilient Farming",
       subtitle: "NASA climate data to help you compare what to grow next.",
@@ -313,6 +314,8 @@ export const translations = {
       sourcesTitle: "NASA Data in Use", sourcesLink: "View data sources", limited: "Limited samples",
     },
     dashboardUi: {
+      areaClimate: "Climate in your area",
+      areaClimateIntro: "Explore rainfall, temperature and plant greenness for your selected district.",
       referencePoint: "Climate data reference point",
       selectedDistrict: "Selected district",
       historyBoundary: "NASA POWER historical observations and calculated climate summaries. This is not live weather.",
@@ -1191,7 +1194,7 @@ export const translations = {
 
     landing: {
       aboutSimple: {"subtitle": "ফসল তুলনা, এলাকার জলবায়ু বোঝা ও খামারের পরিকল্পনা এক জায়গায় রাখার ওয়েবসাইট।", "storyTitle": "আপনার ফসলের পরিকল্পনায় কৃষি মামা", "story": "কৃষি মামা একটি কৃষিবিষয়ক ওয়েবসাইট। এখনকার ফসল তোলার পর কী চাষ করবেন, এখানে তা তুলনা করে দেখতে পারেন। কী ফসল চাষ করেন আর পানির কী সুবিধা আছে জানালে একই জমিতে চাষের আরও কিছু উপায় দেখতে পাবেন।", "choice": "এলাকার পুরোনো বৃষ্টি ও তাপমাত্রা দেখুন, ফসল ক্যালেন্ডার মিলিয়ে নিন। কোন ফসলে কত পানি লাগে বা চাষের সময় মিলে যায় কি না, তা বুঝতে নাসার তথ্য ও স্থানীয় কৃষি তথ্য ব্যবহার করা হয়।", "localTitle": "এখন দুই জেলার তথ্য পাবেন", "localBody": "এখন কুমিল্লা ও চট্টগ্রামের তথ্য দেখতে পারবেন। নিজের জেলা বেছে জলবায়ুর তথ্য দেখুন ও ফসলের তুলনা করুন। সামনে আরও জেলার তথ্য যুক্ত করার পরিকল্পনা আছে।", "languages": "বাংলা ও ইংরেজি", "nasa": "নাসার তথ্য", "card1Title": "নিজের এলাকা বুঝুন", "card1Body": "পুরোনো বৃষ্টি, তাপমাত্রা, মাটির ওপরের আর্দ্রতা ও গাছপালার সবুজভাব দেখুন।", "card2Title": "পরের ফসল তুলনা করুন", "card2Body": "ফসল ক্যালেন্ডার দিয়ে পানির চাহিদা ও দুই ফসলের মাঝের সময় মিলিয়ে দেখুন।", "card3Title": "তথ্যের সীমা জানুন", "card3Body": "তথ্যের তারিখ ও ঘাটতি গুরুত্বপূর্ণ। এলাকার পর্যবেক্ষণ আপনার জমির সরাসরি মাপ নয়।", "card4Title": "নিজের ভাষায় বুঝুন", "card4Body": "বাংলা বা ইংরেজিতে পড়ুন। পাওয়া তথ্য বুঝতে সহকারীর সাহায্য নিন।", "help": "অ্যাকাউন্ট থাকলে আমার খামারে জমির তথ্য রাখতে ও ফসলের কাজ দেখতে পারবেন। কোনো তথ্য বুঝতে অসুবিধা হলে এআই সহকারীকে বাংলা বা ইংরেজিতে জিজ্ঞাসা করতে পারেন।", "coverage": "এখন কুমিল্লা ও চট্টগ্রামের তথ্য পাবেন। সামনে আরও জেলা যুক্ত করার পরিকল্পনা আছে।"},
-      howSimple: {"intro": "এখনকার ফসল থেকে পরের পরিকল্পনা—সহজ চারটি ধাপে।", "title1": "আপনার এলাকা বাছুন", "body1": "কুমিল্লা বা চট্টগ্রাম বেছে নিয়ে আপনার এলাকার তথ্য দেখুন।", "title2": "জমি ও ফসলের তথ্য দিন", "body2": "কী কী ফসল চাষ করেন, মাটি ও পানির কী সুবিধা আছে জানান। আপনার কাছে কোন বিষয় বেশি জরুরি, তা বাছুন।", "title3": "চাষের উপায় তুলনা করুন", "body3": "বর্তমান ফসলের ক্রমের সঙ্গে আরও দুইটি উপায় দেখুন। জলবায়ুর তথ্য দিয়ে পানির চাহিদা ও চাষের সময় মিলিয়ে নিন।", "title4": "পরের ফসলের পরিকল্পনা করুন", "body4": "বিকল্পগুলো ও নিজের জমির অবস্থা দেখে সিদ্ধান্ত নিন। বুঝতে অসুবিধা হলে এআই সহকারীকে জিজ্ঞাসা করুন।", "ctaTitle": "এরপর কী চাষ করবেন?", "ctaBody": "লগইন ছাড়াই ফসলের তুলনা করে দেখুন।", "cta": "ফসল তুলনা করুন"},
+      howSimple: {"intro": "সহজ চারটি ধাপে পরের ফসলের পরিকল্পনা করুন।", "title1": "আপনার এলাকা বাছুন", "body1": "কুমিল্লা বা চট্টগ্রাম বেছে নিয়ে আপনার এলাকার তথ্য দেখুন।", "title2": "জমি ও ফসলের তথ্য দিন", "body2": "কী কী ফসল চাষ করেন, মাটি ও পানির কী সুবিধা আছে জানান। আপনার কাছে কোন বিষয় বেশি জরুরি, তা বাছুন।", "title3": "চাষের উপায় তুলনা করুন", "body3": "বর্তমান ফসলের ক্রমের সঙ্গে আরও দুইটি উপায় দেখুন। জলবায়ুর তথ্য দিয়ে পানির চাহিদা ও চাষের সময় মিলিয়ে নিন।", "title4": "পরের ফসলের পরিকল্পনা করুন", "body4": "বিকল্পগুলো ও নিজের জমির অবস্থা দেখে সিদ্ধান্ত নিন। বুঝতে অসুবিধা হলে এআই সহকারীকে জিজ্ঞাসা করুন।", "ctaTitle": "এরপর কী চাষ করবেন?", "ctaBody": "লগইন ছাড়াই ফসলের তুলনা করে দেখুন।", "cta": "ফসল তুলনা করুন"},
       dataOverview: {"title": "ফসলের পরিকল্পনায় নাসার তথ্য", "intro": "ফসলের পরিকল্পনায় জলবায়ু, বৃষ্টি, মাটির আর্দ্রতা ও গাছপালার সবুজভাবের তথ্য।", "powerMeaning": "এলাকার পুরোনো বৃষ্টি ও তাপমাত্রার তথ্য।", "soilMeaning": "মাটির ওপরের অংশের আর্দ্রতার তথ্য।", "rainMeaning": "স্যাটেলাইটে পর্যবেক্ষণ করা বৃষ্টির তথ্য।", "greenMeaning": "স্যাটেলাইটে দেখা গাছপালার সবুজভাব।", "period": "রেকর্ডের সময়কাল", "noDates": "সময়কাল পাওয়া যায়নি", "details": "বিস্তারিত", "records": "সংরক্ষিত পর্যবেক্ষণ", "modisPeriod": "১৬ দিনের পর্যবেক্ষণ মিলিয়ে তৈরি।", "sources": "সব তথ্যের উৎস দেখুন"},
       heroKicker: "নাসা প্রযুক্তিনির্ভর কৃষি বুদ্ধিমত্তা, বাংলাদেশের জন্য",
       heroTitle: "জলবায়ুর তথ্যে ফসল চাষের স্মার্ট সিদ্ধান্ত নিন",
@@ -1419,6 +1422,7 @@ export const translations = {
       noRisk: "পাওয়া তথ্যে বড় আবহাওয়া ঝুঁকির সংকেত নেই। কাজের আগে স্থানীয় আবহাওয়া ও জমির অবস্থা দেখে নিন।",
       tasks: { sowing: "বীজতলা তৈরি ও বীজ বপন", transplant: "চারা রোপণ", growth: "ফসলের বৃদ্ধি দেখুন", flowering: "ফুল ও শীষের অবস্থা দেখুন", harvest: "ফসলের পরিপক্বতা দেখে কাটুন", water: "পানি ও মাটির আর্দ্রতা দেখুন", hazard: "আবহাওয়া ও রোগপোকার ঝুঁকি দেখুন" },
     },
+    dashboardSourceMeaning: { power: "আপনার এলাকার পুরোনো বৃষ্টি, তাপমাত্রা ও রোদের তথ্য।", smap: "মাটির ওপরের অংশে কতটা আর্দ্রতা ছিল, তার তথ্য।", gpm: "স্যাটেলাইটে মাপা বৃষ্টির পরিমাণের তথ্য।", modis: "স্যাটেলাইটের ছবিতে গাছপালা কতটা সবুজ ছিল, তার তথ্য।" },
     dashboardDesign: {
       headline: "জলবায়ু সহনশীল চাষের জন্য ফসলের পর্যায়ক্রমের তথ্য",
       subtitle: "পরের ফসল তুলনা করতে নাসার জলবায়ু তথ্য।",
@@ -1439,6 +1443,8 @@ export const translations = {
       sourcesTitle: "ব্যবহৃত নাসার তথ্য", sourcesLink: "তথ্যের উৎস দেখুন", limited: "সীমিত নমুনা",
     },
     dashboardUi: {
+      areaClimate: "আপনার এলাকার জলবায়ু",
+      areaClimateIntro: "নির্বাচিত জেলার বৃষ্টি, তাপমাত্রা ও গাছপালার সবুজভাবের তথ্য দেখুন।",
       referencePoint: "জলবায়ু তথ্যের নির্ধারিত বিন্দু",
       selectedDistrict: "নির্বাচিত জেলা",
       historyBoundary: "NASA POWER-এর ঐতিহাসিক পর্যবেক্ষণ ও জলবায়ু সারাংশ; এটি লাইভ আবহাওয়া নয়।",

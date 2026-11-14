@@ -10,7 +10,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useLang } from "@/lib/i18n/LanguageContext.js";
-import { observationYear } from "@/lib/dashboardPresentation.js";
 import { toBengaliNumber } from "@/lib/tickerHeadlines.js";
 import { getReliableModisIndices } from "@/lib/dashboardData.js";
 
@@ -477,24 +476,11 @@ export default function EnvironmentalIntelligenceCards({
       {/* Section Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-forest-100 text-forest-700 dark:bg-emerald-950/60 dark:text-emerald-400">
-              <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            </span>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-forest-700 dark:text-emerald-400">
-              {isBn ? "জলবায়ু তথ্য" : "Climate Data"}
-            </p>
-          </div>
           <h2 id="environmental-intelligence-title" className="mt-1 text-xl font-bold tracking-tight text-stone-900 sm:text-2xl dark:text-stone-50">
             {sectionTitle || (isBn ? "আপনার এলাকার জলবায়ু তথ্য" : "Climate data for your area")}
           </h2>
         </div>
         <div className="flex flex-wrap items-end justify-between gap-3">
-        <p className="max-w-xl text-xs leading-relaxed text-stone-600 dark:text-stone-300">
-          {isBn
-            ? `${districtDisplayName} জেলার NASA পর্যবেক্ষণ; তারিখ, গুণমান ও সীমাবদ্ধতা প্রতিটি কার্ডে দেখানো হয়েছে।`
-            : `NASA observations for ${districtDisplayName}. Dates, quality, and limitations are shown on each card.`}
-        </p>
         {!hideExploreLink && <>
         <Link href="/climate" className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-forest-700 transition-colors hover:bg-forest/5 hover:text-forest-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-climate dark:text-emerald-400 dark:hover:bg-white/5">
           <span>{isBn ? "সব জলবায়ু তথ্য দেখুন" : "Explore Climate Data"}</span>
@@ -505,20 +491,23 @@ export default function EnvironmentalIntelligenceCards({
       </div>
 
       {/* Grid of 4 Symmetrical Enterprise SaaS Cards (2 Cards per Row) */}
-      <div className="grid w-full min-w-0 items-stretch gap-4 md:grid-cols-2 lg:gap-5">
+      <div className="grid w-full min-w-0 items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3 lg:gap-5">
         {cards.filter((card) => card.id !== "power").map((card) => {
           const CardIcon = card.icon;
-          const year = observationYear(card.id === "gpm" ? gpmObservedDate : card.id === "modis" ? modisObsDate : null);
           const noSoilData = card.id === "smap" && card.metric.isUnavailable;
           const meaning = t(`dashboardUi.${card.id === "gpm" ? "rainMeaning" : card.id === "smap" ? "soilMeaning" : "vegetationMeaning"}`);
-          return <article key={card.id} className="flex h-full min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-line bg-surface">
+          const palette = card.id === "gpm"
+            ? { surface: "border-sky-200 from-sky-50 to-cyan-50/60 dark:border-sky-900 dark:from-sky-950/30 dark:to-cyan-950/20", icon: "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300", metric: "border-sky-100 bg-sky-100/60 dark:border-sky-900 dark:bg-sky-900/20" }
+            : card.id === "smap"
+              ? { surface: "border-teal-200 from-teal-50 to-emerald-50/60 dark:border-teal-900 dark:from-teal-950/30 dark:to-emerald-950/20", icon: "bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300", metric: "border-teal-100 bg-teal-100/60 dark:border-teal-900 dark:bg-teal-900/20" }
+              : { surface: "border-lime-200 from-lime-50 to-green-50/60 dark:border-lime-900 dark:from-lime-950/30 dark:to-green-950/20", icon: "bg-lime-100 text-green-700 dark:bg-lime-900/50 dark:text-lime-300", metric: "border-lime-100 bg-lime-100/60 dark:border-lime-900 dark:bg-lime-900/20" };
+          return <article key={card.id} className={`flex h-full min-w-0 flex-col justify-between overflow-hidden rounded-3xl border bg-gradient-to-br shadow-km-sm ${palette.surface}`}>
             <div className="flex-1 p-4 sm:p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex items-center gap-3"><CardIcon className="h-5 w-5 text-emerald-strong" aria-hidden="true" /><h3 className="text-base font-semibold text-content">{card.title}</h3></div>
-                {year && <span className="rounded-full border border-line bg-surface-2 px-3 py-1 text-xs font-medium text-content">{t("dashboardUi.sampleYear").replace("{year}", isBn ? toBengaliNumber(year) : year)}</span>}
+                <div className="flex items-center gap-3"><span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${palette.icon}`}><CardIcon className="h-6 w-6" aria-hidden="true" /></span><h3 className="text-base font-semibold text-content">{card.title}</h3></div>
               </div>
               <p className="mt-3 text-sm leading-6 text-muted">{meaning}</p>
-              <div className="mt-4 rounded-xl border border-line bg-surface-2 p-4">
+              <div className={`mt-4 rounded-2xl border p-4 ${noSoilData ? "border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-800" : palette.metric}`}>
                 {noSoilData ? <p className="text-sm leading-7 text-muted">{t("dashboardUi.noQualityData")}</p> : <>
                   <p className="text-3xl font-semibold text-content">{card.metric.primaryValue} <span className="text-sm font-normal text-muted">{card.metric.unit}</span></p>
                   <p className="mt-1 text-xs leading-6 text-muted">{card.id === "modis" ? `${t("rainSimple.day")}: ${formatDate(modisObsDate, locale)}` : card.metric.label}</p>
@@ -538,7 +527,7 @@ export default function EnvironmentalIntelligenceCards({
               </details>}
               {card.id === "modis" && <p className="mt-3 text-xs leading-6 text-muted">{t("vegetationSimple.cardNote")}</p>}
             </div>
-            <Link href={card.href} className="flex items-center justify-between gap-3 border-t border-line px-5 py-3 text-sm font-medium text-emerald-strong hover:bg-surface-2"><span>{card.actionLabel}</span><ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+            <Link href={card.href} className="flex items-center justify-between gap-3 border-t border-black/5 bg-surface/60 px-5 py-4 text-sm font-semibold text-emerald-strong transition-colors hover:bg-surface dark:border-white/10"><span>{card.actionLabel}</span><ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
           </article>;
         })}
       </div>

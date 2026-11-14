@@ -133,11 +133,7 @@ export default function VegetationSection({ embedded = false, refreshToken = 0, 
               {isBn ? "ফসলের সবুজত্বের সূচক" : "Vegetation greenness index"}
             </Heading>
           </div>
-          <p className="mt-1 text-sm text-ink-muted">
-            {isBn
-              ? "নাসা টেরা স্যাটেলাইট থেকে প্রাপ্ত ২৫০ মিটার ১৬-দিনের কম্পোজিট এনডিভিআই (NDVI) ও ইভিআই (EVI) উদ্ভিজ্জ সূচক"
-              : "250m 16-day composite Normalized Difference (NDVI) & Enhanced Vegetation Index (EVI) from NASA Terra MODIS."}
-          </p>
+
         </div>
 
         {/* District Switcher */}
@@ -182,27 +178,13 @@ export default function VegetationSection({ embedded = false, refreshToken = 0, 
             title={isBn ? "উপাত্ত রিফ্রেশ করুন" : "Refresh data"}
           >
             <RefreshCw size={14} strokeWidth={1.8} className={isLoading ? "animate-spin" : ""} />
-            <span className="hidden sm:inline">{isBn ? "রিফ্রেশ" : "Refresh"}</span>
+            
           </button>
         </div>
       </div>
 
       {/* Scientific Transparency Disclosures */}
       <div className="space-y-2">
-        <div className="rounded-xl border border-line bg-surface-2 p-4 text-xs text-ink-muted">
-          <div className="flex items-start gap-2.5">
-            <Info size={16} strokeWidth={1.8} className="mt-0.5 shrink-0 text-emerald" />
-            <div className="space-y-1">
-              <span className="font-semibold text-ink">{isBn ? "এই মানের অর্থ:" : "What this measure means:"}</span>
-              <p>
-                {isBn
-                  ? "এগুলো উপগ্রহের ছবিতে গাছপালা কতটা সবুজ দেখা যায় তা বোঝায়। ফলন, রোগ বা পোকা আক্রমণের সরাসরি পরীক্ষা নয়।"
-                  : "These indices describe how green vegetation appears in the satellite image. They do not directly measure yield, disease, or pest damage."}
-              </p>
-            </div>
-          </div>
-        </div>
-
         <details className="rounded-xl border border-line bg-surface px-4 py-3 text-xs text-ink-muted">
           <summary className="cursor-pointer font-medium text-ink">{t("observationSimple.about")}</summary>
           <p className="mt-2 leading-6">{t("observationSimple.vegetationAbout")}</p>

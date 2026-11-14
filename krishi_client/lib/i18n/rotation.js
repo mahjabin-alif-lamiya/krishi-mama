@@ -1,6 +1,6 @@
 export const rotationTranslations = {
   en: {
-    publicData: { intro: "Explore historical climate and environmental records for your area. Select a topic below; no account is needed.", temperature: "Temperature", rainfall: "Rainfall", soil: "Soil moisture", vegetation: "Vegetation", map: "Map", calendar: "Crop calendar", sources: "Data sources" },
+    publicData: { intro: "Explore rainfall, temperature and environmental records for your area.", temperature: "Temperature", rainfall: "Rainfall", soil: "Soil moisture", vegetation: "Vegetation", map: "Map", calendar: "Crop calendar", sources: "Data sources" },
     access: { title: "Your farm, your private workspace", body: "Sign in to compare rotations for your land, save plans and ask the assistant about your results. General climate data and the rotation demo are public.", demo: "See the rotation demo" },
     rotation: {
       simpleTitle: "What will you grow after this crop?",
@@ -46,7 +46,7 @@ export const rotationTranslations = {
     },
   },
   bn: {
-    publicData: { intro: "আপনার এলাকার ঐতিহাসিক জলবায়ু ও পরিবেশের তথ্য দেখুন। নিচ থেকে বিষয় বেছে নিন; অ্যাকাউন্ট লাগবে না।", temperature: "তাপমাত্রা", rainfall: "বৃষ্টিপাত", soil: "মাটির আর্দ্রতা", vegetation: "উদ্ভিদের সবুজত্ব", map: "মানচিত্র", calendar: "ফসল পঞ্জিকা", sources: "তথ্যের উৎস" },
+    publicData: { intro: "আপনার এলাকার পুরোনো বৃষ্টি, তাপমাত্রা ও পরিবেশের তথ্য দেখুন।", temperature: "তাপমাত্রা", rainfall: "বৃষ্টিপাত", soil: "মাটির আর্দ্রতা", vegetation: "উদ্ভিদের সবুজত্ব", map: "মানচিত্র", calendar: "ফসল পঞ্জিকা", sources: "তথ্যের উৎস" },
     access: { title: "আপনার খামারের ব্যক্তিগত কাজের জায়গা", body: "নিজের জমির rotation তুলনা, পরিকল্পনা সংরক্ষণ ও ফলাফল নিয়ে সহকারীর সাহায্য পেতে লগইন করুন। সাধারণ জলবায়ু তথ্য ও rotation ডেমো সবার জন্য উন্মুক্ত।", demo: "Rotation ডেমো দেখুন" },
     rotation: {
       simpleTitle: "এক ফসলের পর কী চাষ করবেন?",

@@ -1,32 +1,25 @@
 "use client";
-import Link from "next/link";
+import { CloudSun } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { PublicHeader, PublicFooter } from "@/components/layout/PublicChrome.js";
 import { AppShell } from "@/components/layout/AppShell.js";
 import { useAuth } from "@/contexts/AuthContext.js";
 import { useLang } from "@/lib/i18n/LanguageContext.js";
 
-const dataLinks = [
-  { href: "/climate", key: "publicHeader.climateData" },
-  { href: "/map", key: "publicData.map" },
-  { href: "/crop-calendar", key: "publicData.calendar" },
-  { href: "/data-sources", key: "publicData.sources" },
-];
-
 function PublicRecordsShell({ children }) {
   const pathname = usePathname();
   const { t } = useLang();
   return <div className="flex min-h-screen flex-col bg-bg">
     <PublicHeader />
-    <div className="border-b border-line bg-surface">
-      <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-        <p className="text-2xl font-semibold text-content">{t("publicHeader.climateData")}</p>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">{t("publicData.intro")}</p>
-        <nav aria-label={t("publicHeader.climateData")} className="mt-6 flex gap-5 overflow-x-auto">
-          {dataLinks.map(({ href, key }) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined} className={`shrink-0 border-b-2 pb-3 text-sm font-medium transition-colors ${pathname === href ? "border-emerald text-emerald-strong" : "border-transparent text-muted hover:text-content"}`}>{t(key)}</Link>)}
-        </nav>
+    {pathname === "/climate" && <div className="border-b border-green-100 bg-gradient-to-r from-green-50 via-surface to-sky-50 dark:border-green-900 dark:from-green-950/30 dark:via-surface dark:to-sky-950/20">
+      <div className="mx-auto flex max-w-7xl items-start gap-4 px-4 py-6 sm:px-6 lg:px-8">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"><CloudSun className="h-7 w-7" aria-hidden="true" /></span>
+        <div>
+          <p className="text-2xl font-bold text-forest dark:text-green-200">{t("publicHeader.climateData")}</p>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-muted">{t("publicData.intro")}</p>
+        </div>
       </div>
-    </div>
+    </div>}
     <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">{children}</main>
     <PublicFooter />
   </div>;

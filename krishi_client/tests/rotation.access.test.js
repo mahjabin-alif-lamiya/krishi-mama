@@ -7,10 +7,14 @@ import { isPrivatePath, isPublicDataPath, safeReturnTo } from "../lib/access.js"
 import { translations } from "../lib/i18n/translations.js";
 import { compareCropRotations, previewCropRotations, saveRotationPlan } from "../services/api.js";
 
-test("only personal workflows require sign-in and redirects cannot escape the app", () => {
-  for (const path of ["/my-farm", "/my-farm/new", "/assistant", "/settings", "/rotation-planner"]) assert.ok(isPrivatePath(path));
+test("private workspace pages require sign-in and redirects cannot escape the app", () => {
+  for (const path of ["/my-farm", "/my-farm/new", "/assistant", "/settings", "/rotation-planner", "/map", "/crop-calendar"]) assert.ok(isPrivatePath(path));
   for (const path of ["/", "/crop-rotation", "/climate", "/data-sources", "/dashboard"]) assert.equal(isPrivatePath(path), false);
-  for (const path of ["/climate", "/rainfall", "/soil-moisture", "/vegetation", "/map", "/data-sources"]) assert.equal(isPublicDataPath(path), true);
+  for (const path of ["/climate", "/rainfall", "/soil-moisture", "/vegetation", "/data-sources"]) assert.equal(isPublicDataPath(path), true);
+  for (const route of ["/map", "/crop-calendar"]) {
+    assert.equal(isPublicDataPath(route), false);
+    assert.equal(safeReturnTo(route), route);
+  }
   assert.equal(isPublicDataPath("/dashboard"), false);
   assert.equal(safeReturnTo("/rotation-planner"), "/rotation-planner");
   for (const path of [null, "https://evil.test", "//evil.test", "/my-farm/../evil", "/my-farm/%2f%2fevil", "/assistant?next=evil", "/my-farm\\evil"]) assert.equal(safeReturnTo(path), "/dashboard");
@@ -116,4 +120,13 @@ test("public crop rotation keeps guest navigation and uses the app shell when si
   assert.match(page, /<PublicHeader \/>/);
   assert.match(page, /<PublicFooter \/>/);
   assert.doesNotMatch(page, /router\.(push|replace)/);
+});
+
+test("map and calendar mount only behind the existing sign-in gate", async () => {
+  for (const [route, component] of [["map", "MapPage"], ["crop-calendar", "CropCalendarPage"]]) {
+    const page = await readFile(new URL(`../app/(public-data)/${route}/page.js`, import.meta.url), "utf8");
+    assert.ok(page.includes(`<PrivateAccess><${component} /></PrivateAccess>`));
+  }
+  const shell = await readFile(new URL("../components/layout/PublicDataLayout.js", import.meta.url), "utf8");
+  assert.doesNotMatch(shell, /href: "\/(map|crop-calendar)"/);
 });

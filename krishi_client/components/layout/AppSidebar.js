@@ -64,8 +64,7 @@ function NavList({ onNavigate, isCollapsed = false }) {
   const { t } = useLang();
   const { user } = useAuth();
   const navigation = appNav
-    .map((item) => !user && item.href === "/rotation-planner" ? { ...item, href: "/crop-rotation" } : item)
-    .filter((item) => user || !isPrivatePath(item.href));
+    .map((item) => !user && item.href === "/rotation-planner" ? { ...item, href: "/crop-rotation" } : item);
 
   return (
     <nav className={`space-y-1 ${isCollapsed ? "px-2 py-2" : "px-3 py-3"}`} aria-label="Application">
@@ -73,12 +72,15 @@ function NavList({ onNavigate, isCollapsed = false }) {
         const Icon = icons[href] || ScanLine;
         const active = pathname === href || pathname.startsWith(`${href}/`);
         const label = t(key);
+        const destination = !user && isPrivatePath(href)
+          ? `/login?redirect=${encodeURIComponent(href)}`
+          : href;
 
         if (isCollapsed) {
           return (
             <div key={href} className="group relative flex justify-center">
               <Link
-                href={href}
+                href={destination}
                 onClick={onNavigate}
                 aria-label={label}
                 title={label}
@@ -106,7 +108,7 @@ function NavList({ onNavigate, isCollapsed = false }) {
         return (
           <Link
             key={href}
-            href={href}
+            href={destination}
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${

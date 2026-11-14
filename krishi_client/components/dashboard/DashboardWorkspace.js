@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
+  CloudRain,
+  Sun,
+  Thermometer,
+  Snowflake,
   MapPin,
   RefreshCw,
 } from "lucide-react";
@@ -11,7 +15,6 @@ import { ClimateMonthlyChart } from "@/components/charts/ClimateMonthlyChart.js"
 import EnvironmentalIntelligenceCards from "@/components/dashboard/EnvironmentalIntelligenceCards.js";
 import DistrictLocationPanel from "@/components/dashboard/DistrictLocationPanel.js";
 import WeatherIntelligenceSection from "@/components/dashboard/WeatherIntelligenceSection.js";
-import { Badge } from "@/components/ui/Badge.js";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card.js";
 import DashboardOverview from "@/components/dashboard/DashboardOverview.js";
 import { ErrorState, LoadingState } from "@/components/ui/States.js";
@@ -309,7 +312,7 @@ export default function DashboardWorkspace({ view = "overview", children }) {
     {view === "overview" ? null : <>
 
       <DistrictLocationPanel district={selectedDistrictLocation} locale={locale} />
-      <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-semibold text-content">{t("publicHeader.climateData")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4 dark:border-emerald-900 dark:bg-emerald-950/20"><h1 className="text-2xl font-semibold text-content">{t("publicHeader.climateData")}</h1>
           <div className="flex flex-wrap items-center justify-start gap-2">
           {/* District selector */}
           <label className="relative flex min-h-10 items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 shadow-km-sm transition-colors focus-within:border-emerald">
@@ -367,49 +370,43 @@ export default function DashboardWorkspace({ view = "overview", children }) {
 
     {view === "overview" ? <DashboardOverview available={hasCurrentSummary} metrics={{ rainfall: annualRainfallMean, temperature: meanTempAvg, humidity: humidityAvg, solar: solarAvg }} years={currentClimateMeta?.years_used} chartSeries={chartSeries} wettest={wettest} driest={driest} sources={environmentalSources} district={selectedDistrict} /> : <>
 
-      <p className="text-sm text-muted">{t("dashboardUi.historyBoundary")}</p>
       {hasCurrentSummary && <>
           {/* Climate summary panel + monthly rainfall normal chart */}
           <section aria-label={t("dashboard.summaryTitle")}>
             <div className="grid gap-4 xl:grid-cols-12">
-              <Card className="h-full xl:col-span-5">
+              <Card className="h-full overflow-hidden !rounded-3xl !border-emerald-200 bg-gradient-to-br from-emerald-50/80 via-surface to-lime-50/60 xl:col-span-5 dark:!border-emerald-900 dark:from-emerald-950/30 dark:to-lime-950/20">
                 <CardHeader
                   title={t("dashboard.summaryTitle")}
                   description={`${districtDisplayName} (${powerCoverageLabel} · ${metaData?.years_used ?? "—"} ${locale === "bn" ? "বছরের উপাত্ত" : "years represented"})`}
-                  action={
-                    <Badge tone="sage" className="text-xs">
-                      NASA POWER
-                    </Badge>
-                  }
                 />
                 <CardBody className="pt-3">
-                  <ul className="divide-y divide-line">
-                    <li className="flex items-center justify-between gap-3 py-3">
-                      <p className="text-sm text-muted">{t("dashboard.summaryWettest")}</p>
+                  <ul className="space-y-3">
+                    <li className="flex items-center justify-between gap-3 rounded-2xl border border-sky-100 bg-sky-50/80 p-3 dark:border-sky-900/60 dark:bg-sky-950/25">
+                      <p className="flex items-center gap-2 text-sm text-content"><CloudRain className="h-9 w-9 shrink-0 rounded-xl bg-sky-100 p-2 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300" aria-hidden="true" />{t("dashboard.summaryWettest")}</p>
                       <p className="text-right text-sm font-semibold text-content">
                         {wettest.value}
                         <span className="ml-1 text-xs font-normal text-muted">mm</span>
                         <span className="ml-2 text-xs font-medium text-emerald-text">({wettest.month})</span>
                       </p>
                     </li>
-                    <li className="flex items-center justify-between gap-3 py-3">
-                      <p className="text-sm text-muted">{t("dashboard.summaryDriest")}</p>
+                    <li className="flex items-center justify-between gap-3 rounded-2xl border border-amber-100 bg-amber-50/80 p-3 dark:border-amber-900/60 dark:bg-amber-950/25">
+                      <p className="flex items-center gap-2 text-sm text-content"><Sun className="h-9 w-9 shrink-0 rounded-xl bg-amber-100 p-2 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300" aria-hidden="true" />{t("dashboard.summaryDriest")}</p>
                       <p className="text-right text-sm font-semibold text-content">
                         {driest.value}
                         <span className="ml-1 text-xs font-normal text-muted">mm</span>
                         <span className="ml-2 text-xs font-medium text-emerald-text">({driest.month})</span>
                       </p>
                     </li>
-                    <li className="flex items-center justify-between gap-3 py-3">
-                      <p className="text-sm text-muted">{t("dashboard.summaryHottest")}</p>
+                    <li className="flex items-center justify-between gap-3 rounded-2xl border border-orange-100 bg-orange-50/80 p-3 dark:border-orange-900/60 dark:bg-orange-950/25">
+                      <p className="flex items-center gap-2 text-sm text-content"><Thermometer className="h-9 w-9 shrink-0 rounded-xl bg-orange-100 p-2 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300" aria-hidden="true" />{t("dashboard.summaryHottest")}</p>
                       <p className="text-right text-sm font-semibold text-content">
                         {hottest.value}
                         <span className="ml-1 text-xs font-normal text-muted">°C</span>
                         <span className="ml-2 text-xs font-medium text-emerald-text">({hottest.month})</span>
                       </p>
                     </li>
-                    <li className="flex items-center justify-between gap-3 py-3">
-                      <p className="text-sm text-muted">{t("dashboard.summaryCoolest")}</p>
+                    <li className="flex items-center justify-between gap-3 rounded-2xl border border-teal-100 bg-teal-50/80 p-3 dark:border-teal-900/60 dark:bg-teal-950/25">
+                      <p className="flex items-center gap-2 text-sm text-content"><Snowflake className="h-9 w-9 shrink-0 rounded-xl bg-teal-100 p-2 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300" aria-hidden="true" />{t("dashboard.summaryCoolest")}</p>
                       <p className="text-right text-sm font-semibold text-content">
                         {coolest.value}
                         <span className="ml-1 text-xs font-normal text-muted">°C</span>
@@ -418,7 +415,7 @@ export default function DashboardWorkspace({ view = "overview", children }) {
                     </li>
                   </ul>
 
-                  <details className="mt-4 rounded-lg border border-line bg-surface-2 p-3 text-xs leading-relaxed text-muted">
+                  <details className="mt-4 rounded-xl border border-emerald-100 bg-surface/70 p-3 text-xs dark:border-emerald-900 leading-relaxed text-muted">
                     <summary className="cursor-pointer font-medium text-content">{t("dashboardUi.details")}</summary>
                     {metaData?.formula_version && (
                       <p className="font-medium text-content mb-1">
@@ -430,17 +427,10 @@ export default function DashboardWorkspace({ view = "overview", children }) {
                 </CardBody>
               </Card>
 
-              <Card className="h-full xl:col-span-7">
+              <Card className="h-full overflow-hidden !rounded-3xl !border-sky-200 bg-gradient-to-br from-sky-50/80 via-surface to-cyan-50/50 xl:col-span-7 dark:!border-sky-900 dark:from-sky-950/30 dark:to-cyan-950/20">
                 <CardHeader
                   title={t("dashboard.chartTitle")}
                   description={t("dashboard.chartNote")}
-                  action={
-                    <Badge tone="emerald" className="text-xs">
-                      {metaData?.coverage_percent != null
-                        ? `${metaData.coverage_percent}% ${t("dashboard.coverage")}`
-                        : `— ${t("dashboard.coverage")}`}
-                    </Badge>
-                  }
                 />
                 <CardBody className="pt-2">
                   <ClimateMonthlyChart
@@ -475,8 +465,8 @@ export default function DashboardWorkspace({ view = "overview", children }) {
         modisData={currentEnvironmental?.modis}
         isLoading={isLoading}
       />
-      <details ref={observationDetailsRef} className="rounded-2xl border border-line bg-surface p-4 sm:p-5"><summary className="cursor-pointer font-semibold text-content">{t("dashboardUi.observationDetails")}</summary><div className="mt-5">{children}</div></details>
-      <details ref={weatherDetailsRef} id="short-term-weather" className="scroll-mt-24 rounded-2xl border border-line bg-surface p-4 sm:p-5">
+      <details ref={observationDetailsRef} className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-surface p-4 sm:p-5 dark:border-emerald-900 dark:from-emerald-950/30"><summary className="cursor-pointer font-semibold text-content">{t("dashboardUi.observationDetails")}</summary><div className="mt-5">{children}</div></details>
+      <details ref={weatherDetailsRef} id="short-term-weather" className="scroll-mt-24 rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-50 to-surface p-4 sm:p-5 dark:border-sky-900 dark:from-sky-950/30">
         <summary className="cursor-pointer text-base font-semibold text-content">{t("dashboardUi.weatherTitle")}</summary>
         <div className="mt-5">
       <WeatherIntelligenceSection

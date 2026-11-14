@@ -1,4 +1,5 @@
 "use client";
+import { PrivateAccess } from "@/components/auth/PrivateAccess.js";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
@@ -46,7 +47,7 @@ const DynamicGisMap = dynamic(
   }
 );
 
-export default function MapPage() {
+function MapPage() {
   const { user } = useAuth();
   const { t, locale } = useLang();
   const { selectedDistrict, setSelectedDistrict, districts, currentDistrictObj } =
@@ -302,4 +303,8 @@ export default function MapPage() {
       </div>
     </div>
   );
+}
+
+export default function ProtectedMapPage() {
+  return <PrivateAccess><MapPage /></PrivateAccess>;
 }

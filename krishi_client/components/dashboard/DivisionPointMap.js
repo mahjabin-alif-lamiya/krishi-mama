@@ -6,7 +6,6 @@ import "leaflet/dist/leaflet.css";
 import { getDivisionPoint } from "@/lib/divisionPoint.js";
 
 const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 export default function DivisionPointMap({ division, locale, compact = false }) {
   const point = getDivisionPoint(division);
@@ -28,10 +27,9 @@ export default function DivisionPointMap({ division, locale, compact = false }) 
     const longitude = Number(container.dataset.longitude);
     if (!container.isConnected || !Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
 
-    const map = L.map(container, { scrollWheelZoom: false });
-    map.attributionControl.setPrefix(false);
+    const map = L.map(container, { scrollWheelZoom: false, attributionControl: false });
     map.setView([latitude, longitude], 7, { animate: false });
-    L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION }).addTo(map);
+    L.tileLayer(TILE_URL).addTo(map);
     const marker = L.circleMarker([latitude, longitude], {
       radius: 8,
       color: "#fff",

@@ -1,4 +1,5 @@
 "use client";
+import { PrivateAccess } from "@/components/auth/PrivateAccess.js";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -60,7 +61,7 @@ function CropIcon({ cropId, isSelected, className = "h-5 w-5" }) {
   return <Leaf className={`${className} text-forest-600 dark:text-forest-400`} />;
 }
 
-export default function CropCalendarPage() {
+function CropCalendarPage() {
   const { t, locale } = useLang();
   const { selectedDistrict, setSelectedDistrict, districts, currentDistrictObj } =
     useLocation();
@@ -718,4 +719,8 @@ export default function CropCalendarPage() {
       </div>
     </div>
   );
+}
+
+export default function ProtectedCropCalendarPage() {
+  return <PrivateAccess><CropCalendarPage /></PrivateAccess>;
 }
