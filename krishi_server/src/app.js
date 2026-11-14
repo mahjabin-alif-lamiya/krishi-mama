@@ -16,6 +16,8 @@ export function createApp() {
 
   // ---- Core middleware ----
   app.disable("x-powered-by");
+  // Audio transcription uses base64 JSON and needs a route-specific body limit.
+  app.use("/api/v1/assistant/transcribe", express.json({ limit: "4mb" }));
   app.use(express.json({ limit: "100kb" }));
   app.use(cookieParser());
 

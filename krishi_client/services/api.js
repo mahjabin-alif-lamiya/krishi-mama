@@ -413,6 +413,15 @@ export async function sendAssistantMessage({ message, district = "cumilla", crop
   });
 }
 
+/** Transcribe one short microphone recording with automatic Bangla/English detection. */
+export async function transcribeAssistantAudio({ audioBase64, mimeType }) {
+  return request("/assistant/transcribe", {
+    method: "POST",
+    body: JSON.stringify({ audioBase64, mimeType }),
+    timeoutMs: 30000,
+  });
+}
+
 /**
  * GET /api/v1/assistant/conversations
  * Fetches the authenticated user's conversation history list.

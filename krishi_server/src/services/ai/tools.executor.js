@@ -16,7 +16,7 @@ import { ModisObservation } from "../../models/modisobservation.model.js";
 import { NasaObservation } from "../../models/nasaobservation.model.js";
 import { GpmObservation } from "../../models/gpmobservation.model.js";
 import { GPM } from "../../config/gpm.config.js";
-import { analyzeDistrictClimate, analyzeHandoff } from "../climate/analysis.service.js";
+import { analyzeDistrictClimate, analyzeHandoff, executePythonFarmReport } from "../climate/analysis.service.js";
 import { snapshotService } from "../snapshot.service.js";
 import mongoose from "mongoose";
 import { gpmFinalDistrictFilter, summarizeGpmLocalDay } from "../nasa/gpm.validation.js";
@@ -24,6 +24,10 @@ import { findLatestRecommendedSmapObservation, latestRecommendedSmapSnapshot } f
 import { findLatestGoodModisObservation, latestGoodModisSnapshot } from "../nasa/modis.quality.js";
 import { Farm } from "../../models/farm.model.js";
 import { FarmActivity } from "../../models/farmactivity.model.js";
+import { FarmNotification } from "../../models/farmnotification.model.js";
+import { User } from "../../models/user.model.js";
+import { RotationPlan } from "../../models/rotationplan.model.js";
+import { Conversation } from "../../models/conversation.model.js";
 import { ownedFarmFilter } from "../../security/farm-ownership.js";
 import {
   generateFarmLifecycleTimeline,
@@ -34,6 +38,7 @@ import { getSeasonalOutlook } from "../weather/seasonal.service.js";
 import { getActiveOfficialWarningsResult } from "../weather/warning.service.js";
 import { assessAgriculturalRisks } from "../weather/risk.engine.js";
 import { resolveWarningDivision, resolveWarningDistrict } from "../../config/weather.config.js";
+import { getPlatformKnowledge as buildPlatformKnowledge } from "./platform.knowledge.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -126,6 +131,40 @@ function requireWeatherDistrict(code) {
 }
 
 export const toolExecutors = {
+  /** Build a Python-processed, source/date-aware report from available NASA records. */
+  async getUnifiedFarmAnalysis({ district, farmId, crop, userId }) {
+    let farm = null;
+    if (farmId) {
+      const access = await findOwnedFarmForTool(farmId, userId);
+      if (access.error) return access;
+      farm = access.farm;
+      district = farm.location?.districtCode || farm.location?.district;
+    }
+    const validDistrict = normalizeDistrict(district);
+    if (!validDistrict) return { error: "Verified data is available only for Cumilla and Chattogram.", supportedDistricts: [...VALID_DISTRICT_CODES] };
+
+    const names = ["gpm", "smap", "modis", "power"];
+    const results = await Promise.allSettled([
+      toolExecutors.getPrecipitationLatest({ district: validDistrict }),
+      toolExecutors.getSoilMoistureLatest({ district: validDistrict }),
+      toolExecutors.getVegetationLatest({ district: validDistrict }),
+      toolExecutors.getClimateRainfall({ district: validDistrict, grouping: "annual" }),
+    ]);
+    const datasets = Object.fromEntries(names.map((name, index) => [
+      name,
+      results[index].status === "fulfilled" ? results[index].value : { status: "UNAVAILABLE", error: results[index].reason?.message || "Source unavailable" },
+    ]));
+    const farmContext = farm ? {
+      name: farm.farmName || null,
+      district: farm.location?.district || validDistrict,
+      upazila: farm.location?.upazila || null,
+      crop: crop || farm.crop?.cropName || null,
+      cropCode: farm.crop?.cropCode || null,
+      plantingDate: farm.crop?.plantingDate || null,
+    } : null;
+    return executePythonFarmReport({ payload: { district: validDistrict, farm: farmContext, datasets } });
+  },
+
   /** Latest available GPM Final V07 daily summary with strict 48-interval validation. */
   async getPrecipitationLatest({ district }) {
     const validDistrict = normalizeDistrict(district);
@@ -608,6 +647,11 @@ export const toolExecutors = {
     };
   },
 
+  /** Public feature guide; contains no account, farm, or conversation records. */
+  async getPlatformKnowledge({ topic = "" } = {}) {
+    return buildPlatformKnowledge({ topic });
+  },
+
   /**
    * 8. Farmer's specific farm details.
    */
@@ -634,6 +678,97 @@ export const toolExecutors = {
       upazila: farm.location?.upazila,
       status: farm.status,
       notes: farm.notes || "",
+    };
+  },
+
+  /** Recent, bounded context for the authenticated user only. */
+  async getMyAccountContext({ userId }) {
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return { error: "AUTHENTICATED_USER_REQUIRED: Sign in to access personal farm context." };
+    }
+
+    const ownerId = new mongoose.Types.ObjectId(userId);
+    let accountRecords;
+    try {
+      accountRecords = await Promise.all([
+      User.findById(ownerId).select("name preferredDistrict role").lean(),
+      Farm.find({ userId: ownerId }).sort({ updatedAt: -1 }).limit(20).select(
+        "farmName location districtCode land crop soil water status updatedAt"
+      ).lean(),
+      Farm.countDocuments({ userId: ownerId }),
+      FarmActivity.find({ userId: ownerId }).sort({ scheduledDate: -1, updatedAt: -1 }).limit(20).select(
+        "farmId title activityType scheduledDate status completionNote"
+      ).lean(),
+      RotationPlan.find({ userId: ownerId }).sort({ createdAt: -1 }).limit(10).select(
+        "farmId selectedStrategyId createdAt"
+      ).lean(),
+      RotationPlan.countDocuments({ userId: ownerId }),
+      FarmNotification.find({ userId: ownerId }).sort({ createdAt: -1 }).limit(10).select(
+        "farmId type title message scheduledFor isRead createdAt"
+      ).lean(),
+      FarmNotification.countDocuments({ userId: ownerId, isRead: false }),
+      Conversation.find({ userId: ownerId }).sort({ updatedAt: -1 }).limit(5).select(
+        { title: 1, district: 1, crop: 1, farmId: 1, messages: { $slice: -4 }, updatedAt: 1 }
+      ).lean(),
+      ]);
+    } catch {
+      return { error: "USER_CONTEXT_UNAVAILABLE: Saved account context could not be loaded." };
+    }
+
+    const [user, farms, farmCount, activities, plans, rotationPlanCount, notifications, unreadNotificationCount, conversations] = accountRecords;
+
+    const farmNames = new Map(farms.map((farm) => [farm._id.toString(), farm.farmName]));
+    return {
+      profile: user ? { name: user.name, preferredDistrict: user.preferredDistrict, role: user.role } : null,
+      farmCount,
+      farms: farms.map((farm) => ({
+        farmId: farm._id.toString(),
+        farmName: farm.farmName,
+        district: farm.location?.district || null,
+        districtCode: farm.location?.districtCode || null,
+        upazila: farm.location?.upazila || null,
+        land: farm.land || null,
+        crop: farm.crop || null,
+        soil: farm.soil || null,
+        water: farm.water || null,
+        status: farm.status,
+      })),
+      recentActivities: activities.map((activity) => ({
+        farmName: farmNames.get(activity.farmId.toString()) || null,
+        title: activity.title,
+        type: activity.activityType,
+        scheduledDate: activity.scheduledDate,
+        status: activity.status,
+        completionNote: activity.completionNote || null,
+      })),
+      savedRotationPlans: plans.map((plan) => ({
+        farmName: plan.farmId ? farmNames.get(plan.farmId.toString()) || null : null,
+        selectedStrategyId: plan.selectedStrategyId,
+        savedAt: plan.createdAt,
+      })),
+      rotationPlanCount,
+      recentNotifications: notifications.map((notification) => ({
+        farmName: farmNames.get(notification.farmId.toString()) || null,
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        scheduledFor: notification.scheduledFor,
+        isRead: notification.isRead,
+      })),
+      unreadNotificationCount,
+      recentConversations: conversations.map((conversation) => ({
+        title: conversation.title,
+        district: conversation.district,
+        crop: conversation.crop,
+        farmName: conversation.farmId ? farmNames.get(conversation.farmId.toString()) || null : null,
+        recentMessages: (conversation.messages || []).slice(-4).map((message) => ({
+          role: message.role,
+          content: message.content.slice(0, 600),
+          truncated: message.content.length > 600,
+        })),
+        updatedAt: conversation.updatedAt,
+      })),
+      scope: "Only records owned by this authenticated user. Passwords, email addresses, and phone numbers are excluded.",
     };
   },
 

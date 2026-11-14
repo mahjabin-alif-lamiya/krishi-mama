@@ -22,6 +22,7 @@ from stats import (
     summarize_handoff,
     sowing_window_rainfall_coverage,
 )
+from farm_report import build_farm_environment_report
 
 
 def main():
@@ -40,6 +41,10 @@ def main():
     handoff_parser.add_argument("--input", required=True, help="Path to input JSON snapshot (or - for stdin)")
     handoff_parser.add_argument("--output", default=None, help="Path to output JSON file (default stdout)")
 
+    farm_parser = subparsers.add_parser("farm-report", help="Combine validated NASA environmental evidence")
+    farm_parser.add_argument("--input", required=True, help="Path to report JSON (or - for stdin)")
+    farm_parser.add_argument("--output", default=None, help="Path to output JSON file (default stdout)")
+
     args = parser.parse_args()
 
     # Read input
@@ -54,6 +59,18 @@ def main():
     except json.JSONDecodeError as e:
         sys.stderr.write(f"Error parsing JSON input: {e}\n")
         sys.exit(1)
+
+    if args.command == "farm-report":
+        report = build_farm_environment_report(payload)
+        output_json = json.dumps(report, ensure_ascii=False, indent=2)
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                f.write(output_json)
+        else:
+            print(output_json)
+        if not report.get("success"):
+            sys.exit(1)
+        return
 
     errors = validate_input_snapshot(payload)
     if errors:

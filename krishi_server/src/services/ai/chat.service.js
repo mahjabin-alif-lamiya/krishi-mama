@@ -85,6 +85,18 @@ function isGeneralHelpOrGreeting(message) {
   );
 }
 
+function isWebsiteHelpQuestion(message) {
+  const text = String(message || "").toLowerCase();
+  return /\b(website|web site|site|app|page|feature|menu|sidebar|dashboard|crop rotation|rotation planner|handoff|crop calendar|data sources|soil moisture page|interactive map|settings|login|register|sign in|how to use|where can i find|where is)\b/i.test(text) ||
+    /(ওয়েবসাইট|ওয়েবসাইট|সাইট|পেজ|ফিচার|মেনু|সাইডবার|ড্যাশবোর্ড|আমার খামার পেজ|ফসল পরিকল্পনা পেজ|ক্যালেন্ডার পেজ|তথ্যসূত্র পেজ|সেটিংস পেজ|কোথায় পাব|কোথায় পাব|কীভাবে ব্যবহার|কিভাবে ব্যবহার|কোথায় আছে|কোথায় আছে)/.test(text);
+}
+
+function isOwnDataRecallQuestion(message) {
+  const text = String(message || "").toLowerCase();
+  return /\b(my farms?|my profile|my activities|my (crop )?plans?|my saved (plans?|data|information)|my notifications?|previous chats?|past conversations?|what do you remember|what do you know about me|what information do you have about me|amar (sob|shob|all)? ?(khamar|farm|tothyo|data|kaj|plan|chat))\b/i.test(text) ||
+    /(আমার (সব|সকল|আগের|সাম্প্রতিক)? ?(খামার|প্রোফাইল|তথ্য|কাজ|কৃষিকাজ|পরিকল্পনা|নোটিফিকেশন|চ্যাট|কথা)|আমার সম্পর্কে.*জানো|মনে আছে|আগের কথোপকথন)/.test(text);
+}
+
 function getAnnualRainfallMean(rainfallData) {
   const value = rainfallData?.annualHistorical?.meanAnnualTotalMm;
   return Number.isFinite(value) ? value : null;
@@ -113,9 +125,9 @@ function updateConversationHistory(conversationId, userText, assistantText) {
   }
   session.history.push({ role: "user", parts: [{ text: userText }] });
   session.history.push({ role: "model", parts: [{ text: assistantText }] });
-  // Keep only last 6 turns (3 round-trips)
-  if (session.history.length > 6) {
-    session.history = session.history.slice(-6);
+  // Keep the recent 10 exchanges available without sending an unbounded transcript.
+  if (session.history.length > 20) {
+    session.history = session.history.slice(-20);
   }
   session.lastActive = Date.now();
 }
@@ -150,6 +162,47 @@ async function generateDeterministicFallback({ message, district, crop = null, f
   let language = "bn";
   const provenance = [];
   const limitations = [];
+
+  // Cross-source environmental questions use the shared Python evidence report,
+  // including when Gemini is unavailable.
+  const asksForCombinedReport = /\b(all|together|overall|combined|complete)\b.*\b(nasa|farm|environment|satellite|data|analysis|report)\b|\b(nasa|farm|environment|satellite)\b.*\b(analysis|report|together|all data)\b/i.test(normMessage) ||
+    /(সব|একসাথে|সম্মিলিত|সামগ্রিক).{0,50}(নাসা|স্যাটেলাইট|উপাত্ত|তথ্য|খামার|বিশ্লেষণ)|খামার.{0,40}(বিশ্লেষণ|অবস্থা|উপাত্ত)/.test(message);
+  if (asksForCombinedReport) {
+    language = isBanglaMessage(message) ? "bn" : "en";
+    const report = await toolExecutors.getUnifiedFarmAnalysis({ district: validDistrict, farmId, crop, userId });
+    executedTools.push({ toolName: "getUnifiedFarmAnalysis", result: report });
+    sources.push("NASA GPM IMERG", "NASA SMAP", "NASA MODIS", "NASA POWER", "Krishi Mama Python NumPy Evidence Analysis");
+    if (report.error) {
+      dataQuality = "unavailable";
+      answer = language === "bn"
+        ? "এই জেলার জন্য একসাথে যাচাইকৃত NASA বিশ্লেষণ করা যাচ্ছে না। কুমিল্লা বা চট্টগ্রাম নির্বাচন করুন।"
+        : "A combined verified NASA report is unavailable for this district. Select Cumilla or Chattogram.";
+    } else {
+      const e = report.evidence || {};
+      const dateText = (value) => value || (language === "bn" ? "তারিখ পাওয়া যায়নি" : "date unavailable");
+      const unavailable = language === "bn" ? "যাচাইকৃত তথ্য নেই" : "no verified observation";
+      const gpm = e.gpm?.status === "available"
+        ? (language === "bn" ? `${e.gpm.dailyTotalMm} মিমি, ${dateText(e.gpm.observationDate)} (৪৮/৪৮ ব্যবধান)` : `${e.gpm.dailyTotalMm} mm on ${dateText(e.gpm.observationDate)} (48/48 intervals)`)
+        : (language === "bn" ? `দৈনিক মোট প্রকাশ করা হয়নি (${e.gpm?.validIntervals || 0}/48 বৈধ ব্যবধান)` : `daily total withheld (${e.gpm?.validIntervals || 0}/48 valid intervals)`);
+      const smap = e.smap?.status === "available"
+        ? (language === "bn" ? `${e.smap.surfaceSoilMoisture} ${e.smap.unit || "m³/m³"}, ${dateText(e.smap.observationDate)}` : `${e.smap.surfaceSoilMoisture} ${e.smap.unit || "m³/m³"}, ${dateText(e.smap.observationDate)}`)
+        : unavailable;
+      const modis = e.modis?.status === "available"
+        ? `NDVI ${e.modis.ndvi ?? unavailable}, EVI ${e.modis.evi ?? unavailable}, ${dateText(e.modis.observationDate)}`
+        : unavailable;
+      const power = e.power?.status === "available"
+        ? (language === "bn" ? `${e.power.meanAnnualRainfallMm} মিমি বার্ষিক গড় (২০০১–২০২৫)` : `${e.power.meanAnnualRainfallMm} mm mean annual rainfall (2001–2025)`)
+        : unavailable;
+      dataDate = report.meta?.latestSatelliteDateRange?.latest || "2001-2025";
+      dataQuality = report.meta?.status || "partial_evidence";
+      provenance.push(`Python NumPy ${report.meta?.formulaVersion || "deterministic report"}`);
+      limitations.push(...(report.cautions || []));
+      answer = language === "bn"
+        ? `উপলভ্য উপাত্তের সারাংশ (${report.meta?.district || validDistrict}):\n• NASA GPM বৃষ্টিপাত: ${gpm}\n• NASA SMAP উপরিভাগের আর্দ্রতা (০–৫ সেমি): ${smap}\n• NASA MODIS উদ্ভিদের সবুজত্ব: ${modis}\n• NASA POWER ঐতিহাসিক বৃষ্টিপাত: ${power}\n\nএই মানগুলো ভিন্ন তারিখ ও আঞ্চলিক গ্রিড থেকে এসেছে; এগুলো খামারের সরাসরি মাপ নয়। সেচ বা বপনের সিদ্ধান্তের আগে জমির মাটি পরীক্ষা করুন এবং ফসলভিত্তিক পরামর্শের জন্য ফসল ও বর্তমান পর্যায় জানান।`
+        : `Available evidence for ${report.meta?.district || validDistrict}:\n• NASA GPM rainfall: ${gpm}\n• NASA SMAP surface moisture (0–5 cm): ${smap}\n• NASA MODIS vegetation greenness: ${modis}\n• NASA POWER historical rainfall: ${power}\n\nThese values come from different dates and regional grids, not direct farm measurements. Check field soil before irrigation or sowing. Share the crop and its current stage for crop-specific guidance.`;
+    }
+    return { answer, executedTools, sources, dataDate, dataQuality, provenance, limitations, language, modelUsed: "python-numpy-farm-report" };
+  }
 
   // Farm-aware contextual fallback if farmId is provided
   if (farmId) {
@@ -428,7 +481,7 @@ async function generateDeterministicFallback({ message, district, crop = null, f
       }
     }
 
-    const isBangla = /[\u0980-\u09FF]/.test(message);
+    const isBangla = isBanglaMessage(message);
     const forecastData = await toolExecutors.getLocationWeatherForecast({ location: targetLoc, farmId, userId })
       .catch(() => ({ error: "WEATHER_UNAVAILABLE", current: null, location: null }));
     const alertsData = await toolExecutors.getActiveWeatherAlerts({ location: targetLoc, crop, farmId, userId })
@@ -907,7 +960,7 @@ async function generateDeterministicFallback({ message, district, crop = null, f
 
     const districtBn = validDistrict === "cumilla" ? "কুমিল্লা" : "চট্টগ্রাম";
     const districtEn = validDistrict === "cumilla" ? "Cumilla" : "Chattogram";
-    const isBangla = /[\u0980-\u09FF]/.test(message);
+    const isBangla = isBanglaMessage(message);
     const ingestedText = gpmData.ingestedAt
       ? new Date(gpmData.ingestedAt).toISOString()
       : null;
@@ -1027,6 +1080,81 @@ async function generateDeterministicFallback({ message, district, crop = null, f
           "This is calendar guidance, not a current weather forecast or yield guarantee.";
     }
     dataDate = null;
+  } else if (isOwnDataRecallQuestion(message) && !isWebsiteHelpQuestion(message)) {
+    language = isBanglaMessage(message) ? "bn" : "en";
+    if (!userId) {
+      answer = language === "bn"
+        ? "আপনার ব্যক্তিগত খামার ও সংরক্ষিত তথ্য দেখতে লগইন করুন। অন্য ব্যবহারকারীর তথ্য আমি দেখাতে পারি না।"
+        : "Sign in to review your own farm and saved information. I cannot show another user's records.";
+      dataQuality = "authentication_required";
+    } else {
+      const accountContext = await toolExecutors.getMyAccountContext({ userId });
+      executedTools.push({ toolName: "getMyAccountContext", result: accountContext });
+      sources.push("Krishi Mama Private User Records");
+      dataQuality = accountContext.error ? "unavailable" : "owner_scoped_records";
+
+      if (accountContext.error) {
+        answer = language === "bn"
+          ? "আপনার সংরক্ষিত তথ্য এখন পাওয়া যাচ্ছে না। পরে আবার চেষ্টা করুন।"
+          : "Your saved information is currently unavailable. Please try again later.";
+      } else {
+        const farms = (accountContext.farms || []).map((farm) => language === "bn"
+          ? `${farm.farmName} (${farm.crop?.cropName || farm.crop?.cropCode || "ফসল উল্লেখ নেই"}, ${farm.district || "জেলা উল্লেখ নেই"})`
+          : `${farm.farmName} (${farm.crop?.cropCode || "crop unspecified"}, ${farm.district || "district unspecified"})`);
+        const activities = (accountContext.recentActivities || []).slice(0, 5).map((activity) =>
+          `${activity.title} — ${activity.scheduledDate || (language === "bn" ? "তারিখ নেই" : "no date")}, ${activity.status}`
+        );
+        const plans = accountContext.savedRotationPlans || [];
+        const conversations = accountContext.recentConversations || [];
+
+        answer = language === "bn"
+          ? `আপনার সংরক্ষিত তথ্যের সারাংশ:\n` +
+            `- প্রোফাইল: ${accountContext.profile?.name || "নাম উল্লেখ নেই"}; পছন্দের জেলা ${accountContext.profile?.preferredDistrict || "উল্লেখ নেই"}\n` +
+            `- খামার: ${farms.length ? farms.join("; ") : "কোনো খামার সংরক্ষিত নেই"}${accountContext.farmCount > farms.length ? `; মোট ${accountContext.farmCount}টি খামারের মধ্যে সাম্প্রতিক ${farms.length}টি দেখানো হয়েছে` : ""}\n` +
+            `- সাম্প্রতিক কাজ: ${activities.length ? activities.join("; ") : "কোনো কাজ সংরক্ষিত নেই"}\n` +
+            `- সংরক্ষিত ফসল পরিকল্পনা: ${accountContext.rotationPlanCount || plans.length}\n` +
+            `- অপঠিত নোটিফিকেশন: ${accountContext.unreadNotificationCount || 0}\n` +
+            `- সাম্প্রতিক কথোপকথন: ${conversations.length ? conversations.map((item) => item.title).join("; ") : "কোনো সংরক্ষিত কথোপকথন নেই"}`
+          : `Summary of your saved information:\n` +
+            `- Profile: ${accountContext.profile?.name || "name not specified"}; preferred district ${accountContext.profile?.preferredDistrict || "not specified"}\n` +
+            `- Farms: ${farms.length ? farms.join("; ") : "no saved farms"}${accountContext.farmCount > farms.length ? `; showing ${farms.length} recent farms out of ${accountContext.farmCount}` : ""}\n` +
+            `- Recent activities: ${activities.length ? activities.join("; ") : "no saved activities"}\n` +
+            `- Saved crop plans: ${accountContext.rotationPlanCount || plans.length}\n` +
+            `- Unread notifications: ${accountContext.unreadNotificationCount || 0}\n` +
+            `- Recent conversations: ${conversations.length ? conversations.map((item) => item.title).join("; ") : "no saved conversations"}`;
+        provenance.push("Authenticated current-user records only");
+      }
+    }
+  } else if (isWebsiteHelpQuestion(message)) {
+    language = isBanglaMessage(message) ? "bn" : "en";
+    const knowledge = await toolExecutors.getPlatformKnowledge({ topic: message });
+    executedTools.push({ toolName: "getPlatformKnowledge", result: knowledge });
+    sources.push("Krishi Mama Website Guide");
+    dataQuality = "website_feature_guide";
+    const titleBn = {
+      Home: "হোম পেজ",
+      Dashboard: "ড্যাশবোর্ড",
+      "My Farm": "আমার খামার",
+      "Add or edit a farm": "খামার যোগ বা সম্পাদনা",
+      "Farm workspace": "খামারের তথ্য ও কাজ",
+      "Crop planning and rotation": "ফসল পরিকল্পনা ও চাষচক্র",
+      "Crop rotation demo": "ফসল চক্রের নমুনা",
+      "AI Farmer Assistant": "কৃষি সহকারী",
+      "Crop Transition (Handoff)": "ফসল পরিবর্তন",
+      "Climate and environmental data": "জলবায়ু ও পরিবেশের উপাত্ত",
+      "Interactive Map": "ইন্টার‌্যাকটিভ মানচিত্র",
+      "Crop Calendar": "ফসলের পঞ্জিকা",
+      "Data Sources": "উপাত্তের উৎস",
+      Settings: "সেটিংস",
+      "Account and location setup": "অ্যাকাউন্ট ও অবস্থান নির্ধারণ",
+    };
+    const pageNames = (knowledge.pages || []).map((page) =>
+      `${language === "bn" ? titleBn[page.title] || page.title : page.title} (${page.route})`
+    );
+    answer = language === "bn"
+      ? `ওয়েবসাইটে এই পেজগুলো আছে: ${pageNames.join("; ")}। কোন পেজে কীভাবে কাজ করবেন, সেটি বললে ধাপে ধাপে বুঝিয়ে দেব।`
+      : `The website includes these pages: ${pageNames.join("; ")}. Tell me which page you want to use and I can explain its steps.`;
+    provenance.push("Krishi Mama application feature catalogue");
   }  // 6. Generic or Greeting / Fallback
   else {
     const supported = await toolExecutors.getSupportedDistrictsAndCrops();
@@ -1083,15 +1211,20 @@ export class AssistantChatService {
     const isGreetingOrHelp = isGeneralHelpOrGreeting(trimmedMessage);
     if (!farmId && !isGreetingOrHelp && !VALID_DISTRICT_CODES.has(lowerDistrict)) {
       const language = isBanglaMessage(trimmedMessage) ? "bn" : "en";
+      const missingDistrict = !lowerDistrict;
       const unsupportedAnswer = language === "bn"
-        ? `বর্তমানে কেবল কুমিল্লা ও চট্টগ্রাম জেলার উপাত্ত যাচাইকৃত। '${district || "নির্বাচিত নয়"}' জেলার জন্য তথ্য ব্যবহার করা হয়নি। অনুগ্রহ করে কুমিল্লা বা চট্টগ্রাম নির্বাচন করুন।`
-        : `Only Cumilla and Chattogram currently have validated district data. No data was used for '${district || "unspecified"}'. Select Cumilla or Chattogram to continue.`;
+        ? missingDistrict
+          ? "আপনি কোন জেলার তথ্য জানতে চান—কুমিল্লা, নাকি চট্টগ্রাম?"
+          : `“${district}” জেলার যাচাইকৃত উপাত্ত নেই। বর্তমানে কেবল কুমিল্লা ও চট্টগ্রামের তথ্য ব্যবহার করা যায়।`
+        : missingDistrict
+          ? "Which district should I use: Cumilla or Chattogram?"
+          : `There is no verified dataset for “${district}”. Current coverage includes Cumilla and Chattogram only.`;
       return {
         answer: unsupportedAnswer,
         language,
         sources: ["BBS / Krishi Mama Supported District Registry"],
         dataDate: null,
-        dataQuality: "district_unsupported",
+        dataQuality: missingDistrict ? "clarification_needed" : "district_unsupported",
         provenance: ["Administrative boundary filter"],
         limitations: ["Only Cumilla (BD2019) and Chattogram (BD2015) are actively validated."],
         conversationId: effectiveConversationId,
@@ -1127,7 +1260,19 @@ export class AssistantChatService {
           const res = call.result;
           if (!res) continue;
 
-          if (call.toolName === "getSoilMoistureLatest") {
+          if (call.toolName === "getUnifiedFarmAnalysis") {
+            sources.add("NASA GPM IMERG, SMAP, MODIS & NASA POWER");
+            sources.add("Krishi Mama Python NumPy Evidence Analysis");
+            if (res.meta?.latestSatelliteDateRange) {
+              const range = res.meta.latestSatelliteDateRange;
+              dataDate = range.earliest && range.latest
+                ? `${range.earliest} to ${range.latest}`
+                : range.latest || range.earliest || null;
+            }
+            dataQuality = res.meta?.status || "partial_evidence";
+            if (Array.isArray(res.cautions)) limitations.push(...res.cautions);
+            provenance.push(`Deterministic analysis ${res.meta?.formulaVersion || ""}`.trim());
+          } else if (call.toolName === "getSoilMoistureLatest") {
             sources.add("NASA SMAP SPL3SMP_E V006");
             if (res.date) dataDate = res.date;
             if (res.qualityClassification) dataQuality = res.qualityClassification;
@@ -1157,9 +1302,15 @@ export class AssistantChatService {
           } else if (call.toolName === "getHandoffPlan") {
             sources.add("Krishi Mama Handoff Window Planner");
             if (res.scientificDisclaimer) limitations.push(res.scientificDisclaimer);
+          } else if (call.toolName === "getPlatformKnowledge") {
+            sources.add("Krishi Mama Website Guide");
+            provenance.push("Krishi Mama application feature catalogue");
           } else if (call.toolName === "getMyFarmDetails") {
             sources.add("Krishi Mama My Farm Registry");
             provenance.push("Farmer Authenticated Profile");
+          } else if (call.toolName === "getMyAccountContext") {
+            sources.add("Krishi Mama Private User Records");
+            provenance.push("Authenticated current-user profile, farms, and saved records");
           } else if (call.toolName === "getMyFarmLifecycle") {
             sources.add("BAMIS Agro-Meteorological Crop Calendar");
             if (res.provenance?.publisher) provenance.push(res.provenance.publisher);

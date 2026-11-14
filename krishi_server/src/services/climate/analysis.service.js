@@ -104,6 +104,33 @@ export async function executePythonAnalysis({ snapshot, parameter = null }) {
   });
 }
 
+/** Runs the deterministic multi-source farm evidence report in Python. */
+export async function executePythonFarmReport({ payload }) {
+  return new Promise((resolve, reject) => {
+    const pyProcess = spawn("python", [PYTHON_RUN_SCRIPT, "farm-report", "--input", "-"], {
+      stdio: ["pipe", "pipe", "pipe"],
+      env: { ...process.env, PYTHONIOENCODING: "utf-8" },
+    });
+    let stdoutData = "";
+    let stderrData = "";
+    pyProcess.stdout.on("data", (chunk) => { stdoutData += chunk.toString("utf8"); });
+    pyProcess.stderr.on("data", (chunk) => { stderrData += chunk.toString("utf8"); });
+    pyProcess.on("close", (code) => {
+      if (code !== 0) return reject(new Error(`Python farm report exited with code ${code}: ${stderrData || stdoutData || "unknown error"}`));
+      try {
+        const result = JSON.parse(stdoutData);
+        if (!result.success) return reject(new Error(result.error || "Python farm report failed."));
+        resolve(result);
+      } catch (err) {
+        reject(new Error(`Failed to parse Python farm report output: ${err.message}`));
+      }
+    });
+    pyProcess.on("error", (err) => reject(new Error(`Failed to start Python farm report: ${err.message}`)));
+    pyProcess.stdin.on("error", () => {});
+    pyProcess.stdin.end(JSON.stringify(payload));
+  });
+}
+
 /**
  * High-level analysis pipeline for a district.
  */

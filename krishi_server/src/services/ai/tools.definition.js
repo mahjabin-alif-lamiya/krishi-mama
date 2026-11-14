@@ -5,6 +5,18 @@
 
 export const assistantTools = [
   {
+    name: "getUnifiedFarmAnalysis",
+    description: "Run a deterministic Python and NumPy evidence report combining all available validated NASA GPM rainfall, SMAP surface moisture, MODIS vegetation, and NASA POWER historical rainfall for the farmer's district or authorized own farm. Returns source dates, quality, missing datasets, and limitations. Descriptive only; not a forecast or diagnosis. Use for broad farm/environment analysis.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        district: { type: "STRING", description: "Verified district: cumilla or chattogram." },
+        farmId: { type: "STRING", description: "Optional authenticated user's own farm ID for farm context." },
+        crop: { type: "STRING", description: "Optional crop name for context only." },
+      },
+    },
+  },
+  {
     name: "getPrecipitationLatest",
     description: "Retrieve the latest stored NASA GPM IMERG Final V07 precipitation observation and daily summary. The daily total is present only when all 48 unique Bangladesh-local half-hour intervals are valid; disclose observation date, source, ~0.1 degree spatial resolution, coverage, and limitations. Never describe this as live weather or a farm rain-gauge measurement.",
     parameters: { type: "OBJECT", properties: { district: { type: "STRING", description: "Target district code: 'cumilla' or 'chattogram'." } }, required: ["district"] },
@@ -130,6 +142,20 @@ export const assistantTools = [
     },
   },
   {
+    name: "getPlatformKnowledge",
+    description:
+      "Look up the Krishi Mama website guide when a farmer asks how to use a page, feature, account flow, data view, or planning workflow. Returns the curated site page catalogue, access requirements, supported crops/districts, and limitations. This is public feature knowledge only and contains no user records.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        topic: {
+          type: "STRING",
+          description: "The page or feature the farmer asks about. Use an empty string for a general overview.",
+        },
+      },
+    },
+  },
+  {
     name: "getMyFarmDetails",
     description:
       "Retrieve profile, variety, acreage, planting date, and location of the authenticated farmer's specific farm.",
@@ -142,6 +168,15 @@ export const assistantTools = [
         },
       },
       required: ["farmId"],
+    },
+  },
+  {
+    name: "getMyAccountContext",
+    description:
+      "Retrieve a bounded overview of the authenticated current user's own profile preferences, farms, recent farm activities, saved rotation plans, notifications, and recent conversations. Use only when the user asks about their own saved information or asks the assistant to recall it. Never access another user's records. Does not return email, phone, passwords, or credentials.",
+    parameters: {
+      type: "OBJECT",
+      properties: {},
     },
   },
   {

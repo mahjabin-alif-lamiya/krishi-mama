@@ -45,6 +45,6 @@ test("Assistant UI preserves factual metadata and recoverable request state", as
 
   await t.test("farm controls cannot change while a response is in flight", () => {
     assert.match(assistant, /onChange=\{\(e\) => handleFarmSelection\(e\.target\.value\)\}[\s\S]{0,100}disabled=\{isLoading\}/);
-    assert.match(assistant, /onChange=\{\(e\) => setSelectedDistrict\(e\.target\.value\)\}[\s\S]{0,100}disabled=\{isLoading\}/);
+    assert.match(assistant, /onChange=\{\(e\) => setSelectedCrop\(e\.target\.value\)\}[\s\S]{0,100}disabled=\{isLoading\}/);
   });
 });

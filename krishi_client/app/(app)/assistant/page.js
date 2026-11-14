@@ -14,10 +14,8 @@ import {
   Check,
   ChevronDown,
   ChevronRight,
-  ChevronUp,
   CloudRain,
   Copy,
-  Database,
   Edit2,
   FileText,
   Info,
@@ -33,7 +31,6 @@ import {
   Play,
   Plus,
   Send,
-  ShieldCheck,
   Sparkles,
   Sprout,
   Square,
@@ -101,7 +98,6 @@ function AssistantContent() {
   const [isRenaming, setIsRenaming] = useState(false);
   const [newTitleValue, setNewTitleValue] = useState("");
   const [isGuestSession, setIsGuestSession] = useState(false);
-  const [expandedDetails, setExpandedDetails] = useState({});
   const [copiedId, setCopiedId] = useState(null);
   const [failedPrompt, setFailedPrompt] = useState("");
 
@@ -200,8 +196,7 @@ function AssistantContent() {
   const {
     isSupported: isVoiceSupported,
     isListening,
-    lang: voiceLang,
-    setLang: setVoiceLang,
+    isTranscribing,
     interimTranscript,
     errorCode: voiceErrorCode,
     errorDetails: voiceErrorDetails,
@@ -210,13 +205,9 @@ function AssistantContent() {
     toggleListening,
     clearError: clearVoiceError,
   } = useVoiceInput({
-    initialLang: isBn ? "bn-BD" : "en-US",
     onFinalTranscript: handleFinalTranscript,
+    uiLanguage: isBn ? "bn" : "en",
   });
-
-  useEffect(() => {
-    setVoiceLang(isBn ? "bn-BD" : "en-US");
-  }, [isBn, setVoiceLang]);
 
   // Voice Output (TTS) Hook
   const {
@@ -225,6 +216,7 @@ function AssistantContent() {
     isPaused: isTtsPaused,
     currentId: ttsCurrentId,
     error: ttsError,
+    errorDetails: ttsErrorDetails,
     speak: speakTts,
     pause: pauseTts,
     resume: resumeTts,
@@ -241,10 +233,12 @@ function AssistantContent() {
   };
 
   const cleanAssistantText = (value) => String(value || "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/\*\*(.*?)\*\*/gs, "$1")
     .replace(/__(.*?)__/gs, "$1")
     .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1$2")
     .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, "$1$2")
+    .replace(/\*{2,}|_{2,}/g, "")
     .replace(/^\s{0,3}#{1,6}\s+/gm, "")
     .replace(/^\s*[-*•]\s+/gm, "• ")
     .replace(/\n{3,}/g, "\n\n")
@@ -515,13 +509,6 @@ function AssistantContent() {
     ]
   );
 
-  const toggleDetails = (messageId) => {
-    setExpandedDetails((prev) => ({
-      ...prev,
-      [messageId]: !prev[messageId],
-    }));
-  };
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -556,14 +543,23 @@ function AssistantContent() {
   // 6 Curated Cards
   const QUICK_QUESTIONS = [
     {
+      id: "nasa-report",
+      title: isBn ? "একসাথে খামার বিশ্লেষণ" : "Farm Intelligence Report",
+      subtitle: isBn
+        ? "উপলভ্য NASA উপাত্ত ও তারিখ একসাথে দেখুন"
+        : "Review available NASA data, dates, and quality together",
+      query: `আমার ${districtLabelBn} জেলার খামারের জন্য সব উপলভ্য NASA উপাত্ত একসাথে বিশ্লেষণ করে সহজ বাংলায় বুঝিয়ে বলো।`,
+      icon: Layers,
+      iconColor: "text-teal-700 dark:text-teal-400",
+      bgColor: "bg-teal-50 dark:bg-teal-950/60 border border-teal-100 dark:border-teal-900/40",
+    },
+    {
       id: "rainfall",
       title: isBn ? "বৃষ্টিপাতের তথ্য" : "Rainfall Insights",
       subtitle: isBn
         ? `${districtLabelBn}-য় সাম্প্রতিক ও ঐতিহাসিক বৃষ্টিপাতের ধারা কেমন?`
         : `Recent and historical rainfall patterns in ${districtLabel}`,
-      query: isBn
-        ? `${districtLabelBn}-এ সাম্প্রতিক ও ঐতিহাসিক বৃষ্টিপাতের ধারা কেমন?`
-        : `What recent and historical rainfall observations are available for ${districtLabel}?`,
+      query: `${districtLabelBn} জেলায় NASA-র সাম্প্রতিক ও ঐতিহাসিক বৃষ্টিপাতের পর্যবেক্ষণ কী পাওয়া যাচ্ছে?`,
       icon: CloudRain,
       iconColor: "text-sky-600 dark:text-sky-400",
       bgColor: "bg-sky-50 dark:bg-sky-950/60 border border-sky-100 dark:border-sky-900/40",
@@ -574,9 +570,7 @@ function AssistantContent() {
       subtitle: isBn
         ? `${districtLabelBn}-র মাটির আর্দ্রতা পরিস্থিতি কেমন?`
         : `Current soil moisture conditions in ${districtLabel}`,
-      query: isBn
-        ? `${districtLabelBn}-এর মাটির উপরিভাগের আর্দ্রতার বৈধ পর্যবেক্ষণ কী আছে?`
-        : `What valid surface soil-moisture observation is available for ${districtLabel}?`,
+      query: `${districtLabelBn} জেলায় NASA SMAP-এর মাটির উপরিভাগের আর্দ্রতার সর্বশেষ যাচাইকৃত পর্যবেক্ষণ কী?`,
       icon: Sprout,
       iconColor: "text-emerald-700 dark:text-emerald-400",
       bgColor: "bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-900/40",
@@ -587,9 +581,7 @@ function AssistantContent() {
       subtitle: isBn
         ? "আমন ধানের পর সরিষা কখন লাগানো ভালো?"
         : "Best timing for mustard sowing after Aman harvest",
-      query: isBn
-        ? "আমন ধানের পর সরিষা কখন লাগানো ভালো?"
-        : "What official planting window is listed for mustard after Aman rice?",
+      query: "আমন ধান কাটার পর সরিষা বপনের সরকারি পঞ্জিকায় কোন সময় বলা আছে?",
       icon: Wheat,
       iconColor: "text-amber-700 dark:text-amber-400",
       bgColor: "bg-amber-50 dark:bg-amber-950/60 border border-amber-100 dark:border-amber-900/40",
@@ -600,9 +592,7 @@ function AssistantContent() {
       subtitle: isBn
         ? "আমন কাটার পর সরিষা বপনের সম্ভাব্য শুকনা সময়"
         : "Optimal dry weather windows for crop transition",
-      query: isBn
-        ? "আমন কাটার পর সরিষা বপনের সম্ভাব্য শুকনা সময় দেখাও"
-        : "Show the possible dry window for sowing mustard after Aman harvest.",
+      query: "আমন কাটার পর সরিষা বপনের জন্য সম্ভাব্য শুকনা আবহাওয়ার সময়টি দেখাও।",
       icon: Calendar,
       iconColor: "text-rose-600 dark:text-rose-400",
       bgColor: "bg-rose-50 dark:bg-rose-950/60 border border-rose-100 dark:border-rose-900/40",
@@ -613,9 +603,7 @@ function AssistantContent() {
       subtitle: isBn
         ? "আমার এলাকার NDVI বা ফসল স্বাস্থ্য কেমন?"
         : "NDVI greenness and vegetation health in your area",
-      query: isBn
-        ? "আমার এলাকার মোডিস NDVI/EVI পর্যবেক্ষণ কী আছে?"
-        : `What MODIS NDVI/EVI observations are available for ${districtLabel}?`,
+      query: `${districtLabelBn} জেলায় NASA MODIS-এর সর্বশেষ NDVI ও EVI পর্যবেক্ষণ কী?`,
       icon: Leaf,
       iconColor: "text-emerald-600 dark:text-emerald-400",
       bgColor: "bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-900/40",
@@ -626,9 +614,7 @@ function AssistantContent() {
       subtitle: isBn
         ? "বোরো থেকে আউশ ফসলের ঐতিহাসিক ফলাফল কী?"
         : "Historical outcomes for Boro to Aus transition",
-      query: isBn
-        ? "বোরো থেকে আউশ ফসলের ঐতিহাসিক ফলাফল কী?"
-        : "What does the historical record show about the Boro-to-Aus transition?",
+      query: "বোরো থেকে আউশ ফসল পরিবর্তনের ঐতিহাসিক ফলাফল কী?",
       icon: Layers,
       iconColor: "text-teal-700 dark:text-teal-400",
       bgColor: "bg-teal-50 dark:bg-teal-950/60 border border-teal-100 dark:border-teal-900/40",
@@ -800,33 +786,25 @@ function AssistantContent() {
                       {[
                         {
                           title: isBn ? "বকেয়া ও আসন্ন কৃষি কাজ" : "Due & Upcoming Tasks",
-                          query: isBn
-                            ? "আমার খামারে কী কী কৃষি কাজ বাকি আছে?"
-                            : "What farming tasks are due for this farm?",
+                          query: "আমার খামারে কী কী কৃষিকাজ বাকি আছে?",
                           icon: ListTodo,
                           color: "text-amber-600 bg-amber-500/15",
                         },
                         {
                           title: isBn ? "বর্তমান বৃদ্ধির পর্যায় ও দিন" : "Current Crop Stage",
-                          query: isBn
-                            ? "আমার ফসল এখন কোন বৃদ্ধি পর্যায়ে রয়েছে?"
-                            : "What growth stage is my crop currently in?",
+                          query: "আমার ফসল এখন কোন বৃদ্ধির পর্যায়ে আছে?",
                           icon: Sprout,
                           color: "text-emerald-600 bg-emerald-500/15",
                         },
                         {
                           title: isBn ? "মাটির আর্দ্রতা ও স্যাটেলাইট ডেটা" : "Soil Moisture & Satellites",
-                          query: isBn
-                            ? "আমার খামারের পরিবেশ ও মাটির আর্দ্রতা কেমন?"
-                            : "What are the latest satellite soil and greenness readings?",
+                          query: "আমার খামারের NASA স্যাটেলাইট তথ্য, মাটির আর্দ্রতা ও গাছের সবুজত্ব বিশ্লেষণ করে বলো।",
                           icon: Droplets,
                           color: "text-blue-600 bg-blue-500/15",
                         },
                         {
                           title: isBn ? "বর্তমান পর্যায়ের সরকারি নির্দেশিকা" : "Official Stage Advisory",
-                          query: isBn
-                            ? "বর্তমান বৃদ্ধির পর্যায়ের জন্য সরকারি নির্দেশিকা কী?"
-                            : "What official guidance exists for the current stage?",
+                          query: "আমার ফসলের বর্তমান বৃদ্ধির পর্যায়ের জন্য সরকারি কৃষি নির্দেশনা কী?",
                           icon: FileText,
                           color: "text-purple-600 bg-purple-500/15",
                         },
@@ -898,7 +876,6 @@ function AssistantContent() {
               <div className="space-y-6">
                 {messages.map((msg) => {
                   const isUser = msg.sender === "user";
-                  const detailsOpen = Boolean(expandedDetails[msg.id]);
 
                   return (
                     <div
@@ -1008,6 +985,13 @@ function AssistantContent() {
                                 : ttsError === "VOICE_UNAVAILABLE_EN"
                                 ? t("assistant.ttsVoiceUnavailableEn")
                                 : t("assistant.ttsError")}
+                              <div className="mt-1 flex items-center gap-2">
+                                <span className="opacity-80">{isBn ? "আবার চেষ্টা করুন বা ডিভাইসের অডিও সেটিংস দেখুন।" : "Try again or check your device audio settings."}</span>
+                                <button type="button" onClick={() => handleSpeakMessage(msg)} className="font-semibold underline underline-offset-2 hover:no-underline">
+                                  {isBn ? "আবার চালান" : "Retry"}
+                                </button>
+                                {ttsErrorDetails && <span className="sr-only">{ttsErrorDetails}</span>}
+                              </div>
                             </div>
                             <button
                               type="button"
@@ -1023,7 +1007,7 @@ function AssistantContent() {
                         <div className="whitespace-pre-line text-sm leading-relaxed [overflow-wrap:anywhere]">{msg.text}</div>
 
                         {/* Metadata Footer */}
-                        {!isUser && (
+                        {!isUser && (msg.observationDate || msg.observationLocation) && (
                           <div className="mt-3 pt-2.5 border-t border-line/60">
                             <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
                               {msg.observationDate && (
@@ -1040,52 +1024,7 @@ function AssistantContent() {
                                 </span>
                               )}
 
-                              {msg.sources && msg.sources.length > 0 && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-hover border border-line">
-                                  <Database className="h-3 w-3 text-emerald" />
-                                  <span className="truncate max-w-[200px]">{msg.sources.join(", ")}</span>
-                                </span>
-                              )}
-
-                              {msg.dataQuality && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald/10 text-emerald font-medium border border-emerald/20">
-                                  <ShieldCheck className="h-3 w-3" />
-                                  <span>{isBn ? "উত্তরের ভিত্তি" : "Response basis"}: {msg.dataQuality}</span>
-                                </span>
-                              )}
-
-                              {(msg.limitations?.length > 0 || msg.provenance?.length > 0) && (
-                                <button
-                                  type="button"
-                                  onClick={() => toggleDetails(msg.id)}
-                                  className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-surface-hover hover:bg-line text-[11px] font-medium text-emerald transition-colors ml-auto cursor-pointer"
-                                >
-                                  <span>{isBn ? "তথ্যসূত্র ও সীমাবদ্ধতা" : "Sources & limitations"}</span>
-                                  {detailsOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                                </button>
-                              )}
                             </div>
-
-                            {detailsOpen && (
-                              <div className="mt-2.5 rounded-lg bg-surface-hover/70 p-2.5 text-xs text-muted border border-line space-y-1.5">
-                                {msg.provenance && msg.provenance.length > 0 && (
-                                  <div className="[overflow-wrap:anywhere]">
-                                    <span className="font-semibold text-content">
-                                      {isBn ? "উৎস পরিচিতি:" : "Provenance:"}
-                                    </span>{" "}
-                                    {msg.provenance.join(" • ")}
-                                  </div>
-                                )}
-                                {msg.limitations && msg.limitations.length > 0 && (
-                                  <div className="text-[11px] text-amber-700 dark:text-amber-400 [overflow-wrap:anywhere]">
-                                    <span className="font-semibold">
-                                      {isBn ? "বৈজ্ঞানিক সীমাবদ্ধতা:" : "Limitations:"}
-                                    </span>{" "}
-                                    {msg.limitations.join(" • ")}
-                                  </div>
-                                )}
-                              </div>
-                            )}
                           </div>
                         )}
 
@@ -1174,6 +1113,10 @@ function AssistantContent() {
                     ? isBn ? "ব্রাউজারে ভয়েস সমর্থিত নয়" : "Browser Not Supported"
                     : voiceErrorCode === "NO_SPEECH"
                     ? isBn ? "কোনো কথা শনাক্ত করা যায়নি" : "No Speech Detected"
+                    : voiceErrorCode === "TRANSCRIPTION_UNAVAILABLE"
+                    ? isBn ? "ভয়েস বোঝার সেবা এখন পাওয়া যাচ্ছে না" : "Voice transcription is unavailable"
+                    : voiceErrorCode === "AUDIO_TOO_LARGE"
+                    ? isBn ? "রেকর্ডিংটি ছোট করে আবার বলুন" : "Please record a shorter voice message"
                     : isBn ? "ভয়েস ইনপুট ত্রুটি" : "Voice Input Error"}
                 </div>
                 <div className="mt-0.5 text-content-muted leading-relaxed">
@@ -1183,11 +1126,17 @@ function AssistantContent() {
                     ? t("assistant.voiceUnsupported")
                     : voiceErrorCode === "NO_SPEECH"
                     ? t("assistant.voiceNoSpeech")
+                    : voiceErrorCode === "TRANSCRIPTION_UNAVAILABLE"
+                    ? isBn ? "ইন্টারনেট সংযোগ বা পরে আবার চেষ্টা করুন।" : "Check your connection or try again later."
+                    : voiceErrorCode === "AUDIO_TOO_LARGE"
+                    ? isBn ? "২৫ সেকেন্ডের মধ্যে ছোট প্রশ্ন বলুন।" : "Keep your voice question under 25 seconds."
+                    : voiceErrorCode === "NETWORK"
+                    ? isBn ? "সংযোগে সমস্যা হয়েছে। আবার চেষ্টা করুন।" : "The connection failed. Please try again."
                     : voiceErrorDetails || "Voice error occurred."}
                 </div>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
-                {voiceErrorCode === "NO_SPEECH" && isVoiceSupported && (
+                {["NO_SPEECH", "NETWORK", "TRANSCRIPTION_UNAVAILABLE", "AUDIO_CAPTURE", "UNKNOWN"].includes(voiceErrorCode) && isVoiceSupported && (
                   <button
                     type="button"
                     onClick={startListening}
@@ -1210,7 +1159,7 @@ function AssistantContent() {
           {/* Message Composer Area */}
           <div className="sticky bottom-0 bg-surface/95 backdrop-blur-md pt-3 mt-3 border-t border-line/80 z-10">
             {/* Active Listening / Interim Transcription Banner */}
-            {isListening && (
+            {(isListening || isTranscribing) && (
               <div className="mb-2 p-2.5 rounded-xl border border-emerald/30 bg-emerald/5 dark:bg-emerald-950/30 flex items-center justify-between gap-3 animate-in fade-in duration-150">
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <span className="relative flex h-3 w-3 shrink-0">
@@ -1219,9 +1168,9 @@ function AssistantContent() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs font-semibold text-emerald dark:text-emerald-300 flex items-center gap-1.5">
-                      <span>{t("assistant.listening")}</span>
+                      <span>{isTranscribing ? (isBn ? "কথা লিখে নেওয়া হচ্ছে" : "Transcribing your voice") : t("assistant.listening")}</span>
                       <span className="text-[10px] font-normal px-1.5 py-0.5 rounded bg-emerald/10 text-emerald-700 dark:text-emerald-300">
-                        {voiceLang === "bn-BD" ? "বাংলা (bn-BD)" : "English (en-US)"}
+                        {isBn ? "বাংলা + English · Auto" : "Bangla + English · Auto"}
                       </span>
                     </div>
                     <div className="text-xs text-content truncate mt-0.5">
@@ -1231,21 +1180,14 @@ function AssistantContent() {
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setVoiceLang(voiceLang === "bn-BD" ? "en-US" : "bn-BD")}
-                    className="px-2 py-1 text-[11px] font-medium rounded-lg border border-line bg-surface hover:bg-surface-hover text-content transition-colors cursor-pointer"
-                  >
-                    {voiceLang === "bn-BD" ? "EN" : "বাং"}
-                  </button>
-                  <button
+                  {isListening && <button
                     type="button"
                     onClick={stopListening}
                     className="px-2.5 py-1 text-xs font-medium rounded-lg bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <Square className="h-3 w-3 fill-current" />
                     <span>{t("assistant.listeningStop")}</span>
-                  </button>
+                  </button>}
                 </div>
               </div>
             )}
@@ -1319,10 +1261,12 @@ function AssistantContent() {
               <button
                 type="button"
                 onClick={isVoiceSupported ? toggleListening : undefined}
-                disabled={!isVoiceSupported || isLoading}
+                disabled={!isVoiceSupported || isLoading || isTranscribing}
                 title={
                   !isVoiceSupported
                     ? t("assistant.voiceUnsupported")
+                    : isTranscribing
+                    ? (isBn ? "কথা লিখে নেওয়া হচ্ছে" : "Transcribing voice")
                     : isListening
                     ? t("assistant.voiceInputStop")
                     : t("assistant.voiceInputStart")
@@ -1330,6 +1274,8 @@ function AssistantContent() {
                 aria-label={
                   !isVoiceSupported
                     ? t("assistant.voiceUnsupported")
+                    : isTranscribing
+                    ? (isBn ? "কথা লিখে নেওয়া হচ্ছে" : "Transcribing voice")
                     : isListening
                     ? t("assistant.voiceInputStop")
                     : t("assistant.voiceInputStart")

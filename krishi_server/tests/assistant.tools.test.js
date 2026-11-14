@@ -11,8 +11,11 @@ import { assistantChatService } from "../src/services/ai/chat.service.js";
 dotenv.config();
 
 test("Assistant Tools Definitions match expected Google Gemini schema", () => {
-  assert.equal(assistantTools.length, 19);
   const toolNames = assistantTools.map((t) => t.name);
+  assert.equal(new Set(toolNames).size, toolNames.length, "Tool names must be unique");
+  assert.ok(toolNames.includes("getUnifiedFarmAnalysis"));
+  assert.ok(toolNames.includes("getPlatformKnowledge"));
+  assert.ok(toolNames.includes("getMyAccountContext"));
   assert.ok(toolNames.includes("getClimateNormals"));
   assert.ok(toolNames.includes("getPrecipitationLatest"));
   assert.ok(toolNames.includes("getClimateRainfall"));

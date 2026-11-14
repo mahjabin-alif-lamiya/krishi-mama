@@ -6,9 +6,39 @@
 
 import mongoose from "mongoose";
 import { assistantChatService } from "../services/ai/chat.service.js";
+import { geminiAssistantClient } from "../services/ai/gemini.client.js";
 import { Conversation } from "../models/conversation.model.js";
 import { Farm } from "../models/farm.model.js";
 import { errorResponse, successResponse } from "../utils/response.js";
+
+const ALLOWED_AUDIO_TYPES = new Set(["audio/webm", "audio/ogg", "audio/mp4", "audio/mpeg", "audio/wav", "audio/aac"]);
+const MAX_AUDIO_BYTES = 2_500_000;
+
+export async function transcribeAssistantAudio(req, res, next) {
+  try {
+    const { audioBase64, mimeType } = req.body || {};
+    if (typeof audioBase64 !== "string" || !audioBase64 || audioBase64.length > Math.ceil(MAX_AUDIO_BYTES * 4 / 3) + 8) {
+      return errorResponse(res, 400, "Audio is empty or exceeds the 2.5 MB limit.", "INVALID_AUDIO");
+    }
+    const normalizedMime = typeof mimeType === "string" ? mimeType.split(";")[0].toLowerCase() : "";
+    if (!ALLOWED_AUDIO_TYPES.has(normalizedMime)) {
+      return errorResponse(res, 415, "This audio format is not supported by voice transcription.", "UNSUPPORTED_AUDIO_FORMAT");
+    }
+    const bytes = Buffer.from(audioBase64, "base64");
+    if (!bytes.length || bytes.length > MAX_AUDIO_BYTES || bytes.toString("base64").replace(/=+$/, "") !== audioBase64.replace(/=+$/, "")) {
+      return errorResponse(res, 400, "Audio payload is invalid or too large.", "INVALID_AUDIO");
+    }
+    if (!geminiAssistantClient.isConfigured()) {
+      return errorResponse(res, 503, "Automatic voice transcription is currently unavailable.", "VOICE_TRANSCRIPTION_UNAVAILABLE");
+    }
+    const transcript = await geminiAssistantClient.transcribeFarmerAudio({ audioBase64, mimeType: normalizedMime });
+    return successResponse(res, 200, { transcript, languageMode: "auto-multilingual" });
+  } catch (err) {
+    if (err.message === "NO_SPEECH") return errorResponse(res, 422, "No clear speech was detected. Please try again.", "NO_SPEECH");
+    if (err.message === "VOICE_TRANSCRIPTION_UNAVAILABLE") return errorResponse(res, 503, "Automatic voice transcription is currently unavailable.", "VOICE_TRANSCRIPTION_UNAVAILABLE");
+    return next(err);
+  }
+}
 
 /**
  * Generate a clean, natural conversation title from the first message.
@@ -116,7 +146,7 @@ export async function chatWithAssistant(req, res, next) {
         }
 
         // Build a bounded recent history for Gemini from saved messages.
-        customHistory = activeConversation.messages.slice(-6).map((m) => ({
+        customHistory = activeConversation.messages.slice(-20).map((m) => ({
           role: m.role === "user" ? "user" : "model",
           parts: [{ text: m.content }],
         }));

@@ -8,6 +8,28 @@ const getSpeechSynthesisSupport = () =>
   typeof window !== "undefined" && "speechSynthesis" in window;
 const getServerSupport = () => false;
 
+function splitForSpeech(text, maxLength = 240) {
+  const sentences = text.match(/[^.!?।]+(?:[.!?।]+(?=\s|$)|$)/g) || [text];
+  const chunks = [];
+  let current = "";
+  for (const sentence of sentences) {
+    const part = sentence.trim();
+    if (!part) continue;
+    if (part.length > maxLength) {
+      if (current) chunks.push(current);
+      current = "";
+      for (let i = 0; i < part.length; i += maxLength) chunks.push(part.slice(i, i + maxLength));
+    } else if (current && `${current} ${part}`.length > maxLength) {
+      chunks.push(current);
+      current = part;
+    } else {
+      current = current ? `${current} ${part}` : part;
+    }
+  }
+  if (current) chunks.push(current);
+  return chunks;
+}
+
 /**
  * useVoiceOutput
  * 
@@ -35,6 +57,7 @@ export function useVoiceOutput() {
 
   const utteranceRef = useRef(null);
   const isComponentMounted = useRef(true);
+  const playbackTokenRef = useRef(0);
 
   // Initialize and load available speech synthesis voices
   useEffect(() => {
@@ -55,9 +78,7 @@ export function useVoiceOutput() {
 
     loadVoices();
 
-    if (typeof window.speechSynthesis.onvoiceschanged !== "undefined") {
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
+    window.speechSynthesis.addEventListener?.("voiceschanged", loadVoices);
 
     return () => {
       isComponentMounted.current = false;
@@ -67,7 +88,7 @@ export function useVoiceOutput() {
         } catch {
           // Ignore
         }
-        window.speechSynthesis.onvoiceschanged = null;
+        window.speechSynthesis.removeEventListener?.("voiceschanged", loadVoices);
       }
     };
   }, []);
@@ -117,6 +138,7 @@ export function useVoiceOutput() {
 
   // Stop playback immediately
   const stop = useCallback(() => {
+    playbackTokenRef.current += 1;
     if (typeof window !== "undefined" && window.speechSynthesis) {
       try {
         window.speechSynthesis.cancel();
@@ -170,6 +192,8 @@ export function useVoiceOutput() {
         return;
       }
 
+      const playbackToken = ++playbackTokenRef.current;
+
       // Single-audio guarantee: cancel any current or pending playback
       try {
         window.speechSynthesis.cancel();
@@ -183,48 +207,33 @@ export function useVoiceOutput() {
       const isBengali = targetLang.toLowerCase().startsWith("bn");
 
       const voice = findBestVoice(targetLang, voices);
+      const chunks = splitForSpeech(text);
+      let chunkIndex = 0;
 
-      if (isBengali && !voice) {
-        // Bengali voice is not installed on this browser/OS
-        setError("VOICE_UNAVAILABLE_BN");
-        setIsSpeaking(false);
-        setIsPaused(false);
-        setCurrentId(null);
-        return;
-      }
-
-      try {
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (voice) {
-          utterance.voice = voice;
-          utterance.lang = voice.lang;
-        } else {
-          utterance.lang = targetLang;
+      const speakNextChunk = () => {
+        if (!isComponentMounted.current || playbackToken !== playbackTokenRef.current) return;
+        if (chunkIndex >= chunks.length) {
+          setIsSpeaking(false);
+          setIsPaused(false);
+          setCurrentId(null);
+          return;
         }
-
-        // Pacing: slightly slower for comfortable Bengali comprehension
-        utterance.rate = isBengali ? 0.95 : 1.0;
-        utterance.pitch = 1.0;
-
-        utterance.onstart = () => {
-          if (isComponentMounted.current) {
-            setIsSpeaking(true);
-            setIsPaused(false);
-            setCurrentId(id);
-          }
-        };
-
-        utterance.onend = () => {
-          if (isComponentMounted.current) {
-            setIsSpeaking(false);
-            setIsPaused(false);
-            setCurrentId(null);
-          }
-        };
-
-        utterance.onerror = (e) => {
-          if (isComponentMounted.current) {
-            // Cancel / interrupted events triggered by user stop() or new speech are expected
+        try {
+          const utterance = new SpeechSynthesisUtterance(chunks[chunkIndex++]);
+          utterance.lang = voice?.lang || targetLang;
+          if (voice) utterance.voice = voice;
+          utterance.rate = isBengali ? 0.95 : 1.0;
+          utterance.pitch = 1.0;
+          utterance.onstart = () => {
+            if (isComponentMounted.current && playbackToken === playbackTokenRef.current) {
+              setIsSpeaking(true);
+              setIsPaused(false);
+              setCurrentId(id);
+            }
+          };
+          utterance.onend = speakNextChunk;
+          utterance.onerror = (e) => {
+            if (!isComponentMounted.current || playbackToken !== playbackTokenRef.current) return;
             if (e.error !== "canceled" && e.error !== "interrupted") {
               console.warn("[useVoiceOutput] Speech synthesis error event:", e.error);
               setError("PLAYBACK_ERROR");
@@ -233,23 +242,22 @@ export function useVoiceOutput() {
             setIsSpeaking(false);
             setIsPaused(false);
             setCurrentId(null);
-          }
-        };
-
-        utterance.onpause = () => {
-          if (isComponentMounted.current) {
-            setIsPaused(true);
-          }
-        };
-
-        utterance.onresume = () => {
-          if (isComponentMounted.current) {
-            setIsPaused(false);
-          }
-        };
-
-        utteranceRef.current = utterance;
-        window.speechSynthesis.speak(utterance);
+          };
+          utterance.onpause = () => playbackToken === playbackTokenRef.current && setIsPaused(true);
+          utterance.onresume = () => playbackToken === playbackTokenRef.current && setIsPaused(false);
+          utteranceRef.current = utterance;
+          window.speechSynthesis.speak(utterance);
+        } catch (err) {
+          console.error("[useVoiceOutput] speak invocation failed:", err);
+          setError("PLAYBACK_ERROR");
+          setErrorDetails(err.message || "Failed to start speech");
+          setIsSpeaking(false);
+          setIsPaused(false);
+          setCurrentId(null);
+        }
+      };
+      try {
+        speakNextChunk();
       } catch (err) {
         console.error("[useVoiceOutput] speak invocation failed:", err);
         setError("PLAYBACK_ERROR");
