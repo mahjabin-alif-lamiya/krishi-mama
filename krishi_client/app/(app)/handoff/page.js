@@ -291,7 +291,7 @@ export default function HandoffPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="mt-2 text-2xl font-bold tracking-tight text-content sm:text-3xl">
-            {strings.title || "Handoff Window Intelligence"}
+            {strings.title || "Crop Transition (Handoff)"}
           </h1>
           <p className="mt-1 text-sm text-muted">
             {strings.subtitle ||

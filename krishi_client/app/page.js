@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
+  CalendarRange,
   Clock,
   Layers,
   Satellite,
@@ -22,7 +23,7 @@ import {
   Thermometer,
 } from "lucide-react";
 
-import { fetchDataSources } from "@/services/api.js";
+import { fetchDataSources, fetchWeatherForecast } from "@/services/api.js";
 import { PublicHeader, PublicFooter } from "@/components/layout/PublicChrome.js";
 import { Badge } from "@/components/ui/Badge.js";
 import { Button } from "@/components/ui/Button.js";
@@ -55,6 +56,8 @@ export default function LandingPage() {
   const { t, locale } = useLang();
   const [liveDataSources, setLiveDataSources] = useState(null);
   const [hasLoadedDataSources, setHasLoadedDataSources] = useState(false);
+  const [forecast, setForecast] = useState(null);
+  const [forecastStatus, setForecastStatus] = useState("loading");
 
   useEffect(() => {
     let isMounted = true;
@@ -67,6 +70,26 @@ export default function LandingPage() {
       .catch(() => {})
       .finally(() => {
         if (isMounted) setHasLoadedDataSources(true);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchWeatherForecast({ location: "cumilla" })
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.success && res?.data) {
+          setForecast(res.data);
+          setForecastStatus("ready");
+        } else {
+          setForecastStatus("error");
+        }
+      })
+      .catch(() => {
+        if (isMounted) setForecastStatus("error");
       });
     return () => {
       isMounted = false;
@@ -118,6 +141,61 @@ export default function LandingPage() {
   const activeParameters = powerApiSource?.parameters
     ? Object.entries(powerApiSource.parameters)
     : [];
+
+  // 0-7 / 7-14 day outlook summary (Open-Meteo, served by our backend)
+  const summarizeForecastWindow = (days) => {
+    if (!Array.isArray(days) || days.length === 0) return null;
+    const tempsMax = days.map((d) => d.temperatureMaxC).filter(Number.isFinite);
+    const tempsMin = days.map((d) => d.temperatureMinC).filter(Number.isFinite);
+    const rainTotal = days.reduce((sum, d) => sum + (Number(d.precipitationSumMm) || 0), 0);
+    const rainProbMax = Math.max(...days.map((d) => Number(d.precipitationProbabilityMax) || 0));
+    const conditionCounts = new Map();
+    days.forEach((d) => {
+      const label = locale === "bn" ? d.conditionBn : d.conditionEn;
+      if (!label) return;
+      conditionCounts.set(label, (conditionCounts.get(label) || 0) + 1);
+    });
+    const dominant = [...conditionCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+    const formatDate = (iso) => {
+      const parsed = new Date(`${iso}T00:00:00`);
+      if (Number.isNaN(parsed.getTime())) return iso;
+      return parsed.toLocaleDateString(locale === "bn" ? "bn-BD" : "en-GB", {
+        day: "numeric",
+        month: "short",
+      });
+    };
+    return {
+      dateRange: `${formatDate(days[0].date)} – ${formatDate(days[days.length - 1].date)}`,
+      tempMax: tempsMax.length ? Math.max(...tempsMax) : null,
+      tempMin: tempsMin.length ? Math.min(...tempsMin) : null,
+      rainTotal: Math.round(rainTotal * 10) / 10,
+      rainProbMax,
+      dominant,
+      dayCount: days.length,
+    };
+  };
+
+  const shortWindowSummary = forecast
+    ? summarizeForecastWindow(forecast.shortRangeForecast)
+    : null;
+  const extendedWindowSummary = forecast
+    ? summarizeForecastWindow((forecast.extendedForecast || []).slice(0, 7))
+    : null;
+  const outlookWindows = [
+    { key: "short", icon: CalendarRange, titleKey: "outlookRangeShort", summary: shortWindowSummary, confidenceKey: "outlookConfidenceShort" },
+    { key: "extended", icon: CloudRain, titleKey: "outlookRangeExtended", summary: extendedWindowSummary, confidenceKey: "outlookConfidenceExtended" },
+  ];
+  const outlookLocationLabel = forecast?.location
+    ? (locale === "bn" ? forecast.location.nameBn : forecast.location.nameEn)
+    : null;
+  const outlookUpdatedLabel = forecast?.meta?.fetchTimestamp
+    ? new Date(forecast.meta.fetchTimestamp).toLocaleString(locale === "bn" ? "bn-BD" : "en-GB", {
+        day: "numeric",
+        month: "short",
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : null;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -514,6 +592,141 @@ export default function LandingPage() {
                   <span>{locale === "bn" ? "সম্পূর্ণ মেথডোলজি দেখুন" : "View Data Sources"}</span>
                   <ArrowRight className="h-4 w-4 ml-1.5" />
                 </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 0-7 & 7-14 Day Outlook — plain-language forecast summary */}
+        <section id="outlook" aria-labelledby="outlook-title" className="scroll-mt-20 border-t border-line bg-surface px-4 py-16 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-6xl">
+            <div className="mx-auto max-w-3xl text-center">
+              <Badge tone="emerald" className="mb-4 uppercase tracking-wider text-[11px] font-bold">
+                {t("landing.outlookKicker")}
+              </Badge>
+              <h2 id="outlook-title" className="text-3xl font-bold tracking-tight text-content sm:text-4xl">
+                {t("landing.sectionOutlook")}
+              </h2>
+              <p className="mt-4 text-base text-muted sm:text-lg leading-relaxed">
+                {t("landing.sectionOutlookSub")}
+              </p>
+              {outlookLocationLabel ? (
+                <p className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-muted">
+                  <MapPin className="h-4 w-4" aria-hidden="true" />
+                  {t("landing.outlookLocation")}: {outlookLocationLabel}
+                </p>
+              ) : null}
+            </div>
+
+            {forecastStatus === "loading" ? (
+              <div className="mt-12 grid gap-6 lg:grid-cols-2" aria-busy="true">
+                {[0, 1].map((i) => (
+                  <div key={i} className="animate-pulse rounded-2xl border border-line bg-surface p-6 shadow-km-sm dark:bg-surface-card">
+                    <div className="h-5 w-40 rounded bg-surface-2" />
+                    <div className="mt-2 h-4 w-28 rounded bg-surface-2" />
+                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                      {[0, 1, 2, 3].map((j) => (
+                        <div key={j} className="h-16 rounded-xl bg-surface-2" />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : !shortWindowSummary || !extendedWindowSummary ? (
+              <div className="mt-12 rounded-2xl border border-line bg-surface p-6 text-center shadow-km-sm dark:bg-surface-card">
+                <p className="text-sm text-muted">{t("landing.outlookUnavailable")}</p>
+                <Button href="/climate" variant="outline" size="sm" className="mt-4">
+                  {t("landing.outlookUnavailableCta")}
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-12 grid gap-6 lg:grid-cols-2">
+                {outlookWindows.map(({ key, icon: WindowIcon, titleKey, summary, confidenceKey }) => (
+                  <div key={key} className="rounded-2xl border border-line bg-surface p-6 shadow-km-sm dark:bg-surface-card">
+                    <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line/80 pb-4">
+                      <div className="flex items-start gap-3.5">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald/15 text-emerald ring-1 ring-emerald/30">
+                          <WindowIcon className="h-5 w-5" aria-hidden="true" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-bold text-content sm:text-lg">
+                            {t(`landing.${titleKey}`)}
+                          </h3>
+                          <p className="mt-0.5 text-xs text-muted">{summary.dateRange}</p>
+                        </div>
+                      </div>
+                      <Badge tone="neutral">{t(`landing.${confidenceKey}`)}</Badge>
+                    </div>
+
+                    <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                      <div className="rounded-xl border border-line/80 bg-surface/90 p-4 shadow-sm dark:bg-surface/50">
+                        <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald">
+                          {t("landing.outlookTempMax")}
+                        </span>
+                        <span className="mt-1 block text-lg font-bold text-content">
+                          {summary.tempMax != null ? `${formatLocalizedNumber(summary.tempMax)}°C` : "—"}
+                        </span>
+                      </div>
+                      <div className="rounded-xl border border-line/80 bg-surface/90 p-4 shadow-sm dark:bg-surface/50">
+                        <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald">
+                          {t("landing.outlookTempMin")}
+                        </span>
+                        <span className="mt-1 block text-lg font-bold text-content">
+                          {summary.tempMin != null ? `${formatLocalizedNumber(summary.tempMin)}°C` : "—"}
+                        </span>
+                      </div>
+                      <div className="rounded-xl border border-line/80 bg-surface/90 p-4 shadow-sm dark:bg-surface/50">
+                        <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald">
+                          {t("landing.outlookRainTotal")}
+                        </span>
+                        <span className="mt-1 block text-lg font-bold text-content">
+                          {`${formatLocalizedNumber(summary.rainTotal)} mm`}
+                        </span>
+                      </div>
+                      <div className="rounded-xl border border-line/80 bg-surface/90 p-4 shadow-sm dark:bg-surface/50">
+                        <span className="block text-[11px] font-bold uppercase tracking-wider text-emerald">
+                          {t("landing.outlookRainProb")}
+                        </span>
+                        <span className="mt-1 block text-lg font-bold text-content">
+                          {`${formatLocalizedNumber(summary.rainProbMax)}%`}
+                        </span>
+                      </div>
+                    </div>
+
+                    {summary.dominant ? (
+                      <p className="mt-4 text-xs leading-relaxed text-muted">
+                        {t("landing.outlookTypical")}: {summary.dominant}
+                      </p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Source & uncertainty footnote */}
+            <div className="mt-8 rounded-2xl border border-line bg-surface-2/60 p-5 shadow-km-sm dark:bg-surface-card/60 sm:p-6">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-start gap-3.5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-climate/15 text-climate ring-1 ring-climate/30">
+                    <Globe className="h-5 w-5" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-content">{t("landing.outlookSourceTitle")}</h4>
+                    <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">
+                      {t("landing.outlookSourceNote")}
+                      {outlookUpdatedLabel ? ` ${t("landing.outlookUpdated")}: ${outlookUpdatedLabel}.` : ""}
+                    </p>
+                    <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">
+                      {t("landing.outlookUncertaintyNote")}
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0">
+                  <Button href="/climate" variant="outline" size="sm">
+                    {t("landing.outlookCta")}
+                    <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

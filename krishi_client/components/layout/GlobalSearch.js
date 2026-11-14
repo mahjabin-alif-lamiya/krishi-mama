@@ -11,7 +11,7 @@ const SEARCH_TERMS = {
   "/dashboard": "overview home ড্যাশবোর্ড সারসংক্ষেপ",
   "/my-farm": "farm farms field fields খামার জমি",
   "/assistant": "ai chat chatbot সহকারী প্রশ্ন",
-  "/handoff": "handoff window sowing বপন সময়",
+  "/handoff": "crop transition handoff window sowing ফসল পরিবর্তন বপন সময়",
   "/climate": "climate weather power জলবায়ু আবহাওয়া",
   "/rainfall": "rain rainwater precipitation বৃষ্টি বৃষ্টিপাত",
   "/soil-moisture": "soil moisture smap মাটির আর্দ্রতা",
