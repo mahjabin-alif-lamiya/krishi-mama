@@ -202,11 +202,21 @@ export function useVoiceOutput() {
       }
 
       // Check available voices
-      const voices = window.speechSynthesis.getVoices() || availableVoices;
+      const browserVoices = window.speechSynthesis.getVoices() || [];
+      const voices = browserVoices.length > 0 ? browserVoices : availableVoices;
       const targetLang = preferredLang || detectLanguage(text);
       const isBengali = targetLang.toLowerCase().startsWith("bn");
 
       const voice = findBestVoice(targetLang, voices);
+      // Never pass Bangla text to an English/default voice: it produces an
+      // English-sounding mispronunciation while pretending Bangla is supported.
+      if (isBengali && !voice) {
+        setError("VOICE_UNAVAILABLE_BN");
+        setIsSpeaking(false);
+        setIsPaused(false);
+        setCurrentId(null);
+        return;
+      }
       const chunks = splitForSpeech(text);
       let chunkIndex = 0;
 
