@@ -222,9 +222,7 @@ export default function WeatherIntelligenceSection({ locationCode = "chattogram"
               {compact ? t("farmUi.weatherTitle") : (locale === "bn" ? "কৃষি আবহাওয়া বুদ্ধিমত্তা ও ফসল দৃষ্টিভঙ্গি" : "Agricultural Weather Intelligence & Crop Outlook")}
             </h2>
             <p className={compact ? "hidden" : "mt-1 text-xs text-muted max-w-2xl"}>
-              {locale === "bn"
-                ? `${locName}-এর জন্য উচ্চ-রেজোলিউশন ৭ দিনের পূর্বাভাস, ১৬ দিনের বর্ধিত দৃষ্টিভঙ্গি, উপ-মৌসুমি প্রবণতা এবং যাচাইকৃত সরকারি সতর্কতা।`
-                : `High-resolution 7-day forecast, 16-day extended outlook, sub-seasonal trends, and verified government warnings for ${locName}.`}
+              {t("weatherIntelligence.overview").replace("{district}", locName)}
             </p>
           </div>
         </div>
@@ -362,7 +360,7 @@ export default function WeatherIntelligenceSection({ locationCode = "chattogram"
                 : "border-transparent text-muted hover:text-content"
             }`}
           >
-            {locale === "bn" ? "১৬ দিনের বর্ধিত দৃষ্টিভঙ্গি" : "16-Day Extended Outlook"}
+            {t("weatherIntelligence.extendedTab")}
           </button>
           <button
             type="button"
@@ -452,34 +450,61 @@ export default function WeatherIntelligenceSection({ locationCode = "chattogram"
         </div>
       )}
 
-      {/* Tab 2: 16-Day Extended Outlook */}
+      {/* Tab 2: 14-Day Extended Outlook */}
       {activeTab === "extended" && (
-        <div className="mt-4 space-y-4">
-          <div className="flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-800 dark:text-amber-300">
-            <Info className="h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" />
-            <span>
-              {locale === "bn"
-                ? "৮–১৬ দিনের পূর্বাভাস বর্ধিত দৃষ্টিভঙ্গি নির্দেশ করে এবং এতে সংখ্যাভিত্তিক মডেলের স্বাভাবিক অনিশ্চয়তা রয়েছে। মাঠের সূচি প্রস্তুতির বদলে দূরবর্তী আবহাওয়া প্রবণতা বোঝার জন্য ব্যবহার করুন।"
-                : "Days 8–16 represent an extended numerical outlook with elevated uncertainty. Suitable for advance operational awareness rather than precision scheduling."}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2.5">
-            {(data.extendedForecast || []).map((day) => {
+        <div className="mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            {(data.extendedForecast || []).slice(0, 7).map((day, idx) => {
               const { dayName, dayMonth } = formatForecastDate(day.date, locale);
+              const isHighlighted = idx === 0;
 
               return (
-                <div key={day.date} className="rounded-xl border border-line bg-surface p-2.5 flex flex-col justify-between">
+                <div
+                  key={day.date}
+                  className={`rounded-xl border p-3 flex flex-col justify-between transition-all ${
+                    isHighlighted
+                      ? "border-emerald/40 bg-emerald/5 dark:bg-emerald/10 shadow-sm"
+                      : "border-line bg-surface hover:border-emerald/30"
+                  }`}
+                >
                   <div>
-                    <div className="text-[11px] font-medium text-muted">{dayMonth}</div>
-                    <div className="my-2 flex justify-center">{getWeatherIcon(day.icon, "h-6 w-6")}</div>
-                    <div className="text-center font-bold text-xs text-content">
-                      {formatMetric(day.temperatureMaxC, locale)}° <span className="text-[10px] font-normal text-muted">/ {formatMetric(day.temperatureMinC, locale)}°</span>
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[11px] font-bold ${isHighlighted ? "text-emerald dark:text-emerald-400" : "text-muted"}`}>
+                        {dayName}
+                      </span>
+                      <span className="text-[10px] text-muted">{dayMonth}</span>
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-center py-1">
+                      {getWeatherIcon(day.icon, "h-7 w-7")}
+                    </div>
+
+                    <div className="mt-2 text-center">
+                      <div className="text-xs font-semibold text-content line-clamp-1">
+                        {locale === "bn" ? day.conditionBn : day.conditionEn}
+                      </div>
+                      <div className="mt-1 text-sm font-bold text-content">
+                        {formatMetric(day.temperatureMaxC, locale)}° <span className="text-xs font-normal text-muted">/ {formatMetric(day.temperatureMinC, locale)}°</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="mt-2 pt-2 border-t border-line/60 flex items-center justify-between text-[10px] text-muted">
-                    <span>{formatMetric(day.precipitationSumMm, locale)} {t("farmUi.mm")}</span>
-                    <span className="text-sky-600 dark:text-sky-400">{formatMetric(day.precipitationProbabilityMax, locale, 0)}%</span>
+
+                  <div className="mt-3 pt-2.5 border-t border-line/60 space-y-1 text-[11px]">
+                    <div className="flex items-center justify-between text-muted">
+                      <span className="flex items-center gap-1">
+                        <Droplets className="h-3 w-3 text-sky-500" aria-hidden="true" />
+                        {formatMetric(day.precipitationSumMm, locale)} {t("farmUi.mm")}
+                      </span>
+                      <span className="font-medium text-sky-600 dark:text-sky-400">
+                        {formatMetric(day.precipitationProbabilityMax, locale, 0)}%
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-muted">
+                      <span className="flex items-center gap-1">
+                        <Wind className="h-3 w-3 text-slate-400" aria-hidden="true" />
+                        {formatMetric(day.windSpeedMaxKmH, locale)} {t("farmUi.kmh")}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
@@ -491,21 +516,13 @@ export default function WeatherIntelligenceSection({ locationCode = "chattogram"
       {/* Tab 3: Sub-Seasonal Weeks 1-6 */}
       {activeTab === "subSeasonal" && (
         <div className="mt-4 space-y-4">
-          <div className="flex items-center gap-2 rounded-xl border border-line/80 bg-surface-alt p-3 text-xs text-muted">
-            <Info className="h-4 w-4 shrink-0 text-emerald" aria-hidden="true" />
-            <span>
-              {locale === "bn"
-                ? "Open-Meteo ECMWF Seasonal Seamless (EC46 + SEAS5) মডেল নির্বাচন থেকে ১–৬ সপ্তাহের আঞ্চলিক প্রবণতা। এটি নির্দিষ্ট খামারের দৈনিক পূর্বাভাস নয়।"
-                : "Weeks 1–6 regional tendencies use Open-Meteo's ECMWF Seasonal Seamless selection (EC46 + SEAS5); they are not local farm-level daily forecasts."}
-            </span>
-          </div>
-
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(subSeasonalOutlookSummary || []).map((w) => (
-              <div key={w.weekNumber} className="rounded-xl border border-line bg-surface p-4 flex flex-col justify-between">
+              <div key={w.weekNumber} className="rounded-2xl border border-emerald/20 bg-emerald/5 p-5 flex flex-col justify-between shadow-sm transition-colors hover:border-emerald/40 dark:border-emerald/25 dark:bg-emerald/10">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-emerald dark:text-emerald-400">
+                    <span className="inline-flex items-center gap-2 text-sm font-bold text-emerald dark:text-emerald-400">
+                      <Calendar className="h-5 w-5" aria-hidden="true" />
                       {locale === "bn" ? `সপ্তাহ ${w.weekNumber}` : `Week ${w.weekNumber}`}
                     </span>
                     <span className="text-[10px] font-medium text-muted">
@@ -528,13 +545,13 @@ export default function WeatherIntelligenceSection({ locationCode = "chattogram"
                       <div className="text-xs font-semibold text-content">
                         {locale === "bn" ? w.rainTendencyBn : w.rainTendencyEn}
                       </div>
-                      <div className="mt-2 text-xs text-muted flex items-center justify-between">
-                        <span>{locale === "bn" ? "প্রত্যাশিত বৃষ্টিপাত:" : "Expected Rain:"}</span>
+                      <div className="mt-4 rounded-xl bg-sky-500/10 px-3 py-3 text-xs text-muted flex items-center justify-between gap-2">
+                        <span className="inline-flex items-center gap-2"><CloudRain className="h-5 w-5 text-sky-500" aria-hidden="true" />{locale === "bn" ? "প্রত্যাশিত বৃষ্টিপাত:" : "Expected Rain:"}</span>
                         <span className="font-bold text-content">{formatMetric(w.expectedRainfallMeanMm, locale)} {t("farmUi.mm")}</span>
                       </div>
-                      <div className="mt-1 text-xs text-muted flex items-center justify-between">
-                        <span>{locale === "bn" ? "গড় তাপমাত্রা:" : "Mean Temp:"}</span>
-                        <span className="font-bold text-content">{w.expectedTempMeanC} °C</span>
+                      <div className="mt-2 rounded-xl bg-orange-500/10 px-3 py-3 text-xs text-muted flex items-center justify-between gap-2">
+                        <span className="inline-flex items-center gap-2"><Thermometer className="h-5 w-5 text-orange-500" aria-hidden="true" />{locale === "bn" ? "গড় তাপমাত্রা:" : "Mean Temp:"}</span>
+                        <span className="font-bold text-content">{formatMetric(w.expectedTempMeanC, locale, 2)} °C</span>
                       </div>
                     </div>
                   )}
@@ -553,78 +570,35 @@ export default function WeatherIntelligenceSection({ locationCode = "chattogram"
 
       {/* Tab 4: Seasonal Months 1-3 */}
       {activeTab === "seasonal" && (
-        <div className="mt-4 space-y-4">
-          <div className="flex items-center gap-2 rounded-xl border border-line/80 bg-surface-alt p-3 text-xs text-muted">
-            <Info className="h-4 w-4 shrink-0 text-emerald" aria-hidden="true" />
-            <span>
-              {locale === "bn"
-                ? "প্রায় ৩০ দিনের ব্লকে আঞ্চলিক মডেল সিরিজের সারাংশ। এই দৈনিক API উত্তরে ক্যালিব্রেটেড বৃষ্টির সম্ভাব্যতা নেই; খামারের নির্দিষ্ট পূর্বাভাস হিসেবে ব্যবহার করবেন না।"
-                : "Regional model summaries are grouped into ~30-day blocks. The requested daily response does not provide calibrated rainfall probabilities; this is not a farm-level forecast."}
-            </span>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-3">
-            {(seasonalOutlookSummary || []).map((m) => (
-              <div key={m.monthIndex} className="rounded-xl border border-line bg-surface p-4 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-bold text-content truncate">
-                      {locale === "bn" ? m.windowLabelBn || m.monthNameBn : m.windowLabelEn || m.monthNameEn}
-                    </h4>
-                    <span className="text-[10px] font-bold text-emerald dark:text-emerald-400 shrink-0">
-                      {locale === "bn" ? m.rainfallThresholdStatusBn : m.rainfallThresholdStatusEn}
-                    </span>
-                  </div>
-
-                  <div className="mt-3 space-y-1.5 text-xs">
-                    <div className="flex justify-between text-muted">
-                      <span>{locale === "bn" ? (m.seriesType === "ENSEMBLE_MEMBERS" ? "পাওয়া সদস্য সিরিজের গড় বৃষ্টি:" : "মডেল সিরিজের গড় বৃষ্টি:") : (m.seriesType === "ENSEMBLE_MEMBERS" ? "Mean across returned member series:" : "Model-series mean rainfall:")}</span>
-                      <span className="font-semibold text-content">{m.rainfallMeanMm != null ? `${m.rainfallMeanMm} mm` : (locale === "bn" ? "অপ্রাপ্য" : "Unavailable")}</span>
-                    </div>
-                    {m.rainfallMedianMm !== undefined && m.rainfallMedianMm !== null && (
-                      <div className="flex justify-between text-muted">
-                        <span>{locale === "bn" ? "পাওয়া সিরিজের মধ্যক বৃষ্টি:" : "Median across returned series:"}</span>
-                        <span className="font-semibold text-content">{formatMetric(m.rainfallMedianMm, locale)} {t("farmUi.mm")}</span>
-                      </div>
-                    )}
-                    {m.rainfallRangeMm && m.rainfallRangeMm.min != null && (
-                      <div className="flex justify-between text-muted">
-                        <span>{locale === "bn" ? "পাওয়া বৃষ্টি মানের সীমা (সর্বনিম্ন–সর্বোচ্চ):" : "Range across returned rainfall values:"}</span>
-                        <span className="font-semibold text-content">{m.rainfallRangeMm.min} – {m.rainfallRangeMm.max} mm</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between text-muted">
-                      <span>{locale === "bn" ? "মডেল সিরিজের গড় তাপমাত্রা:" : "Model-series mean temperature:"}</span>
-                      <span className="font-semibold text-content">{m.temperatureMeanC != null ? `${m.temperatureMeanC} °C` : (locale === "bn" ? "অপ্রাপ্য" : "Unavailable")}</span>
-                    </div>
-                    {m.temperatureRangeC && m.temperatureRangeC.min != null && (
-                      <div className="flex justify-between text-muted">
-                        <span>{locale === "bn" ? "পাওয়া তাপমাত্রা মানের সীমা (সর্বনিম্ন–সর্বোচ্চ):" : "Range across returned temperature values:"}</span>
-                        <span className="font-semibold text-content">{m.temperatureRangeC.min} – {m.temperatureRangeC.max} °C</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-line/60 text-[10px] text-muted">
-                  <div className="flex items-center justify-between">
-                    <span>{locale === "bn" ? "স্থানিক স্কেল:" : "Spatial Scale:"}</span>
-                    <span className="font-medium text-content">~36 km Regional Grid</span>
-                  </div>
-                  <div className="mt-1 flex items-center justify-between">
-                    <span>
-                      {locale === "bn" ? "এই সময়ের ব্যবহারযোগ্য সিরিজ:" : "Usable series for this period:"}
-                    </span>
-                    <span className="font-medium text-emerald dark:text-emerald-400">
-                      {m.usableSeriesCount > 0
-                        ? `${m.usableSeriesCount} ${m.seriesType === "ENSEMBLE_MEMBERS" ? (locale === "bn" ? "ফেরত পাওয়া সদস্য সিরিজ" : "returned member series") : (locale === "bn" ? "মডেল সিরিজ" : "model series")}`
-                        : (locale === "bn" ? "উপাত্ত অপ্রাপ্য" : "Unavailable")}
-                    </span>
-                  </div>
-                </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          {(seasonalOutlookSummary || []).map((m) => (
+            <article key={m.monthIndex} className="flex h-full flex-col rounded-2xl border border-emerald/25 bg-emerald/5 p-4 shadow-sm dark:bg-emerald/10">
+              <div className="flex items-center gap-2">
+                <span className="rounded-lg bg-emerald/10 p-1.5 text-emerald"><Calendar className="h-4 w-4" aria-hidden="true" /></span>
+                <h4 className="text-sm font-bold text-content">
+                  {t("weatherIntelligence.periodTitle").replace("{number}", formatMetric(m.monthIndex, locale, 0))}
+                </h4>
               </div>
-            ))}
-          </div>
+              <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-sky-500/10 px-3 py-2.5">
+                <p className="flex items-center gap-2 text-xs text-muted"><CloudRain className="h-4 w-4 text-sky-500" aria-hidden="true" />{t("weatherIntelligence.rainEstimate")}</p>
+                <p className="shrink-0 text-sm font-bold text-content">{formatMetric(m.rainfallMeanMm, locale, 2)} <span className="text-sm font-normal">{t("farmUi.mm")}</span></p>
+              </div>
+              <div className="mt-2 flex items-center justify-between gap-2 rounded-xl bg-orange-500/10 px-3 py-2.5">
+                <p className="flex items-center gap-2 text-xs text-muted"><Thermometer className="h-4 w-4 text-orange-500" aria-hidden="true" />{t("weatherIntelligence.temperatureEstimate")}</p>
+                <p className="shrink-0 text-sm font-bold text-content">{formatMetric(m.temperatureMeanC, locale, 2)} <span className="text-sm font-normal">°C</span></p>
+              </div>
+              <details className="mt-3 border-t border-emerald/15 pt-2 text-xs text-muted">
+                <summary className="cursor-pointer font-medium text-emerald">{t("weatherIntelligence.moreDetails")}</summary>
+                <div className="mt-3 space-y-3">
+                  {m.rainfallMedianMm != null && <p>{t("weatherIntelligence.middleRain")}: {formatMetric(m.rainfallMedianMm, locale, 2)} {t("farmUi.mm")}</p>}
+                  {m.rainfallRangeMm?.min != null && <p>{t("weatherIntelligence.rainRange")}: {formatMetric(m.rainfallRangeMm.min, locale, 2)} – {formatMetric(m.rainfallRangeMm.max, locale, 2)} {t("farmUi.mm")}</p>}
+                  {m.temperatureRangeC?.min != null && <p>{t("weatherIntelligence.temperatureRange")}: {formatMetric(m.temperatureRangeC.min, locale, 2)} – {formatMetric(m.temperatureRangeC.max, locale, 2)} °C</p>}
+                  <p>{t("weatherIntelligence.regionalEstimate")}</p>
+                  <p>{t("weatherIntelligence.estimatesCount")}: {m.usableSeriesCount > 0 ? formatMetric(m.usableSeriesCount, locale, 0) : "—"}</p>
+                </div>
+              </details>
+            </article>
+          ))}
         </div>
       )}
 
@@ -700,30 +674,11 @@ export default function WeatherIntelligenceSection({ locationCode = "chattogram"
         </div>
       )}
 
-      {/* 4. Data Provenance & Freshness Metadata */}
-      <div className="mt-6 text-[11px] text-muted">
-        {(provenance?.forecastDataStatus !== "AVAILABLE" || provenance?.seasonalDataStatus !== "AVAILABLE" || provenance?.isForecastStale || provenance?.isSeasonalStale) && (
-          <p role="status" className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
-            {locale === "bn"
-              ? "প্রোভাইডারের সঙ্গে সংযোগ না হওয়ায় পূর্বের ক্যাশ করা তথ্য দেখানো হচ্ছে। সময় ও স্থান বিবেচনা করে ব্যবহার করুন।"
-              : "Provider unavailable; showing a previously cached result. Check its timestamp and regional coverage before acting."}
-          </p>
-        )}
-        {(provenance?.forecastFetchTimestamp || provenance?.seasonalFetchTimestamp) && (
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-muted">
-            {provenance.forecastFetchTimestamp && (
-              <span>
-                {locale === "bn" ? "পূর্বাভাস আপডেট:" : "Forecast update:"} {new Date(provenance.forecastFetchTimestamp).toLocaleString(locale === "bn" ? "bn-BD" : "en-US")}
-              </span>
-            )}
-            {provenance.seasonalFetchTimestamp && (
-              <span>
-                {locale === "bn" ? "মৌসুমি দৃষ্টিভঙ্গি আপডেট:" : "Seasonal outlook update:"} {new Date(provenance.seasonalFetchTimestamp).toLocaleString(locale === "bn" ? "bn-BD" : "en-US")}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+      {(provenance?.isForecastStale || provenance?.isSeasonalStale) && (
+        <p role="status" className="mt-4 text-xs text-muted">
+          {t("weatherIntelligence.previousForecast")}
+        </p>
+      )}
     </section>
   );
 }

@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local audit artifacts
+/AUDIT-2026-11-14.md
+audit-*.html
+audit-*.log
