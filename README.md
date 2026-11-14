@@ -289,24 +289,7 @@ Proudly developed by **Team NeuralMesh** for the **NASA International Space Apps
 
 ### 🌟 Team Members Contribution
 
-Mahjabin Alif Lamiya and Md Rabbi Miah collaboratively built and engineered the complete full-stack website (Frontend, Backend, AI integration, and NASA DATA). Sumaiya Noor Dip, Ikra Islam, and Md. Mizbaul Hasan Shawon worked on the agricultural research, field data, and all the project documentation.
-
-### 📋 Detailed Role Distribution
-
-| Member Name | Core Role | Primary Contributions & Focus |
-|---|---|---|
-| **Mahjabin Alif Lamiya** | **Full-Stack & AI/ML** | Leader, Project Idea, Storytelling presentation (240s & 30s video), Complete website engineering, UI/UX and Frontend, system architecture, bilingual localization, and User Experience. |
-| **Md Rabbi Miah** | **Full-Stack** | Storytelling presentation (240s & 30s video), Full-stack web application engineering, backend REST API architecture (Express 5 & Node.js), database modeling (MongoDB Atlas), server-side endpoints, authentication, Google Gemini AI/ML assistant integration & grounding, NASA Earth observation ingestion pipelines, and core application development. |
-| **Sumaiya Noor Dip** | **Researcher** | Agricultural domain research, climate-vulnerability analysis, and comprehensive project technical documentation. |
-| **Ikra Islam** | **UI/UX & Researcher** | User experience, agricultural research, bilingual translation review, and project documentation. |
-| **Md. Mizbaul Hasan Shawon** | **UI/UX** | Supporting project documentation and UI/UX review. |
-
-### 🛠️ Work Distribution Summary
-
-- **Full Website & Technical Engineering (Frontend + Backend + AI/ML):**  
-  **Mahjabin Alif Lamiya** & **Md Rabbi Miah** led the complete end-to-end engineering of the Krishi Mama platform — building the Next.js 16 frontend, the Node.js/Express 5 backend, the MongoDB database tier, the Python scientific engine, and the Google Gemini AI assistant.
-- **Research, UI/UX Design & Project Documentation:**  
-  **Sumaiya Noor Dip**, **Ikra Islam**, and **Md. Mizbaul Hasan Shawon** spearheaded the comprehensive agricultural and scientific research, UI/UX design wireframes and ergonomics, and authored the extensive project documentation suite, ensuring strict alignment with NASA Space Apps Challenge 2026 standards.
+Mahjabin Alif Lamiya and Md Rabbi Miah collaboratively built and engineered the complete full-stack website (Frontend, Backend, AI integration, and NASA DATA). Sumaiya Noor Dip, Ikra Islam, and Md. Mizbaul Hasan Shawon work of the agricultural research, field data, and all the project documentation.
 
 ---
 
