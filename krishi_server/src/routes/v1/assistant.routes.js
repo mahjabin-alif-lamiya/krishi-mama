@@ -8,6 +8,7 @@ import rateLimit from "express-rate-limit";
 import {
   chatWithAssistant,
   transcribeAssistantAudio,
+  generateAssistantSpeech,
   listConversations,
   getConversation,
   renameConversation,
@@ -45,6 +46,15 @@ const transcriptionRateLimiter = rateLimit({
   },
 });
 
+const speechRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 12,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => env.nodeEnv === "test",
+  message: { success: false, error: { code: "TOO_MANY_SPEECH_REQUESTS", message: "Too many speech requests. Please try again shortly." } },
+});
+
 // Conversations Management (Authenticated)
 router.get("/conversations", authenticate, listConversations);
 router.get("/conversations/:id", authenticate, getConversation);
@@ -54,5 +64,6 @@ router.delete("/conversations/:id", authenticate, deleteConversation);
 // Assistant use and private history are available after login.
 router.post("/chat", authenticate, chatRateLimiter, chatWithAssistant);
 router.post("/transcribe", optionalAuthenticate, transcriptionRateLimiter, transcribeAssistantAudio);
+router.post("/speech", optionalAuthenticate, speechRateLimiter, generateAssistantSpeech);
 
 export default router;

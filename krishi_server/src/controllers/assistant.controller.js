@@ -40,6 +40,22 @@ export async function transcribeAssistantAudio(req, res, next) {
   }
 }
 
+export async function generateAssistantSpeech(req, res, next) {
+  try {
+    const text = typeof req.body?.text === "string" ? req.body.text.trim() : "";
+    if (!text) return errorResponse(res, 400, "Text is required for speech playback.", "EMPTY_SPEECH_TEXT");
+    if (text.length > 1800) return errorResponse(res, 400, "Speech text exceeds the 1800 character limit.", "SPEECH_TEXT_TOO_LONG");
+    if (!/[\u0980-\u09FF]/.test(text)) return errorResponse(res, 400, "This endpoint is for Bangla speech.", "BENGALI_TEXT_REQUIRED");
+    if (!geminiAssistantClient.isConfigured()) return errorResponse(res, 503, "Bangla speech is currently unavailable.", "VOICE_TTS_UNAVAILABLE");
+    const audio = await geminiAssistantClient.generateBanglaSpeech(text);
+    res.set({ "Content-Type": "audio/wav", "Content-Length": String(audio.length), "Cache-Control": "no-store" });
+    return res.status(200).send(audio);
+  } catch (err) {
+    if (/^VOICE_TTS_/.test(err.message || "")) return errorResponse(res, 503, "Bangla speech is currently unavailable. Please try again later.", "VOICE_TTS_UNAVAILABLE");
+    return next(err);
+  }
+}
+
 /**
  * Generate a clean, natural conversation title from the first message.
  */

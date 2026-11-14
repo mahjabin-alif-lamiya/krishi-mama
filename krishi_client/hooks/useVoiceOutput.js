@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback, useSyncExternalStore } from "react";
 import { prepareSpokenText, detectLanguage } from "@/lib/speechTextHelper.js";
+import { generateAssistantSpeech } from "@/services/api.js";
 
 const subscribeToBrowserSupport = () => () => {};
 const getSpeechSynthesisSupport = () =>
-  typeof window !== "undefined" && "speechSynthesis" in window;
+  typeof window !== "undefined" && ("speechSynthesis" in window || "Audio" in window);
 const getServerSupport = () => false;
 
 function splitForSpeech(text, maxLength = 240) {
@@ -58,6 +59,8 @@ export function useVoiceOutput() {
   const utteranceRef = useRef(null);
   const isComponentMounted = useRef(true);
   const playbackTokenRef = useRef(0);
+  const audioRef = useRef(null);
+  const audioUrlRef = useRef(null);
 
   // Initialize and load available speech synthesis voices
   useEffect(() => {
@@ -90,6 +93,10 @@ export function useVoiceOutput() {
         }
         window.speechSynthesis.removeEventListener?.("voiceschanged", loadVoices);
       }
+      audioRef.current?.pause();
+      audioRef.current = null;
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
     };
   }, []);
 
@@ -146,6 +153,10 @@ export function useVoiceOutput() {
         // Ignore
       }
     }
+    audioRef.current?.pause();
+    audioRef.current = null;
+    if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+    audioUrlRef.current = null;
     setIsSpeaking(false);
     setIsPaused(false);
     setCurrentId(null);
@@ -153,6 +164,11 @@ export function useVoiceOutput() {
 
   // Pause playback
   const pause = useCallback(() => {
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      setIsPaused(true);
+      return;
+    }
     if (typeof window !== "undefined" && window.speechSynthesis) {
       try {
         window.speechSynthesis.pause();
@@ -165,6 +181,10 @@ export function useVoiceOutput() {
 
   // Resume playback
   const resume = useCallback(() => {
+    if (audioRef.current?.paused) {
+      audioRef.current.play().then(() => setIsPaused(false)).catch(() => setError("PLAYBACK_ERROR"));
+      return;
+    }
     if (typeof window !== "undefined" && window.speechSynthesis) {
       try {
         window.speechSynthesis.resume();
@@ -181,42 +201,88 @@ export function useVoiceOutput() {
       setError(null);
       setErrorDetails("");
 
-      if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-        setError("UNSUPPORTED");
-        return;
-      }
-
       const text = prepareSpokenText(rawText);
       if (!text) {
         setError("EMPTY_TEXT");
         return;
       }
 
-      const playbackToken = ++playbackTokenRef.current;
-
-      // Single-audio guarantee: cancel any current or pending playback
-      try {
-        window.speechSynthesis.cancel();
-      } catch {
-        // Ignore
-      }
-
-      // Check available voices
-      const browserVoices = window.speechSynthesis.getVoices() || [];
-      const voices = browserVoices.length > 0 ? browserVoices : availableVoices;
       const targetLang = preferredLang || detectLanguage(text);
       const isBengali = targetLang.toLowerCase().startsWith("bn");
+      if (typeof window === "undefined" || (!isBengali && !("speechSynthesis" in window))) {
+        setError("UNSUPPORTED");
+        return;
+      }
+
+      const playbackToken = ++playbackTokenRef.current;
+      audioRef.current?.pause();
+      audioRef.current = null;
+      if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+      if (!isBengali) {
+        try { window.speechSynthesis.cancel(); } catch { /* Ignore */ }
+      }
+      const browserVoices = !isBengali ? window.speechSynthesis.getVoices() || [] : [];
+      const voices = browserVoices.length > 0 ? browserVoices : availableVoices;
+
+      if (isBengali) {
+        audioRef.current?.pause();
+        if (audioUrlRef.current) URL.revokeObjectURL(audioUrlRef.current);
+        audioRef.current = null;
+        audioUrlRef.current = null;
+        const token = ++playbackTokenRef.current;
+        setCurrentId(id);
+        setIsSpeaking(true);
+        generateAssistantSpeech(text).then((result) => {
+          if (token !== playbackTokenRef.current) return;
+          if (!result.success) {
+            setError("PLAYBACK_ERROR");
+            setErrorDetails(result.error?.message || "Bangla voice generation failed");
+            setIsSpeaking(false);
+            setCurrentId(null);
+            return;
+          }
+          const url = URL.createObjectURL(result.data);
+          const audio = new Audio(url);
+          audioUrlRef.current = url;
+          audioRef.current = audio;
+          audio.onended = () => {
+            if (token !== playbackTokenRef.current) return;
+            URL.revokeObjectURL(url);
+            audioRef.current = null;
+            audioUrlRef.current = null;
+            setIsSpeaking(false);
+            setIsPaused(false);
+            setCurrentId(null);
+          };
+          audio.onerror = () => {
+            if (token !== playbackTokenRef.current) return;
+            setError("PLAYBACK_ERROR");
+            setErrorDetails("Bangla audio could not be played by this browser.");
+            setIsSpeaking(false);
+            setIsPaused(false);
+            setCurrentId(null);
+          };
+          audio.play().catch((err) => {
+            if (token !== playbackTokenRef.current) return;
+            setError("PLAYBACK_ERROR");
+            setErrorDetails(err.message || "Bangla audio playback failed");
+            setIsSpeaking(false);
+            setCurrentId(null);
+          });
+        }).catch((err) => {
+          if (token !== playbackTokenRef.current) return;
+          setError("PLAYBACK_ERROR");
+          setErrorDetails(err.message || "Bangla voice generation failed");
+          setIsSpeaking(false);
+          setCurrentId(null);
+        });
+        return;
+      }
 
       const voice = findBestVoice(targetLang, voices);
       // Never pass Bangla text to an English/default voice: it produces an
       // English-sounding mispronunciation while pretending Bangla is supported.
-      if (isBengali && !voice) {
-        setError("VOICE_UNAVAILABLE_BN");
-        setIsSpeaking(false);
-        setIsPaused(false);
-        setCurrentId(null);
-        return;
-      }
       const chunks = splitForSpeech(text);
       let chunkIndex = 0;
 

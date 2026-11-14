@@ -142,6 +142,39 @@ export class GeminiAssistantClient {
     return transcript;
   }
 
+  /** Generate natural Bangla speech as a WAV buffer for reliable playback. */
+  async generateBanglaSpeech(text) {
+    if (!this.isConfigured()) throw new Error("VOICE_TTS_UNAVAILABLE");
+    const response = await this.ai.models.generateContent({
+      model: "gemini-3.1-flash-tts-preview",
+      contents: [{ parts: [{ text: `Read the following exactly as written in natural, clear Bangladeshi Bengali. Use a native Bangla pronunciation and a calm, helpful agricultural-advisor tone. Do not translate, summarize, or add words.\n\n${text}` }] }],
+      config: {
+        responseModalities: ["AUDIO"],
+        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } },
+      },
+    });
+    const audioPart = response.candidates?.[0]?.content?.parts?.find((part) => part.inlineData?.data);
+    if (!audioPart?.inlineData?.data) throw new Error("VOICE_TTS_EMPTY_AUDIO");
+    const pcm = Buffer.from(audioPart.inlineData.data, "base64");
+    // Gemini TTS returns mono, 24 kHz, signed 16-bit PCM. Wrap it as WAV for browsers.
+    const wav = Buffer.alloc(44 + pcm.length);
+    wav.write("RIFF", 0);
+    wav.writeUInt32LE(36 + pcm.length, 4);
+    wav.write("WAVE", 8);
+    wav.write("fmt ", 12);
+    wav.writeUInt32LE(16, 16);
+    wav.writeUInt16LE(1, 20);
+    wav.writeUInt16LE(1, 22);
+    wav.writeUInt32LE(24000, 24);
+    wav.writeUInt32LE(48000, 28);
+    wav.writeUInt16LE(2, 32);
+    wav.writeUInt16LE(16, 34);
+    wav.write("data", 36);
+    wav.writeUInt32LE(pcm.length, 40);
+    pcm.copy(wav, 44);
+    return wav;
+  }
+
   /**
    * Execute chat turn with automated function calling.
    */

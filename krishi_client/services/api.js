@@ -422,6 +422,31 @@ export async function transcribeAssistantAudio({ audioBase64, mimeType }) {
   });
 }
 
+/** Generate natural server-side Bangla speech and return it as a browser-playable WAV blob. */
+export async function generateAssistantSpeech(text) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 45000);
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/assistant/speech`, {
+      method: "POST",
+      credentials: "include",
+      cache: "no-store",
+      signal: controller.signal,
+      headers: { Accept: "audio/wav, application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) {
+      const json = await res.json().catch(() => null);
+      return { success: false, error: json?.error || { code: `HTTP_${res.status}`, message: `Speech request failed (${res.status}).` } };
+    }
+    return { success: true, data: await res.blob() };
+  } catch (err) {
+    return { success: false, error: { code: err.name === "AbortError" ? "REQUEST_TIMEOUT" : "NETWORK_ERROR", message: err.message || "Speech request failed." } };
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 /**
  * GET /api/v1/assistant/conversations
  * Fetches the authenticated user's conversation history list.
