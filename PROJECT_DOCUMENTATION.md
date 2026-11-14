@@ -24,11 +24,11 @@
 
 | Member Name | Role | Core Responsibility |
 |---|---|---|
-| **Mahjabin Alif Lamiya** | **Full-Stack & AI/ML** | Full platform engineering (Frontend & Backend integration), system architecture, Google Gemini AI assistant grounding, NASA Earth observation ingestion pipelines, and localization. |
-| **Md Rabbi Miah** | **Full-Stack** | Full-stack engineering, Express REST API backend architecture, MongoDB data modeling, authentication system, and server endpoint implementations. |
-| **Sumaiya Noor Dip** | **Researcher** | Agricultural domain research, national dataset curation (DAE, BAMIS, BRRI, BARI), and comprehensive project technical documentation. |
-| **Ikra Islam** | **UI/UX & Researcher** | User interface & experience design, farmer accessibility ergonomics, agricultural research, and project documentation. |
-| **Md. Mizbaul Hasan Shawon** | **UI/UX** | UI/UX visual design, responsive layout wireframes, color accessibility ergonomics, and supporting project documentation. |
+| **Mahjabin Alif Lamiya** | **Full-Stack & AI/ML** | Leader, Project Idea, Storytelling presentation (240s & 30s video), Complete website engineering, UI/UX and Frontend, system architecture, bilingual localization, and User Experience. |
+| **Md Rabbi Miah** | **Full-Stack** | Storytelling presentation (240s & 30s video), Full-stack web application engineering, backend REST API architecture (Express 5 & Node.js), database modeling (MongoDB Atlas), server-side endpoints, authentication, Google Gemini AI/ML assistant integration & grounding, NASA Earth observation ingestion pipelines, and core application development. |
+| **Sumaiya Noor Dip** | **Researcher** | Agricultural domain research, climate-vulnerability analysis, and comprehensive project technical documentation. |
+| **Ikra Islam** | **UI/UX & Researcher** | User experience, agricultural research, bilingual translation review, and project documentation. |
+| **Md. Mizbaul Hasan Shawon** | **UI/UX** | Supporting project documentation and UI/UX review. |
 
 ---
 

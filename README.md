@@ -291,11 +291,11 @@ Proudly developed by **Team NeuralMesh** for the **NASA International Space Apps
 
 | Member Name | Core Role | Primary Contributions & Focus |
 |---|---|---|
-| **Mahjabin Alif Lamiya** | **Full-Stack & AI/ML** | Complete website engineering (Frontend & Backend integration), system architecture, Google Gemini AI/ML assistant integration & grounding, NASA Earth observation ingestion pipelines, and bilingual localization. |
-| **Md Rabbi Miah** | **Full-Stack** | Full-stack web application engineering, backend REST API architecture (Express 5 & Node.js), database modeling (MongoDB Atlas), server-side endpoints, authentication, and core application development. |
-| **Sumaiya Noor Dip** | **Researcher** | Agricultural domain research, national agricultural data curation (DAE, BAMIS, BRRI, BARI), climate-vulnerability analysis, and comprehensive project technical documentation. |
-| **Ikra Islam** | **UI/UX & Researcher** | User experience and interface design, accessibility workflows tailored for rural farmers, agricultural research, bilingual translation review, and project documentation. |
-| **Md. Mizbaul Hasan Shawon** | **UI/UX** | UI/UX visual design, responsive layout wireframing, color system & dark mode ergonomics, graphics preparation, and supporting project documentation. |
+| **Mahjabin Alif Lamiya** | **Full-Stack & AI/ML** | Leader, Project Idea, Storytelling presentation (240s & 30s video), Complete website engineering, UI/UX and Frontend, system architecture, bilingual localization, and User Experience. |
+| **Md Rabbi Miah** | **Full-Stack** | Storytelling presentation (240s & 30s video), Full-stack web application engineering, backend REST API architecture (Express 5 & Node.js), database modeling (MongoDB Atlas), server-side endpoints, authentication, Google Gemini AI/ML assistant integration & grounding, NASA Earth observation ingestion pipelines, and core application development. |
+| **Sumaiya Noor Dip** | **Researcher** | Agricultural domain research, climate-vulnerability analysis, and comprehensive project technical documentation. |
+| **Ikra Islam** | **UI/UX & Researcher** | User experience, agricultural research, bilingual translation review, and project documentation. |
+| **Md. Mizbaul Hasan Shawon** | **UI/UX** | Supporting project documentation and UI/UX review. |
 
 ### 🛠️ Work Distribution Summary
 
