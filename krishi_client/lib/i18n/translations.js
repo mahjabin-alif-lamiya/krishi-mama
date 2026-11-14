@@ -149,6 +149,21 @@ export const translations = {
       outlookCta: "Explore Climate Context",
       outlookUnavailable: "The outlook could not be loaded right now. Please try again later.",
       outlookUnavailableCta: "Explore Climate Data",
+      outlookSelectLabel: "Choose your district",
+      outlookDetailsCta: "View short-term weather details",
+      outlookAdvisoryTitle: "Field advisory",
+      outlookAdvisoryDryGood:
+        "Mostly dry, workable conditions — a good window for land preparation, weeding, spraying, and harvest. Keep irrigation light and only where needed.",
+      outlookAdvisoryMixed:
+        "Mixed conditions this week — plan field work around the drier days, keep irrigation light, and re-check this outlook before major operations.",
+      outlookAdvisoryWet:
+        "Wet weather is likely and field work may be interrupted — drain low plots, delay urea top-dressing and pesticide spraying, and try to finish harvesting before the wettest days.",
+      outlookAdvisoryWind:
+        "Strong gusts are expected — avoid spraying, support tall or lodging-prone crops, and secure drying yards and stored produce.",
+      outlookAdvisoryHeat:
+        "Very hot days ahead — irrigate early morning or late evening, mulch seed beds, and watch young seedlings for heat stress.",
+      outlookAdvisoryCold:
+        "Cool nights with possible fog — protect seedlings from cold injury, start field work after the fog clears, and allow extra grain-drying time.",
             aboutKicker: "OUR MISSION & COMMITMENT",
       aboutSubtitle: "Farmer-focused climate and satellite information, currently developed and checked for Cumilla and Chattogram. Coverage for other districts is planned for future work.",
       aboutPillar1Title: "NASA Earth Observation",
@@ -673,7 +688,7 @@ export const translations = {
       newChat: "New chat",
       loadingResponse: "Checking available information...",
       homePrompt: "How can I help your farm today?",
-      homePromptSubtitle: "কৃষি বা ফসল নিয়ে কিছু জানতে চান? এখানে প্রশ্ন করুন।",
+      homePromptSubtitle: "Have a question about crops or farming? Ask here.",
       evidenceBadge: "Available NASA data",
       officialBadge: "Official crop guidance",
       transparentBadge: "Sources & limits shown",
@@ -707,7 +722,7 @@ export const translations = {
       guestNotice: "Guest conversation is temporary. Sign in to save conversation history.",
       signIn: "Sign in",
       composerPlaceholder: "Ask a farming question in Bangla or English...",
-      composerExample: "For example: আমন কাটার পর সরিষা কখন বপন করব?",
+      composerExample: "For example: When should I plant mustard after harvesting Aman rice?",
       keyboardHint: "Enter to send · Shift+Enter for a new line",
       footerNasa: "Available NASA observations",
       footerGuidance: "BAMIS / BRRI / DAE guidance",
@@ -1268,6 +1283,21 @@ export const translations = {
       outlookCta: "জলবায়ু তথ্য দেখুন",
       outlookUnavailable: "এই মুহূর্তে পূর্বাভাস আনা যায়নি। পরে আবার চেষ্টা করুন।",
       outlookUnavailableCta: "জলবায়ু ডেটা দেখুন",
+      outlookSelectLabel: "জেলা নির্বাচন করুন",
+      outlookDetailsCta: "স্বল্পমেয়াদি আবহাওয়ার বিস্তারিত দেখুন",
+      outlookAdvisoryTitle: "মাঠ পরামর্শ",
+      outlookAdvisoryDryGood:
+        "বেশিরভাগ দিন শুকনো থাকার সম্ভাবনা — জমি তৈরি, আগাছা পরিষ্কার, স্প্রে ও ফসল তোলার জন্য ভালো সময়। প্রয়োজন হলে হালকা সেচ দিন।",
+      outlookAdvisoryMixed:
+        "এই সপ্তাহে মিশ্র আবহাওয়ার সম্ভাবনা — যেদিন বৃষ্টি কম সেই দিনগুলোতে মাঠের কাজ করুন, হালকা সেচ দিন এবং বড় কোনো কাজের আগে সর্বশেষ পূর্বাভাস দেখে নিন।",
+      outlookAdvisoryWet:
+        "বৃষ্টিপূর্ণ আবহাওয়ার সম্ভাবনা বেশি — নিচু জমির পানি নিষ্কাশনের ব্যবস্থা নিন, ইউরিয়া ও কীটনাশক স্প্রে পেছনে চাপুন এবং সবচেয়ে বেশি বৃষ্টির দিনের আগেই ফসল তোলার চেষ্টা করুন।",
+      outlookAdvisoryWind:
+        "দমকা হাওয়ার সম্ভাবনা আছে — স্প্রে করা এড়িয়ে যান, লম্বা বা হেলে পড়া-প্রবণ ফসলে খুঁটি দিয়ে সাপোর্ট দিন এবং শুকানোর উঠোন ও মজুদ ফসল সুরক্ষিত রাখুন।",
+      outlookAdvisoryHeat:
+        "খুব গরম দিন আসছে — ভোরে বা সন্ধ্যায় সেচ দিন, বীজতলায় মালচিং করুন এবং কচি চারায় তাপের চাপ খেয়াল করুন।",
+      outlookAdvisoryCold:
+        "রাতে ঠান্ডা ও কুয়াশার সম্ভাবনা — চারা ঠান্ডা থেকে রক্ষা করুন, কুয়াশা কেটে গেলে মাঠের কাজ শুরু করুন এবং ফসল শুকানোর জন্য অতিরিক্ত সময় রাখুন।",
     },
 
     ticker: {

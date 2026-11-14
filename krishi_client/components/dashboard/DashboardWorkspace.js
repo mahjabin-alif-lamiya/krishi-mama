@@ -52,9 +52,14 @@ export default function DashboardWorkspace({ view = "overview", children }) {
   } = useLocation();
 
   const observationDetailsRef = useRef(null);
+  const weatherDetailsRef = useRef(null);
   useEffect(() => {
     const revealLinkedRecord = () => {
       if (/^#(power|rainfall|soil-moisture|vegetation)$/.test(window.location.hash) && observationDetailsRef.current) observationDetailsRef.current.open = true;
+      if (/^#short-term-weather$/.test(window.location.hash) && weatherDetailsRef.current) {
+        weatherDetailsRef.current.open = true;
+        weatherDetailsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     };
     revealLinkedRecord();
     window.addEventListener("hashchange", revealLinkedRecord);
@@ -73,6 +78,15 @@ export default function DashboardWorkspace({ view = "overview", children }) {
   const [environmentalSources, setEnvironmentalSources] = useState([]);
   const [latestEnvironmental, setLatestEnvironmental] = useState({ district: null, loaded: false, gpm: null, smap: null, modis: null });
   const latestDistrictRef = useRef(selectedDistrict);
+
+  // Reveal the short-term weather panel after the workspace finishes its first load,
+  // so deep links such as /climate#short-term-weather open even on a cold visit.
+  useEffect(() => {
+    if (!isLoading && weatherDetailsRef.current && /^#short-term-weather$/.test(window.location.hash)) {
+      weatherDetailsRef.current.open = true;
+      weatherDetailsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     let active = true;
@@ -462,7 +476,7 @@ export default function DashboardWorkspace({ view = "overview", children }) {
         isLoading={isLoading}
       />
       <details ref={observationDetailsRef} className="rounded-2xl border border-line bg-surface p-4 sm:p-5"><summary className="cursor-pointer font-semibold text-content">{t("dashboardUi.observationDetails")}</summary><div className="mt-5">{children}</div></details>
-      <details className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
+      <details ref={weatherDetailsRef} id="short-term-weather" className="scroll-mt-24 rounded-2xl border border-line bg-surface p-4 sm:p-5">
         <summary className="cursor-pointer text-base font-semibold text-content">{t("dashboardUi.weatherTitle")}</summary>
         <div className="mt-5">
       <WeatherIntelligenceSection

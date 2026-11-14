@@ -18,9 +18,15 @@ import {
   Leaf,
   Languages,
   MapPin,
+  ChevronDown,
   ShieldCheck,
   Sprout,
   Thermometer,
+  Sun,
+  Wind,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
 } from "lucide-react";
 
 import { fetchDataSources, fetchWeatherForecast } from "@/services/api.js";
@@ -29,6 +35,7 @@ import { Badge } from "@/components/ui/Badge.js";
 import { Button } from "@/components/ui/Button.js";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card.js";
 import { useLang } from "@/lib/i18n/LanguageContext.js";
+import { useLocation } from "@/contexts/LocationContext.js";
 
 const HERO_SRC = "/images/hero.png";
 
@@ -54,6 +61,7 @@ const steps = [
 
 export default function LandingPage() {
   const { t, locale } = useLang();
+  const { selectedDistrict, setSelectedDistrict, districts: locationDistricts } = useLocation();
   const [liveDataSources, setLiveDataSources] = useState(null);
   const [hasLoadedDataSources, setHasLoadedDataSources] = useState(false);
   const [forecast, setForecast] = useState(null);
@@ -77,24 +85,29 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    fetchWeatherForecast({ location: "cumilla" })
-      .then((res) => {
-        if (!isMounted) return;
-        if (res?.success && res?.data) {
-          setForecast(res.data);
-          setForecastStatus("ready");
-        } else {
-          setForecastStatus("error");
-        }
-      })
-      .catch(() => {
-        if (isMounted) setForecastStatus("error");
-      });
+    let isCancelled = false;
+    Promise.resolve().then(() => {
+      if (isCancelled) return;
+      setForecastStatus("loading");
+      setForecast(null);
+      fetchWeatherForecast({ location: selectedDistrict })
+        .then((res) => {
+          if (isCancelled) return;
+          if (res?.success && res?.data) {
+            setForecast(res.data);
+            setForecastStatus("ready");
+          } else {
+            setForecastStatus("error");
+          }
+        })
+        .catch(() => {
+          if (isCancelled) setForecastStatus("error");
+        });
+    });
     return () => {
-      isMounted = false;
+      isCancelled = true;
     };
-  }, []);
+  }, [selectedDistrict]);
 
   const powerApiSource = Array.isArray(liveDataSources)
     ? liveDataSources.find((item) => item.datasetKey === "nasa:power:daily:point") || null
@@ -185,17 +198,54 @@ export default function LandingPage() {
     { key: "short", icon: CalendarRange, titleKey: "outlookRangeShort", summary: shortWindowSummary, confidenceKey: "outlookConfidenceShort" },
     { key: "extended", icon: CloudRain, titleKey: "outlookRangeExtended", summary: extendedWindowSummary, confidenceKey: "outlookConfidenceExtended" },
   ];
-  const outlookLocationLabel = forecast?.location
-    ? (locale === "bn" ? forecast.location.nameBn : forecast.location.nameEn)
-    : null;
-  const outlookUpdatedLabel = forecast?.meta?.fetchTimestamp
-    ? new Date(forecast.meta.fetchTimestamp).toLocaleString(locale === "bn" ? "bn-BD" : "en-GB", {
-        day: "numeric",
-        month: "short",
-        hour: "numeric",
-        minute: "2-digit",
-      })
-    : null;
+
+  // Grounded decision advisory: derived from the same real forecast numbers shown
+  // in the card, using BMD rainfall/heatwave/coldwave and DAE spraying thresholds.
+  const OUTLOOK_ADVISORY_TONES = {
+    dryGood: { icon: CheckCircle2, box: "border-emerald/30 bg-emerald/10 dark:bg-emerald/5", iconColor: "text-emerald dark:text-emerald-400", titleColor: "text-emerald dark:text-emerald-300" },
+    mixed: { icon: Info, box: "border-line bg-surface-2/70 dark:bg-white/5", iconColor: "text-climate", titleColor: "text-content" },
+    wet: { icon: CloudRain, box: "border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/5", iconColor: "text-amber-600 dark:text-amber-400", titleColor: "text-amber-700 dark:text-amber-300" },
+    wind: { icon: Wind, box: "border-sky-500/30 bg-sky-500/10 dark:bg-sky-500/5", iconColor: "text-sky-600 dark:text-sky-400", titleColor: "text-sky-700 dark:text-sky-300" },
+    heat: { icon: Sun, box: "border-orange-500/30 bg-orange-500/10 dark:bg-orange-500/5", iconColor: "text-orange-600 dark:text-orange-400", titleColor: "text-orange-700 dark:text-orange-300" },
+    cold: { icon: Thermometer, box: "border-sky-500/30 bg-sky-500/10 dark:bg-sky-500/5", iconColor: "text-sky-500 dark:text-sky-400", titleColor: "text-sky-700 dark:text-sky-300" },
+  };
+
+  const buildOutlookAdvisory = (windowKey, summary) => {
+    if (!summary) return null;
+    const days = windowKey === "short"
+      ? (forecast?.shortRangeForecast || [])
+      : (forecast?.extendedForecast || []).slice(0, 7);
+    if (days.length === 0) return null;
+
+    const heavyRainDays = days.filter((d) => (Number(d.precipitationSumMm) || 0) >= 10).length;
+    const dryWorkableDays = days.filter((d) => (Number(d.precipitationSumMm) || 0) < 1).length;
+    const maxGust = Math.max(...days.map((d) => Number(d.windGustsMaxKmH) || 0));
+
+    let category;
+    if (summary.rainTotal >= 22 || summary.rainProbMax >= 60 || heavyRainDays >= 2) {
+      category = "wet";
+    } else if (maxGust >= 40) {
+      category = "wind";
+    } else if (summary.tempMax != null && summary.tempMax >= 36) {
+      category = "heat";
+    } else if (summary.tempMin != null && summary.tempMin < 10) {
+      category = "cold";
+    } else if (summary.rainTotal < 5 && summary.rainProbMax < 40 && dryWorkableDays >= 4) {
+      category = "dryGood";
+    } else {
+      category = "mixed";
+    }
+
+    return {
+      category,
+      ...(OUTLOOK_ADVISORY_TONES[category]),
+      body: t(`landing.outlookAdvisory${category.charAt(0).toUpperCase()}${category.slice(1)}`),
+    };
+  };
+
+  const outlookAdvisoryShort = buildOutlookAdvisory("short", shortWindowSummary);
+  const outlookAdvisoryExtended = buildOutlookAdvisory("extended", extendedWindowSummary);
+  const outlookAdvisories = { short: outlookAdvisoryShort, extended: outlookAdvisoryExtended };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -610,16 +660,30 @@ export default function LandingPage() {
               <p className="mt-4 text-base text-muted sm:text-lg leading-relaxed">
                 {t("landing.sectionOutlookSub")}
               </p>
-              {outlookLocationLabel ? (
-                <p className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-muted">
-                  <MapPin className="h-4 w-4" aria-hidden="true" />
-                  {t("landing.outlookLocation")}: {outlookLocationLabel}
-                </p>
-              ) : null}
+            </div>
+
+            {/* District selector — right-aligned above the cards, data follows the selection */}
+            <div className="mt-10 flex justify-center sm:justify-end">
+              <label className="relative inline-flex items-center">
+                <MapPin className="pointer-events-none absolute left-3 h-4 w-4 text-emerald" aria-hidden="true" />
+                <select
+                  value={selectedDistrict}
+                  onChange={(event) => setSelectedDistrict(event.target.value)}
+                  aria-label={t("landing.outlookSelectLabel")}
+                  className="appearance-none rounded-xl border border-line bg-surface py-2.5 pl-9 pr-10 text-sm font-semibold text-content shadow-sm transition-colors cursor-pointer hover:border-emerald/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/60 dark:bg-surface-card"
+                >
+                  {(locationDistricts.length > 0 ? locationDistricts : [{ code: "chattogram", nameEn: "Chattogram", nameBn: "চট্টগ্রাম" }, { code: "cumilla", nameEn: "Cumilla", nameBn: "কুমিল্লা" }]).map((district) => (
+                    <option key={district.code} value={district.code}>
+                      {locale === "bn" ? district.nameBn : district.nameEn}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 h-4 w-4 text-muted" aria-hidden="true" />
+              </label>
             </div>
 
             {forecastStatus === "loading" ? (
-              <div className="mt-12 grid gap-6 lg:grid-cols-2" aria-busy="true">
+              <div className="mt-4 grid gap-6 lg:grid-cols-2" aria-busy="true">
                 {[0, 1].map((i) => (
                   <div key={i} className="animate-pulse rounded-2xl border border-line bg-surface p-6 shadow-km-sm dark:bg-surface-card">
                     <div className="h-5 w-40 rounded bg-surface-2" />
@@ -633,14 +697,14 @@ export default function LandingPage() {
                 ))}
               </div>
             ) : !shortWindowSummary || !extendedWindowSummary ? (
-              <div className="mt-12 rounded-2xl border border-line bg-surface p-6 text-center shadow-km-sm dark:bg-surface-card">
+              <div className="mt-4 rounded-2xl border border-line bg-surface p-6 text-center shadow-km-sm dark:bg-surface-card">
                 <p className="text-sm text-muted">{t("landing.outlookUnavailable")}</p>
                 <Button href="/climate" variant="outline" size="sm" className="mt-4">
                   {t("landing.outlookUnavailableCta")}
                 </Button>
               </div>
             ) : (
-              <div className="mt-12 grid gap-6 lg:grid-cols-2">
+              <div className="mt-4 grid gap-6 lg:grid-cols-2">
                 {outlookWindows.map(({ key, icon: WindowIcon, titleKey, summary, confidenceKey }) => (
                   <div key={key} className="rounded-2xl border border-line bg-surface p-6 shadow-km-sm dark:bg-surface-card">
                     <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line/80 pb-4">
@@ -698,36 +762,41 @@ export default function LandingPage() {
                         {t("landing.outlookTypical")}: {summary.dominant}
                       </p>
                     ) : null}
+
+                    {/* Grounded decision advisory */}
+                    {outlookAdvisories[key] ? (
+                      (() => {
+                        const advisory = outlookAdvisories[key];
+                        const AdvisoryIcon = advisory.icon;
+                        return (
+                          <div className={`mt-5 flex items-start gap-3 rounded-xl border p-4 ${advisory.box}`}>
+                            <AdvisoryIcon className={`mt-0.5 h-4 w-4 shrink-0 ${advisory.iconColor}`} aria-hidden="true" />
+                            <div>
+                              <p className={`text-[11px] font-bold uppercase tracking-wider ${advisory.titleColor}`}>
+                                {t("landing.outlookAdvisoryTitle")}
+                              </p>
+                              <p className="mt-1 text-xs leading-relaxed text-content">
+                                {advisory.body}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })()
+                    ) : null}
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Source & uncertainty footnote */}
-            <div className="mt-8 rounded-2xl border border-line bg-surface-2/60 p-5 shadow-km-sm dark:bg-surface-card/60 sm:p-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-start gap-3.5">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-climate/15 text-climate ring-1 ring-climate/30">
-                    <Globe className="h-5 w-5" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-content">{t("landing.outlookSourceTitle")}</h4>
-                    <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">
-                      {t("landing.outlookSourceNote")}
-                      {outlookUpdatedLabel ? ` ${t("landing.outlookUpdated")}: ${outlookUpdatedLabel}.` : ""}
-                    </p>
-                    <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">
-                      {t("landing.outlookUncertaintyNote")}
-                    </p>
-                  </div>
-                </div>
-                <div className="shrink-0">
-                  <Button href="/climate" variant="outline" size="sm">
-                    {t("landing.outlookCta")}
-                    <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </div>
-              </div>
+            {/* View details — navigates to the short-term weather section on the Climate Data page */}
+            <div className="mt-6 flex justify-center">
+              <Link
+                href="/climate#short-term-weather"
+                className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-emerald-strong shadow-km-sm transition-colors hover:bg-surface-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/60 dark:bg-surface-card"
+              >
+                <span>{t("landing.outlookDetailsCta")}</span>
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </section>
